@@ -7,6 +7,21 @@
 #include <thread>
 #include <windows.h>
 
+#include <dxgi.h>
+#include <d3d11.h>
+
+#include "kiero/kiero.h"
+#define KIERO_INCLUDE_D3D11 1
+
+typedef long(__stdcall* Present)(ID3D11Device*);
+static Present oPresent = NULL;
+
+long __stdcall hkPresent(ID3D11Device* pDevice)
+{
+    std::cout << "hkPresent D3D11 Injector" << std::endl;
+    return oPresent(pDevice);
+}
+
 #include "Cheat/Hooks/Hooks.h"
 #include "Cheat/Gui/imgui_hooker.h"
 
@@ -32,6 +47,11 @@ bool shutdown(FILE* fp, std::string reason) {
 
 int64_t WINAPI MainThread(LPVOID param)
 {
+    if (kiero::init(kiero::RenderType::D3D11) == kiero::Status::Success)
+    {
+        kiero::bind(8, (void**)&oPresent, hkPresent);
+    }
+    
     AllocConsole();
     FILE* fp;
     freopen_s(&fp, "CONOUT$", "w", stdout);

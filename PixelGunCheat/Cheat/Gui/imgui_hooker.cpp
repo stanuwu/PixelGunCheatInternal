@@ -1,11 +1,9 @@
 #include <imgui.h>
-#include <imgui_stdlib.h>
 #include <imgui_impl_win32.h>
 #include <imgui_impl_dx11.h>
-#include <d3d11.h>
 #include <iostream>
-#include <iterator>
 #include <sstream>
+#include <d3d11.h>
 #include <vector>
 
 #include "imgui_hooker.h"
