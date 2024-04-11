@@ -4,11 +4,14 @@
 #include <iostream>
 #include <MinHook.h>
 #include <ostream>
+#include <thread>
 #include <windows.h>
 
 #include "Cheat/Hooks/Hooks.h"
+#include "Cheat/Gui/imgui_hooker.h"
 
 HMODULE Dll;
+BKCImGuiHooker ImGuiHooker;
 
 DWORD __stdcall EjectThread(LPVOID lpParameter) {
     Sleep(100);
@@ -36,6 +39,8 @@ int64_t WINAPI MainThread(LPVOID param)
     HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTextAttribute(console, FOREGROUND_BLUE);
     ShowWindow(GetConsoleWindow(), SW_MINIMIZE);
+    ImGuiHooker.setup_imgui_hwnd(GetConsoleWindow());
+    ImGuiHooker.start();
     std::cout << "Injected..." << std::endl;
     std::cout << "(Insert to Close)" << std::endl;
     Hooks* hooks = new Hooks();
@@ -72,7 +77,6 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
     case DLL_PROCESS_ATTACH:
         Dll = hModule;
         HANDLE hMainThead = CreateThread(nullptr, 0, LPTHREAD_START_ROUTINE(MainThread), hModule, 0, nullptr);
-
         if (hMainThead) CloseHandle(hMainThead);
         break;
     }
