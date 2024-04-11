@@ -23,70 +23,7 @@ static std::string c_Build = ":3";
 static std::string c_RealBuild = "v1.0-ALPHA";
 std::stringstream full_title;
 
-// Boykisser Central Module Vars
-struct BKCSetting
-{
-    int type = 0;
-    std::string name;
-};
-
-struct BKCCheckbox : BKCSetting
-{
-    BKCCheckbox(const std::string& setting_name, const bool checked)
-    {
-        name = setting_name;
-        enabled = checked;
-        type = 1;
-    }
-    bool enabled;
-};
-
-struct BKCSlider : BKCSetting
-{
-    BKCSlider(const std::string& setting_name, const float val, const float min, const float max)
-    {
-        name = setting_name;
-        value = val;
-        minimum = min;
-        maximum = max;
-        type = 2;
-    }
-    float value;
-    float minimum;
-    float maximum;
-};
-
-
-enum BKCCategory
-{
-    NONE = 0,
-    GENERAL = 1,
-    COMBAT = 2,
-    VISUAL = 3,
-    MOVEMENT = 4,
-    PLAYER = 5,
-    EXPLOIT = 6
-};
-
-struct BKCModule
-{
-    std::string name;
-    BKCCategory category = NONE;
-    WPARAM key = 0x0;
-    bool enabled = false;
-    std::vector<BKCCheckbox> checkboxes = {};
-    std::vector<BKCSlider> sliders = {};
-    void toggle()
-    {
-        enabled = !enabled;
-    }
-};
-
 static std::vector<BKCModule> modules = {};
-
-const static BKCCheckbox __test_reach_checkbox = BKCCheckbox("Test Checkbox Setting",  false);
-const static BKCSlider __test_reach_slider = BKCSlider("Test Slider Setting",  100, 0, 200);
-const static BKCModule __reach = { "Reach", PLAYER, 0x0, false, { __test_reach_checkbox }, { __test_reach_slider } };
 
 void InitModules(const std::vector<BKCModule>& init_mods);
 void HandleModuleSettingRendering(BKCModule& module);

@@ -1,33 +1,34 @@
 ﻿#pragma once
 #include <string>
+#include "../Gui/imgui_hooker.h"
 
 class ModuleBase
 {
 public:
-    ModuleBase(const bool e, const int k, std::string n)
+    ModuleBase(const int k, std::string n, BKCModule m)
     {
-        enabled = e;
         key = k;
         name = n;
+        module = m;
     }
     
-    bool enabled = false;
     int key = 0;
     std::string name;
+    BKCModule module;
     
     void run(void* arg)
     {
-        if (enabled) do_module(arg);
+        if (module.enabled) do_module(arg);
     }
 
     bool is_enabled()
     {
-        return enabled;
+        return module.enabled;
     }
     
     void toggle()
     {
-        enabled = !enabled;
+        module.enabled = !module.enabled;
     }
     
     virtual void do_module(void* arg) = 0;
