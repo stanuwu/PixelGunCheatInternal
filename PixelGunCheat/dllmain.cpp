@@ -32,11 +32,11 @@ LRESULT __stdcall WndProc(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 long (__stdcall* oPresent)(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
 long __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
 {
-    std::cout << "hkPresent D3D11 Injector" << std::endl;
     // Do the Things
     static bool is_init = true;
     if (is_init)
     {
+        std::cout << "hkPresent D3D11 Injector" << std::endl;
         if (SUCCEEDED(pSwapChain->GetDevice(__uuidof(ID3D11Device), (void**)& pDevice)))
         {
             pDevice->GetImmediateContext(&pContext);
@@ -56,7 +56,7 @@ long __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Fla
         }
     }
 
-    BKCImGuiHooker::start();
+    BKCImGuiHooker::start(mainRenderTargetView, pContext);
     
     return oPresent(pSwapChain, SyncInterval, Flags);
 }
