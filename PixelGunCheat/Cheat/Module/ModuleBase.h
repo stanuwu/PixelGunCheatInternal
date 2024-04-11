@@ -5,14 +5,14 @@
 class ModuleBase
 {
 public:
-    ModuleBase(const int k, std::string n, BKCModule m)
+    ModuleBase(BKCModule m)
     {
-        key = k;
-        name = n;
+        key = m.key;
+        name = m.name;
         module = m;
     }
     
-    int key = 0;
+    WPARAM key = 0x0;
     std::string name;
     BKCModule module;
     

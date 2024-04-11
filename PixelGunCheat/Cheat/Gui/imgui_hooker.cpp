@@ -51,7 +51,7 @@ void BKCImGuiHooker::setup_imgui_hwnd(HWND handle, ID3D11Device* device, ID3D11D
 {
     imgui_hwnd = handle;
     std::cout << "Starting BKC ImGui Hooker..." << std::endl;
-    std::vector<BKCModule> init_mods = { __reach };
+    std::vector<BKCModule> init_mods = { };
     InitModules(init_mods);
     
     full_title << c_Title << " - Build " << c_Build << " (" << c_RealBuild << ")"; // init the full title

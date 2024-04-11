@@ -1,10 +1,12 @@
 ﻿#pragma once
 #include "../ModuleBase.h"
 
+const static BKCModule __debuff_blindness = { "Debuff Blindness", COMBAT, 0x0, false, {}, {} };
+
 class ModuleDebuffBlind : ModuleBase
 {
 public:
-    ModuleDebuffBlind() : ModuleBase(true, -1, "Debuff Blind") {}
+    ModuleDebuffBlind() : ModuleBase(__debuff_blindness) {}
     
     void do_module(void* arg) override
     {

@@ -1,10 +1,12 @@
 ﻿#pragma once
 #include "../ModuleBase.h"
 
+const static BKCModule __xray = { "XRay", VISUAL, 0x0, false, {}, {} };
+
 class ModuleXRay : ModuleBase
 {
 public:
-    ModuleXRay() : ModuleBase(true, -1, "XRay") {}
+    ModuleXRay() : ModuleBase(__xray) {}
     
     void do_module(void* arg) override
     {

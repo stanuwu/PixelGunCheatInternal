@@ -1,11 +1,12 @@
 ﻿#pragma once
-
 #include "../ModuleBase.h"
+
+const static BKCModule __modify_recoil = { "Recoil Modifier", COMBAT, 0x0, false, {}, {} };
 
 class ModuleRecoil : ModuleBase
 {
 public:
-    ModuleRecoil() : ModuleBase(true, -1, "Modify Recoil") {}
+    ModuleRecoil() : ModuleBase(__modify_recoil) {}
     
     void do_module(void* arg) override
     {

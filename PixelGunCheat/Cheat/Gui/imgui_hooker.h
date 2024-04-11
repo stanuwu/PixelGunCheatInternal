@@ -1,4 +1,7 @@
 #pragma once
+#include <iostream>
+#include <vector>
+#include <d3d11.h>
 
 // Boykisser Central Module Vars
 struct BKCSetting

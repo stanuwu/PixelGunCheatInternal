@@ -1,10 +1,12 @@
 ﻿#pragma once
 #include "../ModuleBase.h"
 
+const static BKCModule __instant_charge = { "Instant Charge", COMBAT, 0x0, false, {}, {} };
+
 class ModuleInstantCharge : ModuleBase
 {
 public:
-    ModuleInstantCharge() : ModuleBase(false, -1, "InstantCharge") {}
+    ModuleInstantCharge() : ModuleBase(__instant_charge) {}
     
     void do_module(void* arg) override
     {

@@ -1,10 +1,12 @@
 ﻿#pragma once
 #include "../ModuleBase.h"
 
+const static BKCModule __debuff_cursing = { "Debuff Cursing", COMBAT, 0x0, false, {}, {} };
+
 class ModuleDebuffCursing : ModuleBase
 {
 public:
-    ModuleDebuffCursing() : ModuleBase(false, -1, "Debuff Cursing") {}
+    ModuleDebuffCursing() : ModuleBase(__debuff_cursing) {}
     
     void do_module(void* arg) override
     {

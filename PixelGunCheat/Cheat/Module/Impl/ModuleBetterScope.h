@@ -1,15 +1,18 @@
 ﻿#pragma once
 #include "../ModuleBase.h"
 
+const static BKCSlider __better_scope_fov = BKCSlider("Scoped FOV",  90, 30, 180);
+const static BKCModule __better_scope = { "Better Scoping", VISUAL, 0x0, true, {}, { __better_scope_fov } };
+
 class ModuleBetterScope : ModuleBase
 {
 public:
-    ModuleBetterScope() : ModuleBase(true, -1, "Better Scope") {}
+    ModuleBetterScope() : ModuleBase(__better_scope) {}
     
     void do_module(void* arg) override
     {
         set_float(arg, 0xF8, 0); // scopeSpeed
-        set_float(arg, 0xD8, 90); // fieldOfViewZomm
+        set_float(arg, 0xD8, __better_scope_fov.value); // fieldOfViewZomm
         set_float(arg, 0xE0, 9999); // scopeCircleRadius
     }
 };

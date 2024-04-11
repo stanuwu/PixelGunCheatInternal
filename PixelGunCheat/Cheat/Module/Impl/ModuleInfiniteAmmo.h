@@ -2,10 +2,12 @@
 #include "../ModuleBase.h"
 #include "../../Internal/Functions.h"
 
+const static BKCModule __infinite_ammo = { "Infinite Ammo", PLAYER, 0x0, false, {}, {} };
+
 class ModuleInfiniteAmmo : ModuleBase
 {
 public:
-    ModuleInfiniteAmmo() : ModuleBase(true, -1, "Infinite Ammo") {}
+    ModuleInfiniteAmmo() : ModuleBase(__infinite_ammo) {}
     
     void do_module(void* arg) override
     {

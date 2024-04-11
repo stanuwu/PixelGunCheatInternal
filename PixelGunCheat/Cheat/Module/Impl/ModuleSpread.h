@@ -1,10 +1,12 @@
 ﻿#pragma once
 #include "../ModuleBase.h"
 
+const static BKCModule __spread_modifier = { "Spread Modifier", COMBAT, 0x0, false, {}, {} };
+
 class ModuleSpread : ModuleBase
 {
 public:
-    ModuleSpread() : ModuleBase(true, -1, "Modify Spread") {}
+    ModuleSpread() : ModuleBase(__spread_modifier) {}
     
     void do_module(void* arg) override
     {

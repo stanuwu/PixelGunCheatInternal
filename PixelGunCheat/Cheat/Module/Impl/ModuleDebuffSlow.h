@@ -1,10 +1,12 @@
 ﻿#pragma once
 #include "../ModuleBase.h"
 
+const static BKCModule __debuff_slowness = { "Debuff Slowness", COMBAT, 0x0, false, {}, {} };
+
 class ModuleDebuffSlow : ModuleBase
 {
 public:
-    ModuleDebuffSlow() : ModuleBase(true, -1, "Debuff Slow") {}
+    ModuleDebuffSlow() : ModuleBase(__debuff_slowness) {}
     
     void do_module(void* arg) override
     {
