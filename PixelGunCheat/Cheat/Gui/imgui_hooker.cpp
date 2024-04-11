@@ -99,6 +99,20 @@ void HandleModuleSettingRendering(BKCModule& module);
 void HandleModuleRendering(BKCModule& module);
 void HandleCategoryRendering(const std::string& name, BKCCategory cat);
 
+void GetDesktopResolution(int& horizontal, int& vertical)
+{
+    RECT desktop;
+    // Get a handle to the desktop window
+    const HWND hDesktop = GetDesktopWindow();
+    // Get the size of screen to the variable desktop
+    GetWindowRect(hDesktop, &desktop);
+    // The top left corner will have coordinates (0,0)
+    // and the bottom right corner will have coordinates
+    // (horizontal, vertical)
+    horizontal = desktop.right;
+    vertical = desktop.bottom;
+}
+
 HWND imgui_hwnd;
 ImFont* main_font;
 void BKCImGuiHooker::setup_imgui_hwnd(HWND handle, ID3D11Device* device, ID3D11DeviceContext* device_context)
@@ -122,8 +136,12 @@ void BKCImGuiHooker::setup_imgui_hwnd(HWND handle, ID3D11Device* device, ID3D11D
     ImGui_ImplWin32_Init(imgui_hwnd);
     ImGui_ImplDX11_Init(device, device_context);
 
-    main_font = io.Fonts->AddFontFromFileTTF("./fonts/UbuntuMono-Regular.ttf", 16.0f);  // create font from file (thank god doesn't need to be only loaded from memory, but still can be)
-    
+    int horizontal = 0;
+    int vertical = 0;
+    GetDesktopResolution(horizontal, vertical);
+
+    float avg_multi = ((float)horizontal / 1920.0f + (float)vertical / 1080.0f) / 2.0f;
+    main_font = io.Fonts->AddFontFromFileTTF("./fonts/UbuntuMono-Regular.ttf", 16.0f * avg_multi);  // create font from file (thank god doesn't need to be only loaded from memory, but still can be)
 }
 
 void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D11DeviceContext* g_pd3dDeviceContext)
