@@ -141,7 +141,7 @@ void BKCImGuiHooker::setup_imgui_hwnd(HWND handle, ID3D11Device* device, ID3D11D
     GetDesktopResolution(horizontal, vertical);
 
     float avg_multi = ((float)horizontal / 1920.0f + (float)vertical / 1080.0f) / 2.0f;
-    main_font = io.Fonts->AddFontFromFileTTF("./fonts/UbuntuMono-Regular.ttf", 16.0f * avg_multi);  // create font from file (thank god doesn't need to be only loaded from memory, but still can be)
+    main_font = io.Fonts->AddFontFromFileTTF("../fonts/UbuntuMono-Regular.ttf", 16.0f * avg_multi);  // create font from file (thank god doesn't need to be only loaded from memory, but still can be)
 }
 
 void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D11DeviceContext* g_pd3dDeviceContext)
@@ -183,7 +183,7 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
-
+    
     ImGui::PushFont(main_font);
     
     if (c_GuiEnabled)
