@@ -90,13 +90,13 @@ int64_t WINAPI MainThread(LPVOID param)
     SetConsoleTitleW(L"Pixel Gun Cheat");
     HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTextAttribute(console, FOREGROUND_BLUE);
-    ShowWindow(GetConsoleWindow(), SW_MINIMIZE);
+    // ShowWindow(GetConsoleWindow(), SW_MINIMIZE);
     std::cout << "Injected..." << std::endl;
     
     bool init_hook = false;
     while (!init_hook)
     {
-        if (kiero::init(kiero::RenderType::Auto) == kiero::Status::Success)
+        if (kiero::init(kiero::RenderType::D3D11) == kiero::Status::Success)
         {
             kiero::bind(8, (void**)&oPresent, hkPresent);
             init_hook = true;

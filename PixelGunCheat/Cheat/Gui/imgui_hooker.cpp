@@ -292,9 +292,6 @@ WPARAM MapLeftRightKeys(const MSG& msg)
     case VK_CONTROL:
         new_vk = extended ? VK_RCONTROL : VK_LCONTROL;
         break;
-    case VK_MENU:
-        new_vk = extended ? VK_RMENU : VK_LMENU;
-        break;
     default:
         // not a key we map from generic to left/right specialized
         //  just return it.
