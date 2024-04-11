@@ -9,6 +9,7 @@
 
 #include <dxgi.h>
 #include <d3d11.h>
+#include <imgui.h>
 
 #include "Cheat/Gui/imgui_hooker.h"
 #include "kiero/kiero.h"
@@ -21,12 +22,134 @@ ID3D11RenderTargetView* mainRenderTargetView;
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-LRESULT __stdcall WndProc(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+// Data
+static UINT                     g_ResizeWidth = 0, g_ResizeHeight = 0;
+bool isWindowVisible = true;
 
-    if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
-        return true;
+void ShowMouseCursor(bool show) {
+    if (show) {
+        while (ShowCursor(TRUE) < 0);
+    }
+    else {
+        while (ShowCursor(FALSE) >= 0);
+    }
+}
 
-    return CallWindowProc(oWndProc, hWnd, uMsg, wParam, lParam);
+
+void HandleMouseInputs(HWND hWnd, ImGuiIO& io) {
+    if (!isWindowVisible)
+        return;
+
+    POINT mousePos;
+    GetCursorPos(&mousePos);
+    ScreenToClient(hWnd, &mousePos);
+    io.MousePos = ImVec2(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
+
+    io.MouseDown[0] = (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0;
+    io.MouseDown[1] = (GetAsyncKeyState(VK_RBUTTON) & 0x8000) != 0;
+    io.MouseDown[2] = (GetAsyncKeyState(VK_MBUTTON) & 0x8000) != 0;
+}
+
+// https://stackoverflow.com/a/15977613
+WPARAM MapLeftRightKeys(WPARAM wParam, LPARAM lParam)
+{
+    WPARAM new_vk;
+    const UINT scancode = (lParam & 0x00ff0000) >> 16;
+    const int extended  = (lParam & 0x01000000) != 0;
+
+    switch (wParam)
+    {
+    case VK_SHIFT:
+        new_vk = MapVirtualKey(scancode, MAPVK_VSC_TO_VK_EX);
+        break;
+    case VK_CONTROL:
+        new_vk = extended ? VK_RCONTROL : VK_LCONTROL;
+        break;
+    default:
+        // not a key we map from generic to left/right specialized
+        //  just return it.
+        new_vk = wParam;
+        break;    
+    }
+
+    return new_vk;
+}
+
+LRESULT __stdcall WndProc(const HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+
+    ImGuiIO& io = ImGui::GetIO();
+
+    if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
+         return true;
+    
+    switch (msg)
+    {
+    case WM_MOUSEMOVE:
+        HandleMouseInputs(hWnd, io);
+        break;
+    case WM_LBUTTONDOWN:
+        if (isWindowVisible)
+            io.MouseDown[0] = true;
+        break;
+    case WM_LBUTTONUP:
+        if (isWindowVisible)
+            io.MouseDown[0] = false;
+        break;
+    case WM_RBUTTONDOWN:
+        if (isWindowVisible)
+            io.MouseDown[1] = true;
+        break;
+    case WM_RBUTTONUP:
+        if (isWindowVisible)
+            io.MouseDown[1] = false;
+        break;
+    case WM_MBUTTONDOWN:
+        if (isWindowVisible)
+            io.MouseDown[2] = true;
+        break;
+    case WM_MBUTTONUP:
+        if (isWindowVisible)
+            io.MouseDown[2] = false;
+        break;
+    case WM_KEYDOWN:
+        if (MapLeftRightKeys(wParam, lParam) == VK_RSHIFT) {
+            if (!isWindowVisible) {
+                ShowMouseCursor(true);
+            }
+            else {
+                ShowMouseCursor(false);
+            }
+            isWindowVisible = !isWindowVisible;
+            BKCImGuiHooker::c_GuiEnabled = !BKCImGuiHooker::c_GuiEnabled;
+        }
+        break;
+    case WM_SIZE:
+        if (wParam == SIZE_MINIMIZED)
+            return 0;
+        g_ResizeWidth = (UINT)LOWORD(lParam); // Queue resize
+        g_ResizeHeight = (UINT)HIWORD(lParam);
+        return 0;
+    case WM_SYSCOMMAND:
+        if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
+            return 0;
+        break;
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        return 0;
+    default:
+        break;
+    }
+
+    if (!isWindowVisible) {
+        RECT rect;
+        GetClientRect(hWnd, &rect);
+        POINT center = { (rect.right - rect.left) / 2, (rect.bottom - rect.top) / 2 };
+        ClientToScreen(hWnd, &center);
+        if (center.x >= 0 && center.y >= 0) SetCursorPos(center.x, center.y); 
+        return CallWindowProcW(oWndProc, GetActiveWindow(), msg, wParam, lParam);
+    }
+    
+    return DefWindowProcW(GetActiveWindow(), msg, wParam, lParam);
 }
 
 long (__stdcall* oPresent)(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);

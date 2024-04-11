@@ -10,9 +10,6 @@
 
 #pragma comment( lib, "d3d11.lib" )
 
-// Data
-static UINT                     g_ResizeWidth = 0, g_ResizeHeight = 0;
-
 // Forward declarations of helper functions
 bool CreateDeviceD3D(HWND hWnd);
 void CleanupDeviceD3D();
@@ -21,7 +18,6 @@ void CleanupRenderTarget();
 WPARAM MapLeftRightKeys(const MSG& msg);
 
 // Boykisser Central Vars
-static bool c_GuiEnabled = true;
 static std::string c_Title = "Boykisser Central";
 static std::string c_Build = ":3";
 static std::string c_RealBuild = "v1.0-ALPHA";
@@ -92,8 +88,6 @@ const static BKCCheckbox __test_reach_checkbox = BKCCheckbox("Test Checkbox Sett
 const static BKCSlider __test_reach_slider = BKCSlider("Test Slider Setting",  100, 0, 200);
 const static BKCModule __reach = { "Reach", PLAYER, 0x0, false, { __test_reach_checkbox }, { __test_reach_slider } };
 
-LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
 void InitModules(const std::vector<BKCModule>& init_mods);
 void HandleModuleSettingRendering(BKCModule& module);
 void HandleModuleRendering(BKCModule& module);
@@ -115,6 +109,7 @@ void GetDesktopResolution(int& horizontal, int& vertical)
 
 HWND imgui_hwnd;
 ImFont* main_font;
+bool BKCImGuiHooker::c_GuiEnabled = true;
 void BKCImGuiHooker::setup_imgui_hwnd(HWND handle, ID3D11Device* device, ID3D11DeviceContext* device_context)
 {
     imgui_hwnd = handle;
@@ -146,28 +141,7 @@ void BKCImGuiHooker::setup_imgui_hwnd(HWND handle, ID3D11Device* device, ID3D11D
 
 void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D11DeviceContext* g_pd3dDeviceContext)
 {
-    // ImVec4 clear_color = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
-    MSG msg;
-    while (::PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE))
-    {
-        ::TranslateMessage(&msg);
-        ::DispatchMessage(&msg);
-        switch (msg.message)
-        {
-        case WM_KEYDOWN:
-            switch (MapLeftRightKeys(msg))
-            {
-            case VK_RSHIFT:
-                c_GuiEnabled = !c_GuiEnabled;
-                break;
-            default:
-                break;
-            }
-            break;
-        default:
-            break;
-        }
-    }
+    // ImVec4 clear_color = ImVec4(0.0f, 0.0f, 0.0f, 0.0f)
 
     /*
     if (g_ResizeWidth != 0 && g_ResizeHeight != 0)
@@ -188,6 +162,7 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
     
     if (c_GuiEnabled)
     {
+        ShowCursor(true);
         ImGui::Begin(full_title.str().c_str());
 
         HandleCategoryRendering("General", GENERAL);
@@ -212,59 +187,6 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
     g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr);
     // g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, clear_color_with_alpha);
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-}
-
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
-LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-    if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
-        return true;
-
-    switch (msg)
-    {
-    case WM_SIZE:
-        if (wParam == SIZE_MINIMIZED)
-            return 0;
-        g_ResizeWidth = (UINT)LOWORD(lParam); // Queue resize
-        g_ResizeHeight = (UINT)HIWORD(lParam);
-        return 0;
-    case WM_SYSCOMMAND:
-        if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
-            return 0;
-        break;
-    case WM_DESTROY:
-        ::PostQuitMessage(0);
-        return 0;
-    default:
-        break;
-    }
-    return ::DefWindowProcW(hWnd, msg, wParam, lParam);
-}
-
-// https://stackoverflow.com/a/15977613
-WPARAM MapLeftRightKeys(const MSG& msg)
-{
-    WPARAM new_vk;
-    const UINT scancode = (msg.lParam & 0x00ff0000) >> 16;
-    const int extended  = (msg.lParam & 0x01000000) != 0;
-
-    switch (msg.wParam)
-    {
-    case VK_SHIFT:
-        new_vk = MapVirtualKey(scancode, MAPVK_VSC_TO_VK_EX);
-        break;
-    case VK_CONTROL:
-        new_vk = extended ? VK_RCONTROL : VK_LCONTROL;
-        break;
-    default:
-        // not a key we map from generic to left/right specialized
-        //  just return it.
-        new_vk = msg.wParam;
-        break;    
-    }
-
-    return new_vk;
 }
 
 void InitModules(const std::vector<BKCModule>& init_mods)
