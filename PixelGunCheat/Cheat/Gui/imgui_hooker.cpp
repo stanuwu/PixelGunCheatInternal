@@ -104,33 +104,15 @@ void HandleModuleRendering(BKCModule& module);
 void HandleCategoryRendering(const std::string& name, BKCCategory cat);
 
 HWND imgui_hwnd;
-
-void BKCImGuiHooker::setup_imgui_hwnd(HWND handle)
+ImFont* main_font;
+void BKCImGuiHooker::setup_imgui_hwnd(HWND handle, ID3D11Device* device, ID3D11DeviceContext* device_context)
 {
     imgui_hwnd = handle;
-}
-
-int BKCImGuiHooker::start()
-{
     std::cout << "Starting BKC ImGui Hooker..." << std::endl;
     std::vector<BKCModule> init_mods = { __reach };
     InitModules(init_mods);
     
     full_title << c_Title << " - Build " << c_Build << " (" << c_RealBuild << ")"; // init the full title
-    WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, L"PG3DImGuiImpl", nullptr };
-    ::RegisterClassExW(&wc);
-
-    
-    if (!CreateDeviceD3D(imgui_hwnd))
-    {
-        CleanupDeviceD3D();
-        ::UnregisterClassW(wc.lpszClassName, wc.hInstance);
-        std::cout << "Failed to create D3D Device!" << std::endl;
-        return 1;
-    }
-
-    ::ShowWindow(imgui_hwnd, SW_SHOWDEFAULT);
-    ::UpdateWindow(imgui_hwnd);
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -141,90 +123,78 @@ int BKCImGuiHooker::start()
     ImGui::StyleColorsDark();
     
     ImGui_ImplWin32_Init(imgui_hwnd);
-    ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
+    ImGui_ImplDX11_Init(device, device_context);
 
-    ImFont* main_font = io.Fonts->AddFontFromFileTTF("./fonts/UbuntuMono-Regular.ttf", 16.0f); // create font from file (thank god doesn't need to be only loaded from memory, but still can be)
+    main_font = io.Fonts->AddFontFromFileTTF("./fonts/UbuntuMono-Regular.ttf", 16.0f);  // create font from file (thank god doesn't need to be only loaded from memory, but still can be)
     
-    bool done = false;
+}
+
+void BKCImGuiHooker::start()
+{
     ImVec4 clear_color = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
-    
-    while (!done)
+    MSG msg;
+    while (::PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE))
     {
-        MSG msg;
-        while (::PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE))
+        ::TranslateMessage(&msg);
+        ::DispatchMessage(&msg);
+        switch (msg.message)
         {
-            ::TranslateMessage(&msg);
-            ::DispatchMessage(&msg);
-            switch (msg.message)
+        case WM_KEYDOWN:
+            switch (MapLeftRightKeys(msg))
             {
-            case WM_QUIT:
-                done = true;
-                break;
-            case WM_KEYDOWN:
-                switch (MapLeftRightKeys(msg))
-                {
-                case VK_ESCAPE:
-                    done = true;
-                    break;
-                case VK_RSHIFT:
-                    c_GuiEnabled = !c_GuiEnabled;
-                    break;
-                default:
-                    break;
-                }
+            case VK_RSHIFT:
+                c_GuiEnabled = !c_GuiEnabled;
                 break;
             default:
                 break;
             }
+            break;
+        default:
+            break;
         }
-        if (done) break;
+    }
 
-        if (g_ResizeWidth != 0 && g_ResizeHeight != 0)
-        {
-            CleanupRenderTarget();
-            g_pSwapChain->ResizeBuffers(0, g_ResizeWidth, g_ResizeHeight, DXGI_FORMAT_UNKNOWN, 0);
-            g_ResizeWidth = g_ResizeHeight = 0;
-            CreateRenderTarget();
-        }
-        
-        // Start the Dear ImGui frame
-        ImGui_ImplDX11_NewFrame();
-        ImGui_ImplWin32_NewFrame();
-        ImGui::NewFrame();
-
-        ImGui::PushFont(main_font);
-        
-        if (c_GuiEnabled)
-        {
-            ImGui::Begin(full_title.str().c_str());
-
-            HandleCategoryRendering("General", GENERAL);
-            HandleCategoryRendering("Combat", COMBAT);
-            HandleCategoryRendering("Visual", VISUAL);
-            HandleCategoryRendering("Movement", MOVEMENT);
-            HandleCategoryRendering("Player", PLAYER);
-            HandleCategoryRendering("Exploit", EXPLOIT);
-            HandleCategoryRendering("Uncategorized", NONE);
-            
-            ImGui::End();
-
-            // ENABLE THIS FOR EASILY FINDING WHAT YOU NEED TO ADD TO THE GUI
-            ImGui::ShowDemoWindow();
-
-            ImGui::PopFont();
-        }
-
-        ImGui::Render();
-            
-        const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
-        g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr);
-        g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, clear_color_with_alpha);
-        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-
-        g_pSwapChain->Present(0, 0); // Present with vsync
+    if (g_ResizeWidth != 0 && g_ResizeHeight != 0)
+    {
+        CleanupRenderTarget();
+        g_pSwapChain->ResizeBuffers(0, g_ResizeWidth, g_ResizeHeight, DXGI_FORMAT_UNKNOWN, 0);
+        g_ResizeWidth = g_ResizeHeight = 0;
+        CreateRenderTarget();
     }
     
-    return 0;
+    // Start the Dear ImGui frame
+    ImGui_ImplDX11_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+
+    ImGui::PushFont(main_font);
+    
+    if (c_GuiEnabled)
+    {
+        ImGui::Begin(full_title.str().c_str());
+
+        HandleCategoryRendering("General", GENERAL);
+        HandleCategoryRendering("Combat", COMBAT);
+        HandleCategoryRendering("Visual", VISUAL);
+        HandleCategoryRendering("Movement", MOVEMENT);
+        HandleCategoryRendering("Player", PLAYER);
+        HandleCategoryRendering("Exploit", EXPLOIT);
+        HandleCategoryRendering("Uncategorized", NONE);
+        
+        ImGui::End();
+
+        // ENABLE THIS FOR EASILY FINDING WHAT YOU NEED TO ADD TO THE GUI
+        ImGui::ShowDemoWindow();
+
+        ImGui::PopFont();
+    }
+
+    ImGui::Render();
+        
+    const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
+    g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr);
+    g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, clear_color_with_alpha);
+    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
 
 bool CreateDeviceD3D(HWND hWnd)
