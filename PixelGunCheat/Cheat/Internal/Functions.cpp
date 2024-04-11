@@ -20,7 +20,7 @@ void Functions::init(uintptr_t game_base, uintptr_t game_assembly, uintptr_t uni
 void Functions::SetNextHitCritical(void* arg, bool arg1)
 {
     if (!arg) return;
-    static const auto fn = (void(*)(void*, bool)) (GameAssembly_ + 0x7E94E0);
+    static const auto fn = (void(*)(void*, bool)) (GameAssembly_ + 0x7E84E0);
     return fn(arg, arg1);
 }
 

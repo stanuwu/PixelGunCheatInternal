@@ -41,17 +41,6 @@ std::list<ModuleBase*> player_damageable_modules = { };
 
 
 // Hook Functions
-/*
-inline void(__stdcall* player_damageable_original)(void* arg);
-inline void __stdcall player_damageable(void* arg)
-{
-    for (ModuleBase* player_damageable_module : player_damageable_modules)
-    {
-        player_damageable_module->run(arg);
-    }
-}
-*/
-
 inline void(__stdcall* weapon_sounds_original)(void* arg);
 inline void __stdcall weapon_sounds_call(void* arg)
 {
@@ -69,6 +58,13 @@ inline void __stdcall player_move_c(void* arg)
     for (ModuleBase* player_move_c_module : player_move_c_modules)
     {
         player_move_c_module->run(arg);
+    }
+
+    // Player Damageable
+    void* player_damageable = (void*)*(uint64_t*)((uint64_t)arg + 0x650);
+    for (ModuleBase* player_damageable_module : player_damageable_modules)
+    {
+        player_damageable_module->run(player_damageable);
     }
     
     return player_move_c_original(arg);
@@ -108,13 +104,12 @@ void Hooks::load()
     GameBase = (uintptr_t)GetModuleHandleA(NULL);
     GameAssembly = (uintptr_t)GetModuleHandleA("GameAssembly.dll");
     UnityPlayer = (uintptr_t)GetModuleHandleA("UnityPlayer.dll");
-    // Functions::init(GameBase, GameAssembly, UnityPlayer);
+    Functions::init(GameBase, GameAssembly, UnityPlayer);
 
     // MinHook
     MH_Initialize();
     
     // Hook Functions Here
-    // hook_function(0x7EF390, &player_damageable, &player_damageable_original);
     hook_function(0x7EF390, &weapon_sounds_call, &weapon_sounds_original);
     hook_function(0x1B61D20, &player_move_c, &player_move_c_original);
     hook_function(0x4BB8D0, &infinite_gem_claim, &infinite_gem_claim_original);
@@ -126,7 +121,7 @@ void Hooks::load()
     
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleAOEBullets());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleBetterScope());
-    // weapon_sounds_modules.push_back((ModuleBase*) new ModuleCriticals());
+    weapon_sounds_modules.push_back((ModuleBase*) new ModuleCriticals());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleDebuffBlind());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleDebuffCharm());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleDebuffCursing());
@@ -142,15 +137,11 @@ void Hooks::load()
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleScoreMultiplier());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleSpread());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleXRay());
-
-    /*
+    
     player_move_c_modules.push_back((ModuleBase*)new ModuleInvisibility());
-    */
-
-    /*
+    
     player_damageable_modules.push_back((ModuleBase*)new ModuleInfiniteAmmo());
     player_damageable_modules.push_back((ModuleBase*)new ModuleHeal());
-    */
 }
 
 void Hooks::unload()
