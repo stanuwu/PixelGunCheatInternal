@@ -23,8 +23,6 @@ static std::string c_Build = ":3";
 static std::string c_RealBuild = "v1.0-ALPHA";
 std::stringstream full_title;
 
-static std::vector<BKCModule> modules = {};
-
 void InitModules(const std::vector<BKCModule>& init_mods);
 void HandleModuleSettingRendering(BKCModule& module);
 void HandleModuleRendering(BKCModule& module);
@@ -46,14 +44,12 @@ void GetDesktopResolution(int& horizontal, int& vertical)
 
 HWND imgui_hwnd;
 ImFont* main_font;
+std::list<BKCModule*> BKCImGuiHooker::modules = {};
 bool BKCImGuiHooker::c_GuiEnabled = true;
 void BKCImGuiHooker::setup_imgui_hwnd(HWND handle, ID3D11Device* device, ID3D11DeviceContext* device_context)
 {
     imgui_hwnd = handle;
     std::cout << "Starting BKC ImGui Hooker..." << std::endl;
-    std::vector<BKCModule> init_mods = { };
-    InitModules(init_mods);
-    
     full_title << c_Title << " - Build " << c_Build << " (" << c_RealBuild << ")"; // init the full title
 
     IMGUI_CHECKVERSION();
@@ -126,6 +122,7 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
 
+/*
 void InitModules(const std::vector<BKCModule>& init_mods)
 {
     std::cout << "Loading modules..." << std::endl;
@@ -138,21 +135,22 @@ void InitModules(const std::vector<BKCModule>& init_mods)
     }
     modules = new_mods;
 }
+*/
 
 void HandleModuleSettingRendering(BKCModule& module)
 {
     for (auto& setting : module.checkboxes)
     {
         std::stringstream per_module_name;
-        per_module_name << setting.name << "##" << module.name << setting.type;
-        ImGui::Checkbox(per_module_name.str().c_str(), &setting.enabled);
+        per_module_name << setting->name << "##" << module.name << setting->type;
+        ImGui::Checkbox(per_module_name.str().c_str(), &setting->enabled);
     }
 
     for (auto& setting : module.sliders)
-    {
+    { 
         std::stringstream per_module_name;
-        per_module_name << setting.name << "##" << module.name << setting.type;
-        ImGui::SliderFloat(per_module_name.str().c_str(), &setting.value, setting.minimum, setting.maximum);
+        per_module_name << setting->name << "##" << module.name << setting->type;
+        ImGui::SliderFloat(per_module_name.str().c_str(), &setting->value, setting->minimum, setting->maximum);
     }
 }
 
@@ -178,10 +176,10 @@ void HandleCategoryRendering(const std::string& name, const BKCCategory cat)
 {
     if (ImGui::CollapsingHeader(name.c_str()))
     {
-        for (auto& module : modules)
+        for (auto& module : BKCImGuiHooker::modules)
         {
-            if (module.category != cat) continue;
-            HandleModuleRendering(module);
+            if (module->category != cat) continue;
+            HandleModuleRendering(*module);
         }
     }
 }

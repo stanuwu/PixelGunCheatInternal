@@ -1,12 +1,12 @@
 ﻿#pragma once
 #include "../ModuleBase.h"
 
-const static BKCModule __frost_aura = { "Frost Aura", COMBAT, 0x0, false, {}, {} };
+static BKCModule __frost_aura = { "Frost Aura", COMBAT, 0x0, false, {}, {} };
 
 class ModuleFrostAura : ModuleBase
 {
 public:
-    ModuleFrostAura() : ModuleBase(__frost_aura) {}
+    ModuleFrostAura() : ModuleBase(&__frost_aura) {}
     
     void do_module(void* arg) override
     {

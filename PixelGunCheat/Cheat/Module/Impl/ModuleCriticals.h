@@ -1,12 +1,12 @@
 ﻿#pragma once
 #include "../ModuleBase.h"
 
-const static BKCModule __criticals = { "Criticals", COMBAT, 0x0, false, {}, {} };
+static BKCModule __criticals = { "Criticals", COMBAT, 0x0, false, {}, {} };
 
 class ModuleCriticals : ModuleBase
 {
 public:
-    ModuleCriticals() : ModuleBase(__criticals) {}
+    ModuleCriticals() : ModuleBase(&__criticals) {}
     
     void do_module(void* arg) override
     {

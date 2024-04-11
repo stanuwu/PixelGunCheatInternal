@@ -1,12 +1,12 @@
 ﻿#pragma once
 #include "../ModuleBase.h"
 
-const static BKCModule __score_multiplier = { "Score Multiplier", GENERAL, 0x0, false, {}, {} };
+static BKCModule __score_multiplier = { "Score Multiplier", GENERAL, 0x0, false, {}, {} };
 
 class ModuleScoreMultiplier : ModuleBase
 {
 public:
-    ModuleScoreMultiplier() : ModuleBase(__score_multiplier) {}
+    ModuleScoreMultiplier() : ModuleBase(&__score_multiplier) {}
     
     void do_module(void* arg) override
     {

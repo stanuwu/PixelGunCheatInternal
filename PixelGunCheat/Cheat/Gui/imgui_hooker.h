@@ -2,16 +2,19 @@
 #include <iostream>
 #include <vector>
 #include <d3d11.h>
+#include <list>
 
 // Boykisser Central Module Vars
-struct BKCSetting
+class BKCSetting
 {
+public:
     int type = 0;
     std::string name;
 };
 
-struct BKCCheckbox : BKCSetting
+class BKCCheckbox : public BKCSetting
 {
+public:
     BKCCheckbox(const std::string& setting_name, const bool checked)
     {
         name = setting_name;
@@ -21,8 +24,9 @@ struct BKCCheckbox : BKCSetting
     bool enabled;
 };
 
-struct BKCSlider : BKCSetting
+class BKCSlider : public BKCSetting
 {
+public:
     BKCSlider(const std::string& setting_name, const float val, const float min, const float max)
     {
         name = setting_name;
@@ -48,14 +52,15 @@ enum BKCCategory
     EXPLOIT = 6
 };
 
-struct BKCModule
+class BKCModule
 {
+public:
     std::string name;
     BKCCategory category = NONE;
     WPARAM key = 0x0;
     bool enabled = false;
-    std::vector<BKCCheckbox> checkboxes = {};
-    std::vector<BKCSlider> sliders = {};
+    std::vector<BKCCheckbox*> checkboxes = {};
+    std::vector<BKCSlider*> sliders = {};
     void toggle()
     {
         enabled = !enabled;
@@ -65,6 +70,7 @@ struct BKCModule
 class BKCImGuiHooker
 {
 public:
+    static std::list<BKCModule*> modules;
     static bool c_GuiEnabled;
     static void setup_imgui_hwnd(HWND handle, ID3D11Device* device, ID3D11DeviceContext* device_context);
     static void start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D11DeviceContext* g_pd3dDeviceContext);

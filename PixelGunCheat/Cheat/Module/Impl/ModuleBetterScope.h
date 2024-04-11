@@ -1,13 +1,13 @@
 ﻿#pragma once
 #include "../ModuleBase.h"
 
-const static BKCSlider __better_scope_fov = BKCSlider("Scoped FOV",  90, 30, 180);
-const static BKCModule __better_scope = { "Better Scoping", VISUAL, 0x0, true, {}, { __better_scope_fov } };
+static BKCSlider __better_scope_fov = BKCSlider("Scoped FOV",  90, 30, 180);
+static BKCModule __better_scope = { "Better Scoping", VISUAL, 0x0, true, {}, { &__better_scope_fov } };
 
 class ModuleBetterScope : ModuleBase
 {
 public:
-    ModuleBetterScope() : ModuleBase(__better_scope) {}
+    ModuleBetterScope() : ModuleBase(&__better_scope) {}
     
     void do_module(void* arg) override
     {

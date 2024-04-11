@@ -1,12 +1,12 @@
 ﻿#pragma once
 #include "../ModuleBase.h"
 
-const static BKCModule __full_auto = { "Full Auto", COMBAT, 0x0, false, {}, {} };
+static BKCModule __full_auto = { "Full Auto", COMBAT, 0x0, false, {}, {} };
 
 class ModuleFullAuto : ModuleBase
 {
 public:
-    ModuleFullAuto() : ModuleBase(__full_auto) {}
+    ModuleFullAuto() : ModuleBase(&__full_auto) {}
     
     void do_module(void* arg) override
     {

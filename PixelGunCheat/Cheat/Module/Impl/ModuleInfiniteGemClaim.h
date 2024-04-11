@@ -1,12 +1,12 @@
 ﻿#pragma once
 #include "../ModuleBase.h"
 
-const static BKCModule __infinite_gem_claim = { "Infinite Gem Claim", EXPLOIT, 0x0, false, {}, {} };
+static BKCModule __infinite_gem_claim = { "Infinite Gem Claim", EXPLOIT, 0x0, false, {}, {} };
 
 class ModuleInfiniteGemClaim : ModuleBase
 {
 public:
-    ModuleInfiniteGemClaim() : ModuleBase(__infinite_gem_claim) {}
+    ModuleInfiniteGemClaim() : ModuleBase(&__infinite_gem_claim) {}
     
     void do_module(void* arg) override
     {

@@ -5,30 +5,31 @@
 class ModuleBase
 {
 public:
-    ModuleBase(BKCModule m)
+    ModuleBase(BKCModule* m)
     {
-        key = m.key;
-        name = m.name;
+        key = m->key;
+        name = m->name;
         module = m;
+        BKCImGuiHooker::modules.push_back(m);
     }
     
-    WPARAM key = 0x0;
+    WPARAM key = 0x00;
     std::string name;
-    BKCModule module;
+    BKCModule* module;
     
     void run(void* arg)
     {
-        if (module.enabled) do_module(arg);
+        if (module->enabled) do_module(arg);
     }
 
     bool is_enabled()
     {
-        return module.enabled;
+        return module->enabled;
     }
     
     void toggle()
     {
-        module.enabled = !module.enabled;
+        module->enabled = !module->enabled;
     }
     
     virtual void do_module(void* arg) = 0;

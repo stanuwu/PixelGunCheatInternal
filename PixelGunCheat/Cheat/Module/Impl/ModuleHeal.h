@@ -2,12 +2,12 @@
 #include "../ModuleBase.h"
 #include "../../Internal/Functions.h"
 
-const static BKCModule __auto_heal = { "Auto Heal", PLAYER, 0x0, false, {}, {} };
+static BKCModule __auto_heal = { "Auto Heal", PLAYER, 0x0, false, {}, {} };
 
 class ModuleHeal : ModuleBase
 {
 public:
-    ModuleHeal() : ModuleBase(__auto_heal) {}
+    ModuleHeal() : ModuleBase(&__auto_heal) {}
     
     void do_module(void* arg) override
     {

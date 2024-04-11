@@ -4,13 +4,13 @@
 
 #include "../ModuleBase.h"
 
-const static BKCSlider __reach_range = BKCSlider("Amount",  99999, 0, 99999);
-const static BKCModule __reach = { "Reach", PLAYER, 0x0, true, {  }, { __reach_range } };
+static BKCSlider __reach_range = BKCSlider("Amount",  1000, 0, 1000);
+static BKCModule __reach = { "Reach", PLAYER, 0x0, true, {  }, { &__reach_range } };
 
 class ModuleReach : ModuleBase
 {
 public:
-    ModuleReach() : ModuleBase(__reach) {}
+    ModuleReach() : ModuleBase(&__reach) {}
     
     void do_module(void* arg) override
     {
