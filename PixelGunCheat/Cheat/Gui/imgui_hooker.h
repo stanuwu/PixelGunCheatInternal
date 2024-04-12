@@ -59,8 +59,7 @@ public:
     BKCCategory category = NONE;
     WPARAM key = 0x0;
     bool enabled = false;
-    std::vector<BKCCheckbox*> checkboxes = {};
-    std::vector<BKCSlider*> sliders = {};
+    std::vector<BKCSetting*> settings = {};
     void toggle()
     {
         enabled = !enabled;

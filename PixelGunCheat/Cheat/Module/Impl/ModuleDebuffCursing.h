@@ -3,7 +3,7 @@
 
 static BKCSlider __curse_duration = BKCSlider("Duration",  9999, 0, 9999);
 static BKCSlider __curse_damage = BKCSlider("Damage",  9999, 0, 9999);
-static BKCModule __debuff_cursing = { "Debuff Cursing", COMBAT, 0x0, false, {}, {&__curse_duration, &__curse_damage} };
+static BKCModule __debuff_cursing = { "Debuff Cursing", COMBAT, 0x0, false, {&__curse_duration, &__curse_damage} };
 
 class ModuleDebuffCursing : ModuleBase
 {

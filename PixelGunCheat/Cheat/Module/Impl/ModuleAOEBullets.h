@@ -3,7 +3,7 @@
 
 static BKCSlider __aoe_range = BKCSlider("Range",  9999, 0, 9999);
 static BKCSlider __aoe_damage = BKCSlider("Damage",  5, 0, 10);
-static BKCModule __aoe_bullets = { "AOE Bullets", COMBAT, 0x0, false, {}, {&__aoe_range, &__aoe_damage} };
+static BKCModule __aoe_bullets = { "AOE Bullets", COMBAT, 0x0, false, {&__aoe_range, &__aoe_damage} };
 
 class ModuleAOEBullets : ModuleBase
 {

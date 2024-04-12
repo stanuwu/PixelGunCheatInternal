@@ -8,9 +8,9 @@
 #include "../Module/Impl/ModuleAOEBullets.h"
 #include "../Module/Impl/ModuleBetterScope.h"
 #include "../Module/Impl/ModuleCriticals.h"
-#include "../Module/Impl/ModuleDebuffBlind.h"
 #include "../Module/Impl/ModuleDebuffCharm.h"
 #include "../Module/Impl/ModuleDebuffCursing.h"
+#include "../Module/Impl/ModuleDebuffer.h"
 #include "../Module/Impl/ModuleDebuffLightning.h"
 #include "../Module/Impl/ModuleDebuffPoison.h"
 #include "../Module/Impl/ModuleDebuffSlow.h"
@@ -29,16 +29,18 @@
 #include "../Module/Impl/ModuleSpread.h"
 #include "../Module/Impl/ModuleXRay.h"
 
+#include "../Logger/Logger.h"
+
 uintptr_t GameBase;
 uintptr_t GameAssembly;
 uintptr_t UnityPlayer;
 
 ModuleBase* rapid_fire_module;
 ModuleBase* infinite_gem_claim_module;
+ModuleBase* fast_levels_module;
 std::list<ModuleBase*> player_move_c_modules = { };
 std::list<ModuleBase*> weapon_sounds_modules = { };
 std::list<ModuleBase*> player_damageable_modules = { };
-
 
 // Hook Functions
 inline void(__stdcall* weapon_sounds_original)(void* arg);
@@ -99,6 +101,7 @@ void hook_function(uintptr_t offset, LPVOID detour, void* original)
 void Hooks::load()
 {
     // TODO: Make MinHook use Static Library so we don't have to inject 2 dlls.
+    Logger::log_info("Creating hooks...");
     
     // Get Cool Base Offsets
     GameBase = (uintptr_t)GetModuleHandleA(NULL);
@@ -122,7 +125,7 @@ void Hooks::load()
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleAOEBullets());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleBetterScope());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleCriticals());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleDebuffBlind());
+    weapon_sounds_modules.push_back((ModuleBase*) new ModuleDebuffer());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleDebuffCharm());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleDebuffCursing());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleDebuffLightning());

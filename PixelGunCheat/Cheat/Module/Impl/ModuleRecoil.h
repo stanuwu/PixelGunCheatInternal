@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "../ModuleBase.h"
 
-static BKCModule __modify_recoil = { "Recoil Modifier", COMBAT, 0x0, false, {}, {} };
+static BKCModule __modify_recoil = { "Recoil Modifier", COMBAT, 0x0, false, {} };
 
 class ModuleRecoil : ModuleBase
 {

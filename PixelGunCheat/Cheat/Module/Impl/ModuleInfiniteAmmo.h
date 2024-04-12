@@ -2,7 +2,7 @@
 #include "../ModuleBase.h"
 #include "../../Internal/Functions.h"
 
-static BKCModule __infinite_ammo = { "Infinite Ammo", PLAYER, 0x0, false, {}, {} };
+static BKCModule __infinite_ammo = { "Infinite Ammo", PLAYER, 0x0, false, {} };
 
 class ModuleInfiniteAmmo : ModuleBase
 {

@@ -2,7 +2,7 @@
 #include "../ModuleBase.h"
 
 static BKCSlider __poison_amount = BKCSlider("Amount",  9999, 0, 9999);
-static BKCModule __debuff_poison = { "Debuff Poison", COMBAT, 0x0, false, {}, {&__poison_amount} };
+static BKCModule __debuff_poison = { "Debuff Poison", COMBAT, 0x0, false, {&__poison_amount} };
 
 class ModuleDebuffPoison : ModuleBase
 {
