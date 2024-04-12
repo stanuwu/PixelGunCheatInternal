@@ -49,7 +49,7 @@ std::list<ModuleBase*> player_move_c_modules = { };
 std::list<ModuleBase*> weapon_sounds_modules = { };
 std::list<ModuleBase*> player_damageable_modules = { };
 
-std::list<void*> player_list;
+std::list<void*> Hooks::player_list;
 
 // Utility
 std::string clean_string(std::string string)
@@ -120,12 +120,12 @@ inline void __stdcall player_move_c(void* arg)
             player_move_c_module->run(arg);
         }
 
-        std::cout << player_list.size() << std::endl;
-        player_list.clear();
+        std::cout << Hooks::player_list.size() << std::endl;
+        Hooks::player_list.clear();
     }
     else
     {
-        player_list.push_back(arg);  
+        Hooks::player_list.push_back(arg);  
     }
 
     // Player Damageable
