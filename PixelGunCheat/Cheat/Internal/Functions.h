@@ -2,6 +2,34 @@
 #include <assert.h>
 #include <cstdint>
 
+#include "../Module/Impl/ModuleAOEBullets.h"
+
+struct Ray
+{
+    float xo;
+    float yo;
+    float zo;
+    float xd;
+    float yd;
+    float zd;
+};
+
+struct RaycastHit
+{
+    float px;
+    float py;
+    float pz;
+    float nx;
+    float ny;
+    float nz;
+    UINT face_id;
+    float distance;
+    float u;
+    float v;
+    int collider;
+    
+};
+
 class Functions
 {
 public:
@@ -11,6 +39,12 @@ public:
     static void AddHealthFromWeaponOnline(void* arg, float amount);
     static void AddAmmoFromWeaponOnline(void* arg, float amount);
     static void* TextMeshGetText(void* arg);
-    static void* PlayerGetTransform(void* arg);
     static void TextMeshGetColor(void* arg, void* color_ptr);
+    static void CameraWorldToScreen(void* arg, void* world, void* screen);
+    static void* ComponentGetTransform(void* arg);
+    static void TransformGetRotation(void* arg, void* quaternion);
+    static void TransformGetPosition(void* arg, void* position);
+    static void TransformLookAt(void* arg, void* position, void* up);
+    static bool PhysicsRaycast(void* ray, void* hit_info, float max_distance);
+    static int ObjectGetInstanceID(void* arg);
 };

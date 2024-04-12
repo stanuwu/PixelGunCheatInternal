@@ -53,9 +53,12 @@ std::list<ModuleBase*> player_damageable_modules = { };
 std::list<ModuleBase*> on_pre_render_modules = { };
 
 uint64_t Hooks::tick = 0;
+std::list<void*> working_player_list;
 std::list<void*> Hooks::player_list;
 void* Hooks::our_player;
 void* Hooks::main_camera;
+Unity::Vector3 zero = Unity::Vector3(0, 0, 0);
+void* Hooks::aimed_pos = &zero;
 
 // Utility
 std::string clean_string(std::string string)
@@ -81,6 +84,11 @@ std::string Hooks::get_player_name(void* player_move_c)
     if (name_ptr == nullptr) return "";
     std::string name = ((Unity::System_String*)name_ptr)->ToString();
     return clean_string(name);
+}
+
+void* Hooks::get_player_transform(void* player)
+{
+    return (void*)*(uint64_t*)((uint64_t)player + 0x3A0);
 }
 
 bool Hooks::is_player_enemy(void* player)
@@ -141,8 +149,6 @@ inline void __stdcall player_move_c(void* arg)
         {
             player_move_c_module->run(arg);
         }
-        
-        Hooks::player_list.clear();
 
         if (Hooks::tick % 60 == 0)
         {
@@ -152,7 +158,7 @@ inline void __stdcall player_move_c(void* arg)
     }
     else
     {
-        Hooks::player_list.push_back(arg);  
+        working_player_list.push_back(arg);  
     }
 
     // Player Damageable
@@ -203,6 +209,10 @@ inline float __stdcall on_pre_render(void* arg)
     {
         on_pre_render_module->run(arg);
     }
+
+    Hooks::player_list = working_player_list;
+    const std::list<void*> tl;
+    working_player_list = tl;
 
     return on_pre_render_original(arg);
 }

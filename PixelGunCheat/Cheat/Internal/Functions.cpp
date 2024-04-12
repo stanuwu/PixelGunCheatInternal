@@ -54,16 +54,57 @@ void* Functions::TextMeshGetText(void* arg)
     return fn(arg);
 }
 
-void* Functions::PlayerGetTransform(void* arg)
-{
-    if (!arg) return nullptr;
-    static const auto fn = (void*(*)(void*)) (GameAssembly_ + 0x4ED340);
-    return fn(arg);
-}
-
 void Functions::TextMeshGetColor(void* arg, void* color_ptr)
 {
     if (!arg) return;
     static const auto fn = (void(*)(void*, void*)) (GameAssembly_ + 0x4446700);
     return fn(arg, color_ptr);
+}
+
+void Functions::CameraWorldToScreen(void* arg, void* world, void* screen)
+{
+    if (!arg) return;
+    static const auto fn = (void(*)(void*, void*, int, void*)) (GameAssembly_ + 0x433BEC0);
+    return fn(arg, world, 2, screen);
+}
+
+void* Functions::ComponentGetTransform(void* arg)
+{
+    if (!arg) return nullptr;
+    static const auto fn = (void*(*)(void*)) (GameAssembly_ + 0x435D760);
+    return fn(arg);
+}
+
+void Functions::TransformGetRotation(void* arg, void* quaternion)
+{
+    if (!arg) return;
+    static const auto fn = (void(*)(void*, void*)) (GameAssembly_ + 0x43726E0);
+    return fn(arg, quaternion);
+}
+
+void Functions::TransformGetPosition(void* arg, void* position)
+{
+    if (!arg) return;
+    static const auto fn = (void(*)(void*, void*)) (GameAssembly_ + 0x4372570);
+    return fn(arg, position);
+}
+
+void Functions::TransformLookAt(void* arg, void* position, void* up)
+{
+    if (!arg) return;
+    static const auto fn = (void(*)(void*, void*, void*)) (GameAssembly_ + 0x43706E0);
+    return fn(arg, position, up);
+}
+
+bool Functions::PhysicsRaycast(void* ray, void* hit_info, float max_distance)
+{
+    static const auto fn = (bool(*)(void*, void*, float)) (GameAssembly_ + 0x43CFE70);
+    return fn(ray, hit_info, max_distance);
+}
+
+int Functions::ObjectGetInstanceID(void* arg)
+{
+    if (!arg) return -1;
+    static const auto fn = (int(*)(void*))(GameAssembly_ + 0x4364DC0);
+    return fn(arg);
 }

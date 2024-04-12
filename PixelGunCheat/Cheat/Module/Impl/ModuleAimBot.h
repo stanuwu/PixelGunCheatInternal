@@ -11,7 +11,14 @@ static BKCCheckbox __aim_bot_through_walls = BKCCheckbox("Through Walls", false)
 static BKCModule __aim_bot = { "Aim Bot", COMBAT, 0x0, false, {&__aim_bot_through_walls} };
 
 static std::map<std::string, Unity::Vector3> player_pos_cache;
-static Unity::Vector3 aimed_pos = {0, 0, 0};
+static RECT window_size;
+
+static bool is_on_screen(Unity::Vector3 pos)
+{
+    const int width = window_size.right - window_size.left;
+    const int height = window_size.bottom - window_size.top;
+    return pos.z > 0.01f && pos.x > -100 && pos.y > -100 && pos.x < (float)width + 100 && pos.y < (float)height + 100;
+}
 
 static bool is_zero(float* vector)
 {
@@ -32,14 +39,29 @@ static Unity::Vector3 crossProduct(const Unity::Vector3 &left, const Unity::Vect
     };
 }
 
-static Unity::Vector3 quaternation_mul(Unity::Quaternion& q, Unity::Vector3& v)
+// https://gamedev.stackexchange.com/questions/28395/rotating-vector3-by-a-quaternion
+static Unity::Vector3 quaternation_mul(Unity::Quaternion& rotation, Unity::Vector3& value)
 {
-    Unity::Vector3 ret;
-    // ret.w = q.x * v.x - q.y * v.y -q.z * v.z;
-    ret.x = q.w * v.x + q.y * v.z -q.z * v.y;
-    ret.y = q.w * v.y - q.x * v.z + q.z * v.x;
-    ret.z = q.w * v.z + q.x * v.y - q.y * v.x;
-    return ret;
+    Unity::Vector3 vector;
+    float num12 = rotation.x + rotation.x;
+    float num2 = rotation.y + rotation.y;
+    float num = rotation.z + rotation.z;
+    float num11 = rotation.w * num12;
+    float num10 = rotation.w * num2;
+    float num9 = rotation.w * num;
+    float num8 = rotation.x * num12;
+    float num7 = rotation.x * num2;
+    float num6 = rotation.x * num;
+    float num5 = rotation.y * num2;
+    float num4 = rotation.y * num;
+    float num3 = rotation.z * num;
+    float num15 = ((value.x * ((1 - num5) - num3)) + (value.y * (num7 - num9))) + (value.z * (num6 + num10));
+    float num14 = ((value.x * (num7 + num9)) + (value.y * ((1 - num8) - num3))) + (value.z * (num4 - num11));
+    float num13 = ((value.x * (num6 - num10)) + (value.y * (num4 + num11))) + (value.z * ((1 - num8) - num5));
+    vector.x = num15;
+    vector.y = num14;
+    vector.z = num13;
+    return vector;
 }
 
 class ModuleAimBot : ModuleBase
@@ -49,26 +71,30 @@ public:
     
     void do_module(void* arg) override
     {
+        if (Hooks::tick % 60 == 0)
+        {
+            GetWindowRect(GetActiveWindow(), &window_size);
+        }
+        
         Unity::Vector3 prediction;
         void* target = nullptr;
-        double distance = 9999999;
+        float distance = 9999999;
         Unity::CCamera* camera = (Unity::CCamera*)Hooks::main_camera;
         for (void* player : Hooks::player_list)
         {
             if (player == nullptr) continue;
             // Only Enemies
-            std::cout << Hooks::is_player_enemy(player) << std::endl;
-
-            return;
-            
             if (!Hooks::is_player_enemy(player)) continue;
             
-            Unity::CTransform* transform = (Unity::CTransform*)Functions::PlayerGetTransform(player);
+            Unity::CTransform* transform = (Unity::CTransform*)Hooks::get_player_transform(player);
             Unity::Vector3 world = transform->GetPosition();
             
             Unity::Vector3 screen;
-            camera->WorldToScreen(world, screen);
+            Functions::CameraWorldToScreen(camera, &world, &screen);
 
+            if (!is_on_screen(screen)) continue;
+            if (screen.z <= 0) continue;
+            
             Unity::Vector3 velocity = {0, 0, 0};
 
             std::string player_name = Hooks::get_player_name(player);
@@ -85,26 +111,31 @@ public:
 
             player_pos_cache.insert_or_assign(player_name, velocity);
 
-            Unity::Vector3 camera_pos = camera->GetTransform()->GetPosition();
+            void* camera_transform = Functions::ComponentGetTransform(camera);
+
+            Unity::Vector3 camera_pos;
+            Functions::TransformGetPosition(camera_transform, &camera_pos);
+            
             Unity::Vector3 head_pos = {
                 world.x + (velocity.Normalize().x / 10),
                 world.y + (velocity.Normalize().y / 10) + 0.75f,
                 world.z + (velocity.Normalize().z / 10)
             };
-
-            float distance = vec3_distance(world, camera_pos);
             
-            if (distance > 800) continue;
-
+            const float distance_r = vec3_distance(world, camera_pos);
+            if (distance_r > 800) continue;
+            
             Unity::Vector3 one = Unity::Vector3 {1, 1, 1};
-            Unity::Quaternion camera_rotation = camera->GetTransform()->GetRotation();
+            Unity::Quaternion camera_rotation;
+            Functions::TransformGetRotation(camera_transform, &camera_rotation);
+            
             Unity::Vector3 aimDirection = quaternation_mul(camera_rotation, one);
-            Unity::Vector3 v = {head_pos.x - world.x, head_pos.y - world.x, head_pos.z - world.x};
+            Unity::Vector3 v = {head_pos.x - camera_pos.x, head_pos.y - camera_pos.x, head_pos.z - camera_pos.x};
             float d = v.Dot(aimDirection);
             Unity::Vector3 closest_point = {
-                world.x + aimDirection.x * d,
-                world.y + aimDirection.y * d,
-                world.z + aimDirection.z * d
+                camera_pos.x + aimDirection.x * d,
+                camera_pos.y + aimDirection.y * d,
+                camera_pos.z + aimDirection.z * d
             };
 
             float new_dist = vec3_distance(closest_point, head_pos);
@@ -112,7 +143,30 @@ public:
 
             if (!__aim_bot_through_walls.enabled)
             {
-                // do raycast
+                Unity::Vector3 aaaaaaaaaaaaaaaa = {
+                    head_pos.x - camera_pos.x,
+                    head_pos.y - camera_pos.y,
+                    head_pos.z - camera_pos.z
+                };
+                Ray ray = {
+                    camera_pos.x,
+                    camera_pos.y,
+                    camera_pos.z,
+                    aaaaaaaaaaaaaaaa.Normalize().x,
+                    aaaaaaaaaaaaaaaa.Normalize().y,
+                    aaaaaaaaaaaaaaaa.Normalize().z
+                };
+                RaycastHit hit_info;
+                if (Functions::PhysicsRaycast(&ray, &hit_info, 600))
+                {
+                    void* head_collider = (void*)*(uint64_t*)((uint64_t)player + 0x128);
+                    int id = Functions::ObjectGetInstanceID(head_collider);
+                    if (hit_info.collider != id) continue;
+                }
+                else
+                {
+                    continue;
+                }
             }
 
             distance = new_dist;
@@ -123,32 +177,26 @@ public:
                 velocity.Normalize().z / 10
             };
         }
-
-        return;
-        
-        if (target == nullptr)
-        {
-            std::cout << "No target" << std::endl;
-        }
         
         if (target != nullptr)
         {
-            Unity::CTransform* t = camera->GetTransform();
-            Unity::CTransform* target_t = (Unity::CTransform*)Functions::PlayerGetTransform(target);
-            Unity::Vector3 target_p = target_t->GetPosition();
+            Unity::CTransform* target_t = (Unity::CTransform*)Hooks::get_player_transform(target);
+            Unity::Vector3 target_p;
+            Functions::TransformGetPosition(target_t, &target_p);
             Unity::Vector3 aim_at = {
                 target_p.x + prediction.x,
                 target_p.y + prediction.y + 0.75f,
                 target_p.z + prediction.z
             };
-            // t->CallMethod<void*, Unity::Vector3>(t->GetMethodPointer("LookAt"), aim_at);
-            // aimed_pos = aim_at;
-            std::cout << Hooks::get_player_name(target) << std::endl;
-            std::cout << "x: " << aim_at.x << " y: " << aim_at.y << " z: " << aim_at.z << std::endl;
+            Unity::CTransform* t = (Unity::CTransform*)Functions::ComponentGetTransform(Hooks::main_camera);
+            Unity::Vector3 up = {0, 1, 0};
+            Functions::TransformLookAt(t, &aim_at, &up);
+            Hooks::aimed_pos = &aim_at;
         }
         else
         {
-            aimed_pos = {0, 0, 0};
+            Unity::Vector3 zero = {0, 0, 0};
+            Hooks::aimed_pos = &zero;
         }
     }
 };
