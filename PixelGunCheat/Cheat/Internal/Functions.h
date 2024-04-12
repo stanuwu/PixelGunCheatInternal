@@ -12,5 +12,5 @@ public:
     static void AddAmmoFromWeaponOnline(void* arg, float amount);
     static void* TextMeshGetText(void* arg);
     static void* PlayerGetTransform(void* arg);
-    static void* TextMeshGetColor(void* arg);
+    static void TextMeshGetColor(void* arg, void* color_ptr);
 };

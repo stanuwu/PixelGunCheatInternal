@@ -86,18 +86,9 @@ std::string Hooks::get_player_name(void* player_move_c)
 bool Hooks::is_player_enemy(void* player)
 {
     void* nick_label = (void*)*(uint64_t*)((uint64_t)player + 0x3B8);
-    void* name_ptr = Functions::TextMeshGetText(nick_label);
-    if (name_ptr == nullptr) return "";
-    std::string name = ((Unity::System_String*)name_ptr)->ToString();
-    std::cout << name << std::endl;
-    return false;
-    void* color_ptr = Functions::TextMeshGetColor(nick_label);
-    std::cout << color_ptr << std::endl;
-    return false;
-    // float r = *(float*)color_ptr;
-    // float g = *(float*)((uint64_t)color_ptr + 0x4);
-    // float b = *(float*)((uint64_t)color_ptr + 0x8);
-    // return r == 1 && g == 0 && b == 0;
+    Unity::Color color = {0, 0,  0, 0};
+    Functions::TextMeshGetColor(nick_label, &color);
+    return color.r == 1 && color.g == 0 && color.b == 0;
 }
 
 bool is_my_player_move_c(void* player_move_c)
