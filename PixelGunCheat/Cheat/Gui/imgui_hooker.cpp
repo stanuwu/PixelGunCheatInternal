@@ -181,6 +181,7 @@ void save_config()
             case 2:
                 out << module->name << ";" << setting->name << ";" << "slider" << ";" << ((BKCSlider*)setting)->value << std::endl;
                 break;
+            default: break;
             }
         }
     }
