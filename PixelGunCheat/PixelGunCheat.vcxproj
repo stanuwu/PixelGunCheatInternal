@@ -249,6 +249,7 @@
     <ClInclude Include="Cheat\Hooks\Hooks.h" />
     <ClInclude Include="Cheat\Internal\Functions.h" />
     <ClInclude Include="Cheat\Logger\Logger.h" />
+    <ClInclude Include="Cheat\Module\Impl\ModuleAimBot.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleAOEBullets.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleBetterScope.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleCriticals.h" />
@@ -259,6 +260,7 @@
     <ClInclude Include="Cheat\Module\Impl\ModuleDebuffPoison.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleDebuffSlow.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleDebuffStun.h" />
+    <ClInclude Include="Cheat\Module\Impl\ModuleFOVChanger.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleFrostAura.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleFullAuto.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleHeal.h" />

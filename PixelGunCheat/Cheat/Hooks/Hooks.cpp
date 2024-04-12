@@ -32,6 +32,7 @@
 #include "../Module/Impl/ModuleXRay.h"
 
 #include "../Logger/Logger.h"
+#include "../Module/Impl/ModuleFOVChanger.h"
 #include "../Module/Impl/ModuleSpeed.h"
 
 #include "../IL2CPPResolver/IL2CPP_Resolver.hpp"
@@ -48,8 +49,11 @@ ModuleBase* fast_levels_module;
 std::list<ModuleBase*> player_move_c_modules = { };
 std::list<ModuleBase*> weapon_sounds_modules = { };
 std::list<ModuleBase*> player_damageable_modules = { };
+std::list<ModuleBase*> on_pre_render_modules = { };
 
+uint64_t Hooks::tick = 0;
 std::list<void*> Hooks::player_list;
+void* Hooks::main_camera;
 
 // Utility
 std::string clean_string(std::string string)
@@ -89,6 +93,12 @@ bool is_my_player_weapon_sounds(void* weapon_sounds)
     return is_my_player_move_c(player_move_c);
 }
 
+Unity::CCamera* find_main_camera()
+{
+    Unity::CCamera* camera = Unity::Camera::GetMain();
+    return camera;
+}
+
 // Hook Functions
 inline void(__stdcall* weapon_sounds_original)(void* arg);
 inline void __stdcall weapon_sounds_call(void* arg)
@@ -115,13 +125,19 @@ inline void __stdcall player_move_c(void* arg)
     if (my_player)
     {
         // My Player
+        Hooks::tick++;
+        
         for (ModuleBase* player_move_c_module : player_move_c_modules)
         {
             player_move_c_module->run(arg);
         }
-
-        std::cout << Hooks::player_list.size() << std::endl;
+        
         Hooks::player_list.clear();
+
+        if (Hooks::tick % 60 == 0)
+        {
+            Hooks::main_camera = find_main_camera();
+        }
     }
     else
     {
@@ -166,7 +182,18 @@ inline float __stdcall speed(void* arg)
 {
     if (((ModuleBase*)speed_module)->is_enabled()) return speed_module->get_amount();
 
-    return rapid_fire_original(arg);
+    return speed_original(arg);
+}
+
+inline float(__stdcall* on_pre_render_original)(void* arg);
+inline float __stdcall on_pre_render(void* arg)
+{
+    for (ModuleBase* on_pre_render_module : on_pre_render_modules)
+    {
+        on_pre_render_module->run(arg);
+    }
+
+    return on_pre_render_original(arg);
 }
 
 // Static
@@ -192,6 +219,7 @@ void Hooks::load()
 
     // Cool IL2CPP Resolver
     IL2CPP::Initialize();
+    Unity::Camera::Initialize();
     
     // MinHook
     MH_Initialize();
@@ -202,6 +230,7 @@ void Hooks::load()
     hook_function(0x4BBE80, &infinite_gem_claim, &infinite_gem_claim_original);
     hook_function(0x111B350, &rapid_fire, &rapid_fire_original);
     hook_function(0x11383E0, &speed, &speed_original);
+    hook_function(0x42D0540, &on_pre_render, &on_pre_render_original);
     
     // Init Modules Here
     rapid_fire_module = new ModuleRapidFire();
@@ -231,6 +260,8 @@ void Hooks::load()
     
     player_damageable_modules.push_back((ModuleBase*)new ModuleInfiniteAmmo());
     player_damageable_modules.push_back((ModuleBase*)new ModuleHeal());
+
+    on_pre_render_modules.push_back((ModuleBase*)new ModuleFOVChanger());
 
     // Post Module Load
     BKCImGuiHooker::modules_loaded = true;
