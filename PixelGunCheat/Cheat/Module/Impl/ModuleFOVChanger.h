@@ -15,7 +15,6 @@ public:
     void do_module(void* arg) override
     {
         if (Hooks::main_camera == nullptr) return;
-        std::cout << ((Unity::CCamera*)Hooks::main_camera)->GetFieldOfView() << std::endl;
         ((Unity::CCamera*)Hooks::main_camera)->SetFieldOfView(__fov_changer_fov.value);
     }
 };

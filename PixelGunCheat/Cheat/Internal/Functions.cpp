@@ -53,3 +53,17 @@ void* Functions::TextMeshGetText(void* arg)
     static const auto fn = (void*(*)(void*)) (GameAssembly_ + 0x4446960);
     return fn(arg);
 }
+
+void* Functions::PlayerGetTransform(void* arg)
+{
+    if (!arg) return nullptr;
+    static const auto fn = (void*(*)(void*)) (GameAssembly_ + 0x4ED340);
+    return fn(arg);
+}
+
+void* Functions::TextMeshGetColor(void* arg)
+{
+    if (!arg) return nullptr;
+    static const auto fn = (void*(*)(void*)) (GameAssembly_ + 0x4446750);
+    return fn(arg);
+}

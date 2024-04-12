@@ -11,7 +11,6 @@ public:
     static void AddHealthFromWeaponOnline(void* arg, float amount);
     static void AddAmmoFromWeaponOnline(void* arg, float amount);
     static void* TextMeshGetText(void* arg);
-    static bool BehaviourGetEnabled(void* arg);
-    static float CameraGetFOV(void* arg);
-    static void CameraSetFOV(void* arg, float fov);
+    static void* PlayerGetTransform(void* arg);
+    static void* TextMeshGetColor(void* arg);
 };

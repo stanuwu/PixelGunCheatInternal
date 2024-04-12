@@ -36,6 +36,7 @@
 #include "../Module/Impl/ModuleSpeed.h"
 
 #include "../IL2CPPResolver/IL2CPP_Resolver.hpp"
+#include "../Module/Impl/ModuleAimBot.h"
 
 class ModuleSpeed;
 uintptr_t GameBase;
@@ -53,6 +54,7 @@ std::list<ModuleBase*> on_pre_render_modules = { };
 
 uint64_t Hooks::tick = 0;
 std::list<void*> Hooks::player_list;
+void* Hooks::our_player;
 void* Hooks::main_camera;
 
 // Utility
@@ -72,7 +74,7 @@ std::string clean_string(std::string string)
     return clean;
 }
 
-std::string get_player_name(void* player_move_c)
+std::string Hooks::get_player_name(void* player_move_c)
 {
     void* nick_label = (void*)*(uint64_t*)((uint64_t)player_move_c + 0x3B8);
     void* name_ptr = Functions::TextMeshGetText(nick_label);
@@ -81,9 +83,26 @@ std::string get_player_name(void* player_move_c)
     return clean_string(name);
 }
 
+bool Hooks::is_player_enemy(void* player)
+{
+    void* nick_label = (void*)*(uint64_t*)((uint64_t)player + 0x3B8);
+    void* name_ptr = Functions::TextMeshGetText(nick_label);
+    if (name_ptr == nullptr) return "";
+    std::string name = ((Unity::System_String*)name_ptr)->ToString();
+    std::cout << name << std::endl;
+    return false;
+    void* color_ptr = Functions::TextMeshGetColor(nick_label);
+    std::cout << color_ptr << std::endl;
+    return false;
+    // float r = *(float*)color_ptr;
+    // float g = *(float*)((uint64_t)color_ptr + 0x4);
+    // float b = *(float*)((uint64_t)color_ptr + 0x8);
+    // return r == 1 && g == 0 && b == 0;
+}
+
 bool is_my_player_move_c(void* player_move_c)
 {
-    return get_player_name(player_move_c) == "1111";
+    return Hooks::get_player_name(player_move_c) == "1111";
 }
 
 bool is_my_player_weapon_sounds(void* weapon_sounds)
@@ -136,6 +155,7 @@ inline void __stdcall player_move_c(void* arg)
 
         if (Hooks::tick % 60 == 0)
         {
+            Hooks::our_player = arg;
             Hooks::main_camera = find_main_camera();
         }
     }
@@ -220,6 +240,7 @@ void Hooks::load()
     // Cool IL2CPP Resolver
     IL2CPP::Initialize();
     Unity::Camera::Initialize();
+    Unity::Transform::Initialize();
     
     // MinHook
     MH_Initialize();
@@ -256,12 +277,13 @@ void Hooks::load()
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleSpread());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleXRay());
     
-    player_move_c_modules.push_back((ModuleBase*)new ModuleInvisibility());
+    player_move_c_modules.push_back((ModuleBase*) new ModuleInvisibility());
+    player_move_c_modules.push_back((ModuleBase*) new ModuleAimBot());
     
-    player_damageable_modules.push_back((ModuleBase*)new ModuleInfiniteAmmo());
-    player_damageable_modules.push_back((ModuleBase*)new ModuleHeal());
+    player_damageable_modules.push_back((ModuleBase*) new ModuleInfiniteAmmo());
+    player_damageable_modules.push_back((ModuleBase*) new ModuleHeal());
 
-    on_pre_render_modules.push_back((ModuleBase*)new ModuleFOVChanger());
+    on_pre_render_modules.push_back((ModuleBase*) new ModuleFOVChanger());
 
     // Post Module Load
     BKCImGuiHooker::modules_loaded = true;
