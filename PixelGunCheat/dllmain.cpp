@@ -9,9 +9,11 @@
 
 #include <dxgi.h>
 #include <d3d11.h>
+#include <filesystem>
 #include <imgui.h>
 
 #include "Cheat/Gui/imgui_hooker.h"
+#include "Cheat/Logger/Logger.h"
 #include "kiero/kiero.h"
 
 HWND window = NULL;
@@ -23,7 +25,7 @@ ID3D11RenderTargetView* mainRenderTargetView;
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // Data
-static UINT                     g_ResizeWidth = 0, g_ResizeHeight = 0;
+static UINT g_ResizeWidth = 0, g_ResizeHeight = 0;
 bool isWindowVisible = true;
 
 void ShowMouseCursor(bool show) {
@@ -34,7 +36,6 @@ void ShowMouseCursor(bool show) {
         while (ShowCursor(FALSE) >= 0);
     }
 }
-
 
 void HandleMouseInputs(HWND hWnd, ImGuiIO& io) {
     if (!isWindowVisible)
@@ -75,12 +76,11 @@ WPARAM MapLeftRightKeys(WPARAM wParam, LPARAM lParam)
     return new_vk;
 }
 
-LRESULT __stdcall WndProc(const HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-
+LRESULT __stdcall WndProc(const HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
     ImGuiIO& io = ImGui::GetIO();
 
-    if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
-         return true;
+    if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam)) return true;
     
     switch (msg)
     {
@@ -112,13 +112,8 @@ LRESULT __stdcall WndProc(const HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
             io.MouseDown[2] = false;
         break;
     case WM_KEYDOWN:
-        if (MapLeftRightKeys(wParam, lParam) == VK_RSHIFT) {
-            if (!isWindowVisible) {
-                ShowMouseCursor(true);
-            }
-            else {
-                ShowMouseCursor(false);
-            }
+        if (MapLeftRightKeys(wParam, lParam) == VK_RSHIFT || isWindowVisible && BKCImGuiHooker::c_GuiEnabled && wParam == VK_ESCAPE) { // allow escape key usage when menu is open (i am too used to mc functionality smh)
+            ShowMouseCursor(!isWindowVisible);
             isWindowVisible = !isWindowVisible;
             BKCImGuiHooker::c_GuiEnabled = !BKCImGuiHooker::c_GuiEnabled;
         }
@@ -152,14 +147,26 @@ LRESULT __stdcall WndProc(const HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
     return DefWindowProcW(GetActiveWindow(), msg, wParam, lParam);
 }
 
+void native_font_list(bool ttf_only)
+{
+    const std::string path = "C:\\Windows\\Fonts";
+    for (const auto & entry : std::filesystem::directory_iterator(path))
+    {
+        const std::filesystem::path& p = entry.path();
+        if (ttf_only && !p.extension().string().contains("ttf")) continue;
+        Logger::log_debug("Found font file: " + p.string() + ", Size:" + std::to_string(entry.file_size()));
+    }
+}
+
 long (__stdcall* oPresent)(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
-long __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
+long __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags) 
 {
     // Do the Things
     static bool is_init = true;
     if (is_init)
     {
-        std::cout << "hkPresent D3D11 Injector" << std::endl;
+        Logger::log_info("Kiero D3D11 hkPresent injector hook running...");
+        
         if (SUCCEEDED(pSwapChain->GetDevice(__uuidof(ID3D11Device), (void**)& pDevice)))
         {
             pDevice->GetImmediateContext(&pContext);
@@ -171,11 +178,15 @@ long __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Fla
             pDevice->CreateRenderTargetView(pBackBuffer, NULL, &mainRenderTargetView);
             pBackBuffer->Release();
             oWndProc = (WNDPROC)SetWindowLongPtr(window, GWLP_WNDPROC, (LONG_PTR)WndProc);
+
+            Logger::log_info("Kiero D3D11 hkPresent hooked successfully!");
             // Init Imgui
 
             BKCImGuiHooker::setup_imgui_hwnd(window, pDevice, pContext);
             
             is_init = false;
+
+            Logger::log_info("Kiero fully bound and hooked!");
         }
     }
 
@@ -188,14 +199,15 @@ long __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Fla
 
 HMODULE Dll;
 
-DWORD __stdcall EjectThread(LPVOID lpParameter) {
+DWORD __stdcall EjectThread(LPVOID lpParameter)
+{
     Sleep(100);
     FreeLibraryAndExitThread(Dll, 0);
     return 0;
 }
 
-bool shutdown(FILE* fp, std::string reason) {
-    
+bool shutdown(FILE* fp, std::string reason)
+{
     std::cout << reason << std::endl;
     Sleep(1000);
     if (fp != nullptr)
@@ -210,23 +222,37 @@ int64_t WINAPI MainThread(LPVOID param)
     AllocConsole();
     FILE* fp;
     freopen_s(&fp, "CONOUT$", "w", stdout);
-    SetConsoleTitleW(L"Pixel Gun Cheat");
-    HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(console, FOREGROUND_BLUE);
+    SetConsoleTitleW(L"BoyKisser Central");
+    const HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+    Logger::console = console;
+    SetConsoleTextAttribute(console, 0x000F);
     // ShowWindow(GetConsoleWindow(), SW_MINIMIZE);
-    std::cout << "Injected..." << std::endl;
+    
+    Logger::log_debug("--- LOGGER TEST ---");
+    
+    Logger::log_debug("This is a debug log!");
+    Logger::log_info("This is an info log!");
+    Logger::log_warn("This is a warning log!");
+    Logger::log_err("This is an error log!");
+    Logger::log_fatal("This is a FATAL log!");
+    
+    Logger::log_debug("--- LOGGER TEST ---");
+    Logger::log_info("Starting injection...");
+    
+    native_font_list(true);
     
     bool init_hook = false;
     while (!init_hook)
     {
+        Logger::log_info("Looking for matching D3D11 process to hook kiero...");
+        
         if (kiero::init(kiero::RenderType::D3D11) == kiero::Status::Success)
         {
+            Logger::log_info("Found matching process, binding kiero to found process...");
             kiero::bind(8, (void**)&oPresent, hkPresent);
             init_hook = true;
         }
     }
-
-    std::cout << "Kiero Hooked..." << std::endl;
     
     Hooks* hooks = new Hooks();
     try
@@ -236,10 +262,14 @@ int64_t WINAPI MainThread(LPVOID param)
     }
     catch (int exception)
     {
-        std::cout << "Exception: " << exception << std::endl;
+        std::stringstream ex;
+        ex << "Exception: " << exception;
+        Logger::log_err(ex.str());
     }
 
-    std::cout << "(Insert to Close)" << std::endl;
+    Logger::log_info("Injected successfully!");
+    Logger::log_info("(Insert to Close)");
+
     while(true)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(50));

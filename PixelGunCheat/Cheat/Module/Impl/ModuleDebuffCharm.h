@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "../ModuleBase.h"
 
-static BKCModule __debuff_charm = { "Debuff Charm", COMBAT, 0x0, false, {}, {} };
+static BKCModule __debuff_charm = { "Debuff Charm", COMBAT, 0x0, false, {} };
 
 class ModuleDebuffCharm : ModuleBase
 {

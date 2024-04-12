@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "../ModuleBase.h"
 
-static BKCModule __instant_charge = { "Instant Charge", COMBAT, 0x0, false, {}, {} };
+static BKCModule __instant_charge = { "Instant Charge", COMBAT, 0x0, false, {} };
 
 class ModuleInstantCharge : ModuleBase
 {

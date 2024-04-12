@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "imgui_hooker.h"
+#include "../Logger/Logger.h"
 
 #pragma comment( lib, "d3d11.lib" )
 
@@ -20,7 +21,7 @@ WPARAM MapLeftRightKeys(const MSG& msg);
 // Boykisser Central Vars
 static std::string c_Title = "Boykisser Central";
 static std::string c_Build = ":3";
-static std::string c_RealBuild = "v1.0-ALPHA";
+static std::string c_RealBuild = "v1.0-BETA";
 std::stringstream full_title;
 
 void InitModules(const std::vector<BKCModule>& init_mods);
@@ -49,9 +50,10 @@ bool BKCImGuiHooker::c_GuiEnabled = true;
 void BKCImGuiHooker::setup_imgui_hwnd(HWND handle, ID3D11Device* device, ID3D11DeviceContext* device_context)
 {
     imgui_hwnd = handle;
-    std::cout << "Starting BKC ImGui Hooker..." << std::endl;
+    Logger::log_info("Setting up ImGui instance...");
     full_title << c_Title << " - Build " << c_Build << " (" << c_RealBuild << ")"; // init the full title
-
+    Logger::log_info("Found current version: " + full_title.str());
+    
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void) io;
@@ -66,10 +68,14 @@ void BKCImGuiHooker::setup_imgui_hwnd(HWND handle, ID3D11Device* device, ID3D11D
 
     int horizontal = 0;
     int vertical = 0;
+    
     GetDesktopResolution(horizontal, vertical);
 
     float avg_multi = ((float)horizontal / 1920.0f + (float)vertical / 1080.0f) / 2.0f;
-    main_font = io.Fonts->AddFontFromFileTTF("UbuntuMono-Regular.ttf", 16.0f * avg_multi);  // create font from file (thank god doesn't need to be only loaded from memory, but still can be)
+    std::stringstream multi_out;
+    multi_out << "Using " << avg_multi << "x scaling for ImGui fonts";
+    Logger::log_info(multi_out.str());
+    main_font = io.Fonts->AddFontFromFileTTF(R"(C:\Windows\Fonts\comic.ttf)", 16.0f * avg_multi); // create font from file (thank god doesn't need to be only loaded from memory, but still can be)
 }
 
 void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D11DeviceContext* g_pd3dDeviceContext)
@@ -139,18 +145,31 @@ void InitModules(const std::vector<BKCModule>& init_mods)
 
 void HandleModuleSettingRendering(BKCModule& module)
 {
+    /*
     for (auto& setting : module.checkboxes)
     {
         std::stringstream per_module_name;
         per_module_name << setting->name << "##" << module.name << setting->type;
         ImGui::Checkbox(per_module_name.str().c_str(), &setting->enabled);
     }
+    */
 
-    for (auto& setting : module.sliders)
+    for (auto& setting : module.settings)
     { 
         std::stringstream per_module_name;
-        per_module_name << setting->name << "##" << module.name << setting->type;
-        ImGui::SliderFloat(per_module_name.str().c_str(), &setting->value, setting->minimum, setting->maximum);
+        
+        if (setting->type == 1)
+        {
+            auto* checkbox = (BKCCheckbox*)setting;
+            per_module_name << setting->name << "##" << module.name << setting->type;
+            ImGui::Checkbox(per_module_name.str().c_str(), &checkbox->enabled);
+        }
+        else if (setting->type == 2)
+        {
+            auto* slider = (BKCSlider*)setting;
+            per_module_name << setting->name << "##" << module.name << setting->type;
+            ImGui::SliderFloat(per_module_name.str().c_str(), &slider->value, slider->minimum, slider->maximum);
+        }
     }
 }
 

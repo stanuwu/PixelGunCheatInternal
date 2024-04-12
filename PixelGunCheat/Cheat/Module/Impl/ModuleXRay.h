@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "../ModuleBase.h"
 
-static BKCModule __xray = { "XRay", VISUAL, 0x0, false, {}, {} };
+static BKCModule __xray = { "XRay", VISUAL, 0x0, false, {} };
 
 class ModuleXRay : ModuleBase
 {
