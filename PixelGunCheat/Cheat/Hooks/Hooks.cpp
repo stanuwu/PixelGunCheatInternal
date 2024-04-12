@@ -194,7 +194,7 @@ void Hooks::load()
     // Hook Functions Here
     hook_function(0x7F0070, &weapon_sounds_call, &weapon_sounds_original);
     hook_function(0x1B677D0, &player_move_c, &player_move_c_original);
-    // hook_function(0x4BB8D0, &infinite_gem_claim, &infinite_gem_claim_original);
+    hook_function(0x4BBE80, &infinite_gem_claim, &infinite_gem_claim_original);
     hook_function(0x111B350, &rapid_fire, &rapid_fire_original);
     hook_function(0x11383E0, &speed, &speed_original);
     
