@@ -2,7 +2,7 @@
 #include "../ModuleBase.h"
 
 static BKCSlider __slow_duration = BKCSlider("Duration",  9999, 0, 9999);
-static BKCSlider __slow_factor = BKCSlider("Factor",  100, 0, 100);
+static BKCSlider __slow_factor = BKCSlider("Factor",  0, 0, 10);
 static BKCModule __debuff_slowness = { "Debuff Slowness", COMBAT, 0x0, false, {&__slow_duration, &__slow_factor} };
 
 class ModuleDebuffSlow : ModuleBase

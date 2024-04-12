@@ -1,7 +1,8 @@
 ﻿#pragma once
 #include "../ModuleBase.h"
 
-static BKCModule __rapid_fire = { "Rapid Fire", COMBAT, 0x0, false, {} };
+static BKCSlider __rapid_fire_speed = BKCSlider("Speed",  10, 0.1f, 25);
+static BKCModule __rapid_fire = { "Rapid Fire", COMBAT, 0x0, false, {&__rapid_fire_speed} };
 
 class ModuleRapidFire : ModuleBase
 {
@@ -10,5 +11,10 @@ public:
     
     void do_module(void* arg) override
     {
+    }
+
+    float get_speed()
+    {
+        return __rapid_fire_speed.value;
     }
 };

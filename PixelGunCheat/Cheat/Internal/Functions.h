@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <assert.h>
+#include <cstdint>
 
 class Functions
 {
@@ -9,4 +10,5 @@ public:
     static void MakeInvisibleForSeconds(void* arg, float duration);
     static void AddHealthFromWeaponOnline(void* arg, float amount);
     static void AddAmmoFromWeaponOnline(void* arg, float amount);
+    static void* TextMeshGetText(void* arg);
 };

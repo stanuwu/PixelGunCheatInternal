@@ -1,6 +1,8 @@
 ﻿#include "Hooks.h"
 
+#include <codecvt>
 #include <list>
+#include <sstream>
 
 #include "MinHook.h"
 #include "../Internal/Functions.h"
@@ -30,25 +32,75 @@
 #include "../Module/Impl/ModuleXRay.h"
 
 #include "../Logger/Logger.h"
+#include "../Module/Impl/ModuleSpeed.h"
 
+#include "../IL2CPPResolver/IL2CPP_Resolver.hpp"
+
+class ModuleSpeed;
 uintptr_t GameBase;
 uintptr_t GameAssembly;
 uintptr_t UnityPlayer;
 
-ModuleBase* rapid_fire_module;
+ModuleRapidFire* rapid_fire_module;
+ModuleSpeed* speed_module;
 ModuleBase* infinite_gem_claim_module;
 ModuleBase* fast_levels_module;
 std::list<ModuleBase*> player_move_c_modules = { };
 std::list<ModuleBase*> weapon_sounds_modules = { };
 std::list<ModuleBase*> player_damageable_modules = { };
 
+// Utility
+std::string clean_string(std::string string)
+{
+    std::vector<char> bytes(string.begin(), string.end());
+    bytes.push_back('\0');
+    std::list<char> chars;
+    for (byte byte : bytes)
+    {
+        if (byte)
+        {
+            chars.push_back(byte);
+        }
+    }
+    std::string clean(chars.begin(), chars.end());
+    return clean;
+}
+
+std::string get_player_name(void* player_move_c)
+{
+    void* nick_label = (void*)*(uint64_t*)((uint64_t)player_move_c + 0x3B8);
+    void* name_ptr = Functions::TextMeshGetText(nick_label);
+    if (name_ptr == nullptr) return "";
+    std::string name = ((Unity::System_String*)name_ptr)->ToString();
+    return clean_string(name);
+}
+
+bool is_my_player_move_c(void* player_move_c)
+{
+    return get_player_name(player_move_c) == "1111";
+}
+
+bool is_my_player_weapon_sounds(void* weapon_sounds)
+{
+    void* player_move_c = (void*)*(uint64_t*)((uint64_t)weapon_sounds + 0x500);
+    if (player_move_c == nullptr) return false;
+    return is_my_player_move_c(player_move_c);
+}
+
 // Hook Functions
 inline void(__stdcall* weapon_sounds_original)(void* arg);
 inline void __stdcall weapon_sounds_call(void* arg)
 {
-    for (ModuleBase* weapon_sounds_module : weapon_sounds_modules)
+    if (is_my_player_weapon_sounds(arg))
     {
-        weapon_sounds_module->run(arg);
+        for (ModuleBase* weapon_sounds_module : weapon_sounds_modules)
+        {
+            weapon_sounds_module->run(arg);
+        }
+    }
+    else
+    {
+        // Other Player
     }
 
     return weapon_sounds_original(arg);
@@ -57,16 +109,32 @@ inline void __stdcall weapon_sounds_call(void* arg)
 inline void(__stdcall* player_move_c_original)(void* arg);
 inline void __stdcall player_move_c(void* arg)
 {
-    for (ModuleBase* player_move_c_module : player_move_c_modules)
+    bool my_player = is_my_player_move_c(arg);
+    if (my_player)
     {
-        player_move_c_module->run(arg);
+        // My Player
+        for (ModuleBase* player_move_c_module : player_move_c_modules)
+        {
+            player_move_c_module->run(arg);
+        }
+    }
+    else
+    {
+        // Other Players    
     }
 
     // Player Damageable
     void* player_damageable = (void*)*(uint64_t*)((uint64_t)arg + 0x650);
-    for (ModuleBase* player_damageable_module : player_damageable_modules)
+    if (my_player)
     {
-        player_damageable_module->run(player_damageable);
+        for (ModuleBase* player_damageable_module : player_damageable_modules)
+        {
+            player_damageable_module->run(player_damageable);
+        }
+    }
+    else
+    {
+        // Other Players
     }
     
     return player_move_c_original(arg);
@@ -83,7 +151,15 @@ inline bool __stdcall infinite_gem_claim(void* arg)
 inline float(__stdcall* rapid_fire_original)(void* arg);
 inline float __stdcall rapid_fire(void* arg)
 {
-    if (rapid_fire_module->is_enabled()) return 99999;
+    if (((ModuleBase*)rapid_fire_module)->is_enabled()) return rapid_fire_module->get_speed();
+
+    return rapid_fire_original(arg);
+}
+
+inline float(__stdcall* speed_original)(void* arg);
+inline float __stdcall speed(void* arg)
+{
+    if (((ModuleBase*)speed_module)->is_enabled()) return speed_module->get_amount();
 
     return rapid_fire_original(arg);
 }
@@ -109,17 +185,22 @@ void Hooks::load()
     UnityPlayer = (uintptr_t)GetModuleHandleA("UnityPlayer.dll");
     Functions::init(GameBase, GameAssembly, UnityPlayer);
 
+    // Cool IL2CPP Resolver
+    IL2CPP::Initialize();
+    
     // MinHook
     MH_Initialize();
     
     // Hook Functions Here
-    hook_function(0x7EF390, &weapon_sounds_call, &weapon_sounds_original);
-    hook_function(0x1B61D20, &player_move_c, &player_move_c_original);
-    hook_function(0x4BB8D0, &infinite_gem_claim, &infinite_gem_claim_original);
-    hook_function(0x113B040, &rapid_fire, &rapid_fire_original);
+    hook_function(0x7F0070, &weapon_sounds_call, &weapon_sounds_original);
+    hook_function(0x1B677D0, &player_move_c, &player_move_c_original);
+    // hook_function(0x4BB8D0, &infinite_gem_claim, &infinite_gem_claim_original);
+    hook_function(0x111B350, &rapid_fire, &rapid_fire_original);
+    hook_function(0x11383E0, &speed, &speed_original);
     
     // Init Modules Here
-    rapid_fire_module = (ModuleBase*) new ModuleRapidFire();
+    rapid_fire_module = new ModuleRapidFire();
+    speed_module = new ModuleSpeed();
     infinite_gem_claim_module = (ModuleBase*) new ModuleInfiniteGemClaim();
     
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleAOEBullets());

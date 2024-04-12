@@ -20,7 +20,7 @@ void Functions::init(uintptr_t game_base, uintptr_t game_assembly, uintptr_t uni
 void Functions::SetNextHitCritical(void* arg, bool arg1)
 {
     if (!arg) return;
-    static const auto fn = (void(*)(void*, bool)) (GameAssembly_ + 0x7E84E0);
+    static const auto fn = (void(*)(void*, bool)) (GameAssembly_ + 0x7E91C0);
     return fn(arg, arg1);
 }
 
@@ -28,7 +28,7 @@ void Functions::SetNextHitCritical(void* arg, bool arg1)
 void Functions::MakeInvisibleForSeconds(void* arg, float duration)
 {
     if (!arg) return;
-    static const auto fn = (void(*)(void*, float)) (GameAssembly_ + 0x1ABF8D0);
+    static const auto fn = (void(*)(void*, float)) (GameAssembly_ + 0x1AC54B0);
     return fn(arg, duration);
 }
 
@@ -36,13 +36,20 @@ void Functions::MakeInvisibleForSeconds(void* arg, float duration)
 void Functions::AddHealthFromWeaponOnline(void* arg, float amount)
 {
     if (!arg) return;
-    static const auto fn = (void(*)(void*, float, char*)) (GameAssembly_ + 0x1AA6220);
+    static const auto fn = (void(*)(void*, float, char*)) (GameAssembly_ + 0x1AABE00);
     return fn(arg, amount, nullptr);
 }
 
 void Functions::AddAmmoFromWeaponOnline(void* arg, float amount)
 {
     if (!arg) return;
-    static const auto fn = (void(*)(void*, float, char*)) (GameAssembly_ + 0x1AA6090);
+    static const auto fn = (void(*)(void*, float, char*)) (GameAssembly_ + 0x1AABC70);
     return fn(arg, amount, nullptr);
+}
+
+void* Functions::TextMeshGetText(void* arg)
+{
+    if (!arg) return nullptr;
+    static const auto fn = (void*(*)(void*)) (GameAssembly_ + 0x4446960);
+    return fn(arg);
 }
