@@ -8,6 +8,8 @@
 
 #include "imgui_hooker.h"
 
+#include <fstream>
+
 #pragma comment( lib, "d3d11.lib" )
 
 // Forward declarations of helper functions
@@ -22,6 +24,7 @@ static std::string c_Title = "Boykisser Central";
 static std::string c_Build = ":3";
 static std::string c_RealBuild = "v1.0-ALPHA";
 std::stringstream full_title;
+static char config_file[32] = "default"; 
 
 void InitModules(const std::vector<BKCModule>& init_mods);
 void HandleModuleSettingRendering(BKCModule& module);
@@ -40,6 +43,64 @@ void GetDesktopResolution(int& horizontal, int& vertical)
     // (horizontal, vertical)
     horizontal = desktop.right;
     vertical = desktop.bottom;
+}
+
+std::wstring get_executing_directory()
+{
+    TCHAR buffer[MAX_PATH] = { 0 };
+    GetModuleFileName( NULL, buffer, MAX_PATH );
+    std::wstring::size_type pos = std::wstring(buffer).find_last_of(L"\\/");
+    return std::wstring(buffer).substr(0, pos);
+}
+
+std::string sanity_config(const std::wstring* dir)
+{
+    const std::wstring config_dir = *dir + L"/bkc_config";
+    CreateDirectory(config_dir.c_str(), nullptr);
+    const std::string config_string_temp(config_file);
+    const std::wstring config_string(config_string_temp.begin(), config_string_temp.end());
+    const std::wstring path_temp = config_dir + L"/" + config_string + L".bkc";
+    std::string path(path_temp.begin(), path_temp.end());
+    FILE* file;
+    fopen_s(&file, path.c_str(), "a+");
+    fclose(file);
+    return path;
+}
+
+void load_config()
+{
+    const std::wstring dir = get_executing_directory();
+    const std::string file_path = sanity_config(&dir);
+}
+
+void save_config()
+{
+    const std::wstring dir = get_executing_directory();
+    const std::string file_path = sanity_config(&dir);
+    FILE* file;
+    fopen_s(&file, file_path.c_str(), "w+");
+    std::ofstream out(file);
+
+    // Write Modules
+    for (const auto& module : BKCImGuiHooker::modules)
+    {
+        out << module->name << ";" << "enabled" << ";" << module->enabled << std::endl;
+        out << module->name << ";" << "key" << ";" << module->key << std::endl;
+        for (const auto checkbox : module->checkboxes)
+        {
+            out << module->name << ";" << checkbox->name << ";" << checkbox->enabled << std::endl;
+        }
+        for (const auto slider : module->sliders)
+        {
+            out << module->name << ";" << slider->name << ";" << slider->value << std::endl;
+        }
+    }
+    
+    // Write Other Config
+    
+    out.close();
+    fclose(file);
+    
 }
 
 HWND imgui_hwnd;
@@ -105,6 +166,24 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
         HandleCategoryRendering("Player", PLAYER);
         HandleCategoryRendering("Exploit", EXPLOIT);
         HandleCategoryRendering("Uncategorized", NONE);
+
+        // Configs
+        if (ImGui::CollapsingHeader("Config"))
+        {
+            ImGui::Indent();
+            if (ImGui::Button("Load"))
+            {
+                load_config();
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Save"))
+            {
+                save_config();
+            }
+            ImGui::SameLine();
+            ImGui::InputText("Config File", config_file, sizeof(config_file));
+            ImGui::Unindent();
+        }
         
         ImGui::End();
 
