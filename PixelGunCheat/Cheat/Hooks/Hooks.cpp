@@ -145,6 +145,9 @@ void Hooks::load()
     
     player_damageable_modules.push_back((ModuleBase*)new ModuleInfiniteAmmo());
     player_damageable_modules.push_back((ModuleBase*)new ModuleHeal());
+
+    // Post Module Load
+    BKCImGuiHooker::modules_loaded = true;
 }
 
 void Hooks::unload()

@@ -68,10 +68,94 @@ std::string sanity_config(const std::wstring* dir)
     return path;
 }
 
+std::string find_or_default_config(std::list<std::string> lines, std::string search)
+{
+    for (auto line : lines)
+    {
+        if(line.starts_with(search))
+        {
+            return line.substr(line.find_last_of(";") + 1, line.length());
+        }
+    }
+    return "not_found";
+}
+
 void load_config()
 {
     const std::wstring dir = get_executing_directory();
     const std::string file_path = sanity_config(&dir);
+    FILE* file;
+    fopen_s(&file, file_path.c_str(), "r+");
+    std::ifstream in(file);
+    std::list<std::string> lines;
+    if (in.is_open())
+    {
+        std::string line;
+        while (std::getline(in, line))
+        {
+            lines.push_back(line);
+        }
+        in.close();
+    }
+    
+    // Read Modules
+    for (const auto& module : BKCImGuiHooker::modules)
+    {
+        std::string found;
+        const std::string NOT_FOUND = "not_found";
+        std::stringstream pe;
+        pe << module->name << ";" << "enabled" << ";";
+        bool enabled;
+        found = find_or_default_config(lines, pe.str());
+        if (found != NOT_FOUND)
+        {
+            std::istringstream(found) >> enabled; // idk why this errors in ide it works
+            module->enabled = enabled;
+        }
+        
+        std::stringstream ke;
+        ke << module->name << ";" << "key" << ";";
+        found = find_or_default_config(lines, ke.str());
+        if (found != NOT_FOUND)
+        {
+            const int key = stoi(found);
+            module->key = key;
+        }
+        
+        for (const auto setting : module->settings)
+        {
+            std::stringstream cb;
+            bool cbv;
+            std::stringstream sl;
+            float slv;
+            switch (setting->type)
+            {
+            case 1:
+                cb << module->name << ";" << setting->name << ";" << "checkbox" << ";";
+                found = find_or_default_config(lines, cb.str());
+                if (found != NOT_FOUND)
+                {
+                    std::istringstream(found) >> cbv;
+                    ((BKCCheckbox*)setting)->enabled = cbv;
+                }
+                break;
+            case 2:
+                sl << module->name << ";" << setting->name << ";" << "slider" << ";";
+                found = find_or_default_config(lines, sl.str());
+                if (found != NOT_FOUND)
+                {
+                    slv = std::stof(found);
+                    ((BKCSlider*)setting)->value = slv;
+                }
+                break;
+            default: break;
+            }
+        }
+    }
+    
+    // Read Other Configs
+    
+    fclose(file);
 }
 
 void save_config()
@@ -87,13 +171,17 @@ void save_config()
     {
         out << module->name << ";" << "enabled" << ";" << module->enabled << std::endl;
         out << module->name << ";" << "key" << ";" << module->key << std::endl;
-        for (const auto checkbox : module->checkboxes)
+        for (const auto setting : module->settings)
         {
-            out << module->name << ";" << checkbox->name << ";" << checkbox->enabled << std::endl;
-        }
-        for (const auto slider : module->sliders)
-        {
-            out << module->name << ";" << slider->name << ";" << slider->value << std::endl;
+            switch (setting->type)
+            {
+            case 1:
+                out << module->name << ";" << setting->name << ";" << "checkbox" << ";" << ((BKCCheckbox*)setting)->enabled << std::endl;
+                break;
+            case 2:
+                out << module->name << ";" << setting->name << ";" << "slider" << ";" << ((BKCSlider*)setting)->value << std::endl;
+                break;
+            }
         }
     }
     
@@ -101,12 +189,13 @@ void save_config()
     
     out.close();
     fclose(file);
-    
 }
 
 HWND imgui_hwnd;
 ImFont* main_font;
 std::list<BKCModule*> BKCImGuiHooker::modules = {};
+bool BKCImGuiHooker::modules_loaded = false;
+bool BKCImGuiHooker::config_loaded = false;
 bool BKCImGuiHooker::c_GuiEnabled = true;
 void BKCImGuiHooker::setup_imgui_hwnd(HWND handle, ID3D11Device* device, ID3D11DeviceContext* device_context)
 {
@@ -141,6 +230,14 @@ void BKCImGuiHooker::setup_imgui_hwnd(HWND handle, ID3D11Device* device, ID3D11D
 
 void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D11DeviceContext* g_pd3dDeviceContext)
 {
+    // Load Config
+    if (modules_loaded && !config_loaded)
+    {
+        config_loaded = true;
+        load_config();
+        Logger::log_info("Loaded default config!");
+    }
+    
     // ImVec4 clear_color = ImVec4(0.0f, 0.0f, 0.0f, 0.0f)
 
     /*
@@ -187,7 +284,7 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
                 save_config();
             }
             ImGui::SameLine();
-            ImGui::InputText("Config File", config_file, sizeof(config_file));
+            ImGui::InputText("", config_file, sizeof(config_file));
             ImGui::Unindent();
         }
         
