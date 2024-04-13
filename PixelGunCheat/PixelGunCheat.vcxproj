@@ -264,6 +264,7 @@
     <ClInclude Include="Cheat\Module\Impl\ModuleInfiniteAmmo.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleInfiniteGemClaim.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleInvisibility.h" />
+    <ClInclude Include="Cheat\Module\Impl\ModuleLotteryPrice.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleRapidFire.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleReach.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleRecoil.h" />

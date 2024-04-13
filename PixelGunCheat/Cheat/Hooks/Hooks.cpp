@@ -35,6 +35,7 @@
 #include "../Module/Impl/ModuleArrayList.h"
 #include "../Module/Impl/ModuleESP.h"
 #include "../Module/Impl/ModuleHeadshotMultiplier.h"
+#include "../Module/Impl/ModuleLotteryPrice.h"
 
 class ModuleSpeed;
 uintptr_t GameBase;
@@ -44,6 +45,7 @@ uintptr_t UnityPlayer;
 ModuleRapidFire* rapid_fire_module;
 ModuleSpeed* speed_module;
 ModuleBase* infinite_gem_claim_module;
+ModuleLotteryPrice* lottery_price_module;
 ModuleBase* fast_levels_module;
 std::list<ModuleBase*> player_move_c_modules = { };
 std::list<ModuleBase*> weapon_sounds_modules = { };
@@ -59,8 +61,15 @@ void* Hooks::our_player;
 void* Hooks::main_camera;
 Unity::Vector3 zero = Unity::Vector3(0, 0, 0);
 void* Hooks::aimed_pos = &zero;
+bool Hooks::do_esp = false;
 
 // Utility
+void nuke_player_list()
+{
+    working_player_list.clear();
+    Hooks::player_list.clear();
+}
+
 std::string clean_string(std::string string)
 {
     std::vector<char> bytes(string.begin(), string.end());
@@ -161,10 +170,13 @@ inline void __stdcall player_move_c(void* arg)
             player_move_c_module->run(arg);
         }
 
-        if (Hooks::tick % 60 == 0)
+        if (Hooks::tick % 30 == 0)
         {
             Hooks::main_camera = find_main_camera();
-            if (Hooks::main_camera == nullptr) return player_move_c_original(arg);
+            if (Hooks::main_camera == nullptr)
+            {
+                if (Hooks::main_camera == nullptr) return player_move_c_original(arg);
+            }
             Hooks::our_player = arg;
         }
     }
@@ -230,6 +242,25 @@ inline float __stdcall on_pre_render(void* arg)
     return on_pre_render_original(arg);
 }
 
+inline void (__stdcall* on_scene_unload_original)(void* arg);
+inline void __stdcall on_scene_unload(void* arg)
+{
+    Hooks::do_esp = false;
+    Hooks::main_camera = nullptr;
+    nuke_player_list();
+}
+
+inline int (__stdcall* free_lottery_original)(void* arg);
+inline int __stdcall free_lottery(void* arg)
+{
+    if (((ModuleBase*)lottery_price_module)->is_enabled())
+    {
+        return lottery_price_module->get_price();
+    }
+    
+    return free_lottery_original(arg);
+}
+
 // Static
 void hook_function(uintptr_t offset, LPVOID detour, void* original)
 {
@@ -266,11 +297,14 @@ void Hooks::load()
     hook_function(0x111B350, &rapid_fire, &rapid_fire_original);
     hook_function(0x11383E0, &speed, &speed_original);
     hook_function(0x42D0540, &on_pre_render, &on_pre_render_original);
+    hook_function(0x414C1B0, &on_scene_unload, &on_scene_unload_original);
+    hook_function(0x781F00, &free_lottery, &free_lottery_original);
     
     // Init Modules Here
     rapid_fire_module = new ModuleRapidFire();
     speed_module = new ModuleSpeed();
     infinite_gem_claim_module = (ModuleBase*) new ModuleInfiniteGemClaim();
+    lottery_price_module = new ModuleLotteryPrice;
 
     player_move_c_modules.push_back((ModuleBase*) new ModuleAimBot());
     player_move_c_modules.push_back((ModuleBase*) new ModuleInvisibility());

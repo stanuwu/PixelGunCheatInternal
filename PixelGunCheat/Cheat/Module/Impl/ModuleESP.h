@@ -20,6 +20,11 @@ public:
     
     void do_module(void* arg) override
     {
+        if (!Hooks::do_esp)
+        {
+            Hooks::do_esp = true;
+            return;
+        }
         try
         {
             if (Hooks::tick % 60 == 0)
@@ -29,13 +34,15 @@ public:
             
             const int height = window_size.bottom - window_size.top;
         
-            if (Hooks::main_camera == nullptr) return;
+            if (!Hooks::do_esp) return;
             for (auto player : Hooks::player_list)
             {
-                if (player == nullptr || Hooks::our_player == nullptr) continue;;
-            
+                if (player == nullptr || Hooks::our_player == nullptr) continue;
+
+                if (!Hooks::do_esp) return;
                 Unity::CTransform* transform = (Unity::CTransform*)Hooks::get_player_transform(player);
                 Unity::Vector3 positon;
+                if (!Hooks::do_esp) return;
                 Functions::TransformGetPosition(transform, &positon);
                 Unity::Vector3 top_world = {
                     positon.x,
@@ -45,8 +52,9 @@ public:
             
                 Unity::Vector3 screen_pos;
                 Unity::Vector3 screen_top;
-                if (Hooks::main_camera == nullptr) return;
+                if (!Hooks::do_esp) return;
                 Functions::CameraWorldToScreen(Hooks::main_camera, &positon, &screen_pos);
+                if (!Hooks::do_esp) return;
                 Functions::CameraWorldToScreen(Hooks::main_camera, &top_world, &screen_top);
 
                 if (screen_pos.z < 0) continue;
@@ -58,9 +66,10 @@ public:
             
                 screen_pos = {screen_pos.x, (float)height - screen_pos.y, screen_pos.z};
 
-                if (player == nullptr) continue;
+                if (!Hooks::do_esp) return;
                 std::string player_name = Hooks::get_player_name(player);
-            
+
+                if (!Hooks::do_esp) return;
                 if (Hooks::is_player_enemy(player))
                 {
                     draw_esp(screen_pos, width2, height2, color_enemy, player_name);
@@ -83,6 +92,7 @@ public:
 
     static void draw_esp(Unity::Vector3 screen_pos, float width2, float height2, ImU32 color, const std::string player_name)
     {
+        if (!Hooks::do_esp) return;
         ImVec2 size = ImGui::CalcTextSize(player_name.c_str());
         ImGui::GetBackgroundDrawList()->AddText({screen_pos.x - size.x / 2, screen_pos.y - height2}, color, player_name.c_str());
         ImGui::GetBackgroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, color, 0, 0, 3);
