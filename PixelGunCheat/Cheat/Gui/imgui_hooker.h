@@ -116,6 +116,8 @@ public:
     static ImFont* gui_font;
     static ImFont* watermark_font;
     static ImFont* arraylist_font;
+    static std::string c_Title;
+    static std::string c_RealBuild;
     static float scale_factor;
     static bool modules_loaded;
     static bool config_loaded;

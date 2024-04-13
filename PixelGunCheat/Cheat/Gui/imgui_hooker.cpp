@@ -26,9 +26,9 @@ void CleanupRenderTarget();
 WPARAM MapLeftRightKeys(const MSG& msg);
 
 // Boykisser Central Vars
-static std::string c_Title = "Boykisser Central";
+std::string BKCImGuiHooker::c_Title = "Boykisser Central";
+std::string BKCImGuiHooker::c_RealBuild = "v1.0-BETA";
 static std::string c_Build = ":3";
-static std::string c_RealBuild = "v1.0-BETA";
 std::stringstream full_title;
 static char config_file[32] = "default";
 static ImU32 color_title = ImGui::ColorConvertFloat4ToU32({0.91f, 0.64f, 0.13f, 1.00f});
