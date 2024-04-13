@@ -16,23 +16,27 @@ public:
     
     void do_module(void* arg) override
     {
+        ImGui::PushFont(BKCImGuiHooker::arraylist_font);
+        
         // ArrayList
         float x = 5;
         float y = 100;
-        float size = ImGui::GetFontSize();
+        float size = ImGui::GetFontSize() * BKCImGuiHooker::scale_factor;
         float modc = 0;
         for (auto& module : BKCImGuiHooker::modules)
         {
             if (module-> enabled) modc++;
         }
-        ImGui::GetBackgroundDrawList()->AddRectFilled({x, y}, {x + 500, y + modc * (size * 2 + 2) + 10}, color_bg, 10);
+        ImGui::GetBackgroundDrawList()->AddRectFilled({x, y}, {x + 300, y + modc * (size + 2) + 10}, color_bg, 10);
         for (auto& module : BKCImGuiHooker::modules)
         {
             if (module -> enabled)
             {
-                ImGui::GetBackgroundDrawList()->AddText(NULL, size * 2, {x + 5, y + 2}, color_array, module->name.c_str());
-                y += size * 2 + 2;
+                ImGui::GetBackgroundDrawList()->AddText(NULL, size, {x + 5, y + 2}, color_array, module->name.c_str());
+                y += size + 2;
             }
         }
+        
+        ImGui::PopFont();
     }
 };

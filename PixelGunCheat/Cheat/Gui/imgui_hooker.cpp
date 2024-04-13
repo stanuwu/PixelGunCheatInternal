@@ -293,11 +293,14 @@ void save_config()
 }
 
 HWND imgui_hwnd;
-ImFont* main_font;
 std::list<BKCModule*> BKCImGuiHooker::modules = {};
+ImFont* BKCImGuiHooker::gui_font = nullptr;
+ImFont* BKCImGuiHooker::watermark_font = nullptr;
+ImFont* BKCImGuiHooker::arraylist_font = nullptr;
 bool BKCImGuiHooker::modules_loaded = false;
 bool BKCImGuiHooker::config_loaded = false;
 bool BKCImGuiHooker::c_GuiEnabled = false;
+float BKCImGuiHooker::scale_factor = 1;
 void BKCImGuiHooker::setup_imgui_hwnd(HWND handle, ID3D11Device* device, ID3D11DeviceContext* device_context)
 {
     imgui_hwnd = handle;
@@ -324,11 +327,15 @@ void BKCImGuiHooker::setup_imgui_hwnd(HWND handle, ID3D11Device* device, ID3D11D
     
     GetDesktopResolution(horizontal, vertical);
 
-    float avg_multi = ((float)horizontal / 1920.0f + (float)vertical / 1080.0f) / 2.0f;
+    scale_factor = ((float)horizontal / 1920.0f + (float)vertical / 1080.0f) / 2.0f;
     std::stringstream multi_out;
-    multi_out << "Using " << avg_multi << "x scaling for ImGui fonts";
+    multi_out << "Using " << scale_factor << "x scale factor for ImGui fonts";
     Logger::log_info(multi_out.str());
-    main_font = io.Fonts->AddFontFromFileTTF(R"(C:\Windows\Fonts\comic.ttf)", 16.0f * avg_multi); // create font from file (thank god doesn't need to be only loaded from memory, but still can be)
+
+    // create font from file (thank god doesn't need to be only loaded from memory, but still can be)
+    gui_font = io.Fonts->AddFontFromFileTTF(R"(C:\Windows\Fonts\comic.ttf)", 16.0f * scale_factor);
+    watermark_font = io.Fonts->AddFontFromFileTTF(R"(C:\Windows\Fonts\comic.ttf)", 28.0f * scale_factor);
+    arraylist_font = io.Fonts->AddFontFromFileTTF(R"(C:\Windows\Fonts\comic.ttf)", 20.0f * scale_factor);
 }
 
 void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D11DeviceContext* g_pd3dDeviceContext)
@@ -346,7 +353,7 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
     
-    ImGui::PushFont(main_font);
+    ImGui::PushFont(gui_font);
     
     if (c_GuiEnabled)
     {
@@ -387,15 +394,18 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
     // Modules
     for (auto module : Hooks::on_imgui_draw_modules)
     {
-        module->do_module(nullptr);
+        module->run(nullptr);
     }
 
-    // Watermark
-    float size = ImGui::GetFontSize();
-    ImGui::GetBackgroundDrawList()->AddRectFilled({5, 5}, {5 + 1000, 5 + size * 2 + 10}, color_bg, 10);
-    ImGui::GetBackgroundDrawList()->AddText(NULL, size * 2, {10, 5}, color_title, full_title.str().c_str());
-    
     ImGui::PopFont();
+
+    // Watermark
+    ImGui::PushFont(watermark_font);
+    float size = ImGui::GetFontSize();
+    ImGui::GetBackgroundDrawList()->AddRectFilled({5, 5}, {10 + ImGui::CalcTextSize(full_title.str().c_str()).x, 5 + size * scale_factor + 10}, color_bg, 10);
+    ImGui::GetBackgroundDrawList()->AddText(nullptr, size * scale_factor, {10, 5}, color_title, full_title.str().c_str());
+    ImGui::PopFont();
+    
     ImGui::Render();
     
     g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr);

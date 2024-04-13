@@ -144,7 +144,7 @@ public:
 
             if (!__aim_bot_through_walls.enabled)
             {
-                Unity::Vector3 aaaaaaaaaaaaaaaa = {
+                Unity::Vector3 diff = {
                     head_pos.x - camera_pos.x,
                     head_pos.y - camera_pos.y,
                     head_pos.z - camera_pos.z
@@ -153,9 +153,9 @@ public:
                     camera_pos.x,
                     camera_pos.y,
                     camera_pos.z,
-                    aaaaaaaaaaaaaaaa.Normalize().x,
-                    aaaaaaaaaaaaaaaa.Normalize().y,
-                    aaaaaaaaaaaaaaaa.Normalize().z
+                    diff.Normalize().x,
+                    diff.Normalize().y,
+                    diff.Normalize().z
                 };
                 RaycastHit hit_info;
                 if (Functions::PhysicsRaycast(&ray, &hit_info, 600))

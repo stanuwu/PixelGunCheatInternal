@@ -51,14 +51,15 @@ public:
             float width2 = scaled_dist / 2;
             float height2 = scaled_dist * 1.5f / 2;
             
-            screen_pos = {screen_pos.x, height - screen_pos.y, screen_pos.z};
+            screen_pos = {screen_pos.x, (float)height - screen_pos.y, screen_pos.z};
             
             std::string player_name = Hooks::get_player_name(player);
             
             if (Hooks::is_player_enemy(player))
             {
                 draw_esp(screen_pos, width2, height2, color_enemy, player_name);
-            } else if (__esp_teammates.enabled)
+            }
+            else if (__esp_teammates.enabled)
             {
                 draw_esp(screen_pos, width2, height2, color_ally, player_name);
             }
@@ -69,6 +70,6 @@ public:
     {
         ImVec2 size = ImGui::CalcTextSize(player_name.c_str());
         ImGui::GetBackgroundDrawList()->AddText({screen_pos.x - size.x / 2, screen_pos.y - height2}, color, player_name.c_str());
-        ImGui::GetBackgroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, color, 10, 0, 3);
+        ImGui::GetBackgroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, color, 0, 0, 3);
     }
 };
