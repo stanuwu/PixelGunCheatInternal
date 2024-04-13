@@ -9,7 +9,8 @@
 #include "../../Internal/Functions.h"
 
 static BKCCheckbox __aim_bot_through_walls = BKCCheckbox("Through Walls", false);
-static BKCModule __aim_bot = { "Aim Bot", COMBAT, 0x0, true, {&__aim_bot_through_walls} };
+static BKCCheckbox __aim_bot_body_shot = BKCCheckbox("Body Shot", false);
+static BKCModule __aim_bot = { "Aim Bot", COMBAT, 0x0, true, {&__aim_bot_through_walls, &__aim_bot_body_shot} };
 
 static std::map<std::string, Unity::Vector3> player_pos_cache;
 static RECT window_size;
@@ -158,7 +159,7 @@ public:
                     diff.Normalize().z
                 };
                 RaycastHit hit_info;
-                if (Functions::PhysicsRaycast(&ray, &hit_info, 600))
+                if (Functions::PhysicsRaycast(&ray, &hit_info, 800))
                 {
                     void* head_collider = (void*)*(uint64_t*)((uint64_t)player + 0x128);
                     int id = Functions::ObjectGetInstanceID(head_collider);
@@ -186,7 +187,7 @@ public:
             Functions::TransformGetPosition(target_t, &target_p);
             Unity::Vector3 aim_at = {
                 target_p.x + prediction.x,
-                target_p.y + prediction.y + 0.75f,
+                target_p.y + prediction.y + (__aim_bot_body_shot.enabled ? 0 : 0.75f),
                 target_p.z + prediction.z
             };
             Unity::CTransform* t = (Unity::CTransform*)Functions::ComponentGetTransform(Hooks::main_camera);
