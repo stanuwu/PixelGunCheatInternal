@@ -32,7 +32,7 @@ public:
             if (Hooks::main_camera == nullptr) return;
             for (auto player : Hooks::player_list)
             {
-                if (player == nullptr || Hooks::our_player == nullptr) return;
+                if (player == nullptr || Hooks::our_player == nullptr) continue;;
             
                 Unity::CTransform* transform = (Unity::CTransform*)Hooks::get_player_transform(player);
                 Unity::Vector3 positon;
@@ -42,9 +42,10 @@ public:
                     positon.y + 2,
                     positon.z
                 };
-
+            
                 Unity::Vector3 screen_pos;
                 Unity::Vector3 screen_top;
+                if (Hooks::main_camera == nullptr) return;
                 Functions::CameraWorldToScreen(Hooks::main_camera, &positon, &screen_pos);
                 Functions::CameraWorldToScreen(Hooks::main_camera, &top_world, &screen_top);
 
@@ -56,7 +57,8 @@ public:
                 float height2 = scaled_dist * 1.5f / 2;
             
                 screen_pos = {screen_pos.x, (float)height - screen_pos.y, screen_pos.z};
-            
+
+                if (player == nullptr) continue;
                 std::string player_name = Hooks::get_player_name(player);
             
                 if (Hooks::is_player_enemy(player))
