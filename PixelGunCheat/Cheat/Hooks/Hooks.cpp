@@ -36,7 +36,7 @@
 #include "../Module/Impl/ModuleDoubleJump.h"
 #include "../Module/Impl/ModuleESP.h"
 #include "../Module/Impl/ModuleHeadshotMultiplier.h"
-#include "../Module/Impl/ModuleLotteryPrice.h"
+#include "../Module/Impl/ModulePriceModifier.h"
 
 class ModuleSpeed;
 uintptr_t GameBase;
@@ -46,7 +46,7 @@ uintptr_t UnityPlayer;
 ModuleRapidFire* rapid_fire_module;
 ModuleSpeed* speed_module;
 ModuleBase* infinite_gem_claim_module;
-ModuleLotteryPrice* lottery_price_module;
+ModulePriceModifier* lottery_price_module;
 ModuleBase* fast_levels_module;
 ModuleESP* esp_module;
 std::list<ModuleBase*> player_move_c_modules = { };
@@ -319,7 +319,7 @@ void Hooks::load()
     rapid_fire_module = new ModuleRapidFire();
     speed_module = new ModuleSpeed();
     infinite_gem_claim_module = (ModuleBase*) new ModuleInfiniteGemClaim();
-    lottery_price_module = new ModuleLotteryPrice;
+    lottery_price_module = new ModulePriceModifier;
 
     esp_module = new ModuleESP();
     player_move_c_modules.push_back((ModuleBase*) esp_module);
