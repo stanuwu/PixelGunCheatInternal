@@ -20,14 +20,14 @@ public:
         
         // ArrayList
         float x = 5;
-        float y = 48;
+        float y = 48 * BKCImGuiHooker::scale_factor;
         float size = ImGui::GetFontSize();
         float modc = 0;
         for (auto& module : BKCImGuiHooker::modules)
         {
             if (module-> enabled) modc++;
         }
-        ImGui::GetBackgroundDrawList()->AddRectFilled({x, y}, {x + 150, y + modc * (size + 2) + 10}, color_bg, 10);
+        ImGui::GetBackgroundDrawList()->AddRectFilled({x, y}, {x + 200, y + modc * (size + 2) + 10}, color_bg, 10);
         for (auto& module : BKCImGuiHooker::modules)
         {
             if (module -> enabled)

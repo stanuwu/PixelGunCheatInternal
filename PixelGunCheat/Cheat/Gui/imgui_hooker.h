@@ -62,6 +62,28 @@ public:
     int maximum;
 };
 
+class BKCDropdown : public BKCSetting
+{
+public:
+    BKCDropdown(const std::string& setting_name, const std::string& def_val, const std::vector<std::string>& vals, const std::string& extra_info = "")
+    {
+        name = setting_name;
+        values = vals;
+        current_value = def_val;
+        current_index = indexof(def_val);
+        tooltip = extra_info;
+        type = 4;
+    }
+    int indexof(std::string val)
+    {
+        auto indexer = std::ranges::find(values, val);
+        return indexer != values.end() ? (int)(indexer - values.begin()) : -1;
+    }
+    int current_index;
+    std::string current_value;
+    std::vector<std::string> values;
+};
+
 enum BKCCategory
 {
     NONE = 0,
