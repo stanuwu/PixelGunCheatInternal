@@ -112,7 +112,8 @@ public:
     {
         if (is_enabled())
         {
-            for (auto draw : to_draw)
+            std::list<EspPlayer> list = to_draw;
+            for (auto draw : list)
             {
                 draw_esp(draw.screen_pos, draw.width2, draw.height2, draw.color, draw.player_name);
             }

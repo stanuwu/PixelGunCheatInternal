@@ -37,6 +37,7 @@
 #include "../Module/Impl/ModuleESP.h"
 #include "../Module/Impl/ModuleHeadshotMultiplier.h"
 #include "../Module/Impl/ModulePriceModifier.h"
+#include "../Module/Impl/ModuleRewardsMultiplier.h"
 
 class ModuleSpeed;
 uintptr_t GameBase;
@@ -48,6 +49,7 @@ ModuleSpeed* speed_module;
 ModuleBase* infinite_gem_claim_module;
 ModulePriceModifier* lottery_price_module;
 ModuleBase* fast_levels_module;
+ModuleRewardsMultiplier* rewards_multiplier_module;
 ModuleESP* esp_module;
 std::list<ModuleBase*> player_move_c_modules = { };
 std::list<ModuleBase*> weapon_sounds_modules = { };
@@ -284,6 +286,28 @@ inline int __stdcall free_lottery(void* arg)
     return free_lottery_original(arg);
 }
 
+inline int (__stdcall* reward_multiplier_original)(void* arg);
+inline int __stdcall reward_multiplier(void* arg)
+{
+    if (((ModuleBase*)rewards_multiplier_module)->is_enabled())
+    {
+        return rewards_multiplier_module->get_amount();
+    }
+    
+    return reward_multiplier_original(arg);
+}
+
+inline bool (__stdcall* double_rewards_original)(void* arg);
+inline bool __stdcall double_rewards(void* arg)
+{
+    if (((ModuleBase*)rewards_multiplier_module)->is_enabled())
+    {
+        return true;
+    }
+    
+    return double_rewards_original(arg);
+}
+
 // Static
 void hook_function(uintptr_t offset, LPVOID detour, void* original)
 {
@@ -323,12 +347,15 @@ void Hooks::load()
     hook_function(0x414C1B0, &on_scene_unload, &on_scene_unload_original);
     hook_function(0x781F00, &free_lottery, &free_lottery_original);
     hook_function(0x1AC4C70, &player_move_c_fixed, &player_move_c_fixed_original);
+    hook_function(0xC326E0, &reward_multiplier, &reward_multiplier_original);
+    hook_function(0xC33660, &double_rewards, &double_rewards_original);
     
     // Init Modules Here
     rapid_fire_module = new ModuleRapidFire();
     speed_module = new ModuleSpeed();
     infinite_gem_claim_module = (ModuleBase*) new ModuleInfiniteGemClaim();
     lottery_price_module = new ModulePriceModifier;
+    rewards_multiplier_module = new ModuleRewardsMultiplier();
 
     esp_module = new ModuleESP();
     player_move_c_modules.push_back((ModuleBase*) esp_module);

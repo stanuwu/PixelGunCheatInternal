@@ -270,6 +270,7 @@
     <ClInclude Include="Cheat\Module\Impl\ModuleReach.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleRecoil.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleHeadshotMultiplier.h" />
+    <ClInclude Include="Cheat\Module\Impl\ModuleRewardsMultiplier.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleScoreMultiplier.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleInstantCharge.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleSpeed.h" />
