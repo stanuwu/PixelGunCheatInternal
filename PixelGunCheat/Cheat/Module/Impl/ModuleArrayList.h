@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <algorithm>
 #include <imgui.h>
 
 #include "../ModuleBase.h"
@@ -23,14 +24,19 @@ public:
         float y = 48 * BKCImGuiHooker::scale_factor;
         float size = ImGui::GetFontSize();
         float modc = 0;
-        for (auto& module : BKCImGuiHooker::modules)
+
+        std::vector<BKCModule*> module_list = {};
+        for (const auto mod : BKCImGuiHooker::modules) module_list.push_back(mod);
+        std::sort(module_list.begin(), module_list.end(), alphabetical_cmp());
+        
+        for (auto& module : module_list)
         {
-            if (module-> enabled) modc++;
+            if (module->enabled) modc++;
         }
         ImGui::GetBackgroundDrawList()->AddRectFilled({x, y}, {x + 200 * BKCImGuiHooker::scale_factor, y + modc * (size + 2) + 10}, color_bg, 10);
-        for (auto& module : BKCImGuiHooker::modules)
+        for (auto& module : module_list)
         {
-            if (module -> enabled)
+            if (module->enabled)
             {
                 ImGui::GetBackgroundDrawList()->AddText(NULL, size, {x + 5, y + 2}, color_array, module->name.c_str());
                 y += size + 2;
@@ -39,4 +45,12 @@ public:
         
         ImGui::PopFont();
     }
+private:
+    struct alphabetical_cmp
+    {
+        bool operator() (const BKCModule* mod1, const BKCModule* mod2) const
+        {
+            return mod1->name.compare(mod2->name) <= 0;
+        }
+    };
 };
