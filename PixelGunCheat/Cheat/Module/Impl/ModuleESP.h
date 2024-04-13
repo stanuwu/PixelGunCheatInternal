@@ -30,6 +30,8 @@ public:
         if (Hooks::main_camera == nullptr) return;
         for (auto player : Hooks::player_list)
         {
+            if (player == nullptr || Hooks::our_player == nullptr) return;
+            
             Unity::CTransform* transform = (Unity::CTransform*)Hooks::get_player_transform(player);
             Unity::Vector3 positon;
             Functions::TransformGetPosition(transform, &positon);

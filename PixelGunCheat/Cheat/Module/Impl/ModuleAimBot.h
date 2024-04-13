@@ -83,7 +83,7 @@ public:
         Unity::CCamera* camera = (Unity::CCamera*)Hooks::main_camera;
         for (void* player : Hooks::player_list)
         {
-            if (player == nullptr) continue;
+            if (player == nullptr || Hooks::our_player == nullptr) continue;
             // Only Enemies
             if (!Hooks::is_player_enemy(player)) continue;
             
