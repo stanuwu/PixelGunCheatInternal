@@ -13,6 +13,7 @@ public:
     static void* our_player;
     static void* main_camera;
     static void* aimed_pos;
+    static bool do_esp;
     static std::string get_player_name(void* player_move_c);
     static void* get_player_transform(void* player);
     static bool is_player_enemy(void* player);
