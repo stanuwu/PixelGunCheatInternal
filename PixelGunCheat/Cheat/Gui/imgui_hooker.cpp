@@ -379,6 +379,7 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
     {
         config_loaded = true;
         load_config();
+        save_config();
         Logger::log_info("Loaded default config!");
     }
     
