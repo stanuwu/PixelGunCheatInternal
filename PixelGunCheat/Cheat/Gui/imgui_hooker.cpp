@@ -426,6 +426,8 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
     }
 
     // Modules
+    Hooks::draw_all();
+    
     for (auto module : Hooks::on_imgui_draw_modules)
     {
         module->run(nullptr);

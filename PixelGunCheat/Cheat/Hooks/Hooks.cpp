@@ -48,6 +48,7 @@ ModuleSpeed* speed_module;
 ModuleBase* infinite_gem_claim_module;
 ModuleLotteryPrice* lottery_price_module;
 ModuleBase* fast_levels_module;
+ModuleESP* esp_module;
 std::list<ModuleBase*> player_move_c_modules = { };
 std::list<ModuleBase*> weapon_sounds_modules = { };
 std::list<ModuleBase*> weapon_sound_others_modules = { };
@@ -62,9 +63,14 @@ void* Hooks::our_player;
 void* Hooks::main_camera;
 Unity::Vector3 zero = Unity::Vector3(0, 0, 0);
 void* Hooks::aimed_pos = &zero;
-bool Hooks::do_esp = false;
 
 // Utility
+void Hooks::draw_all()
+{
+    if (esp_module == nullptr) return;
+    esp_module->draw_all();
+}
+
 void nuke_player_list()
 {
     working_player_list.clear();
@@ -246,9 +252,17 @@ inline float __stdcall on_pre_render(void* arg)
 inline void (__stdcall* on_scene_unload_original)(void* arg);
 inline void __stdcall on_scene_unload(void* arg)
 {
-    Hooks::do_esp = false;
     Hooks::main_camera = nullptr;
     nuke_player_list();
+
+    // Get Old Scene Name
+    /*
+    void* name_ptr = (void*)*(uint64_t*)((uint64_t)arg + 0x10);
+    if (name_ptr == nullptr) return;
+    std::string name = ((Unity::System_String*)name_ptr)->ToString();
+    std::string clean = clean_string(name);
+    std::cout << clean << std::endl;
+    */
 }
 
 inline int (__stdcall* free_lottery_original)(void* arg);
@@ -307,10 +321,11 @@ void Hooks::load()
     infinite_gem_claim_module = (ModuleBase*) new ModuleInfiniteGemClaim();
     lottery_price_module = new ModuleLotteryPrice;
 
+    esp_module = new ModuleESP();
+    player_move_c_modules.push_back((ModuleBase*) esp_module);
     player_move_c_modules.push_back((ModuleBase*) new ModuleAimBot());
     player_move_c_modules.push_back((ModuleBase*) new ModuleInvisibility());
-
-    on_imgui_draw_modules.push_back((ModuleBase*) new ModuleESP());
+    
     on_imgui_draw_modules.push_back((ModuleBase*) new ModuleArrayList());
 
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleCriticals());
