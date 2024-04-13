@@ -21,18 +21,18 @@ public:
         // ArrayList
         float x = 5;
         float y = 100;
-        float size = ImGui::GetFontSize() * BKCImGuiHooker::scale_factor;
+        float size = ImGui::GetFontSize();
         float modc = 0;
         for (auto& module : BKCImGuiHooker::modules)
         {
             if (module-> enabled) modc++;
         }
-        ImGui::GetBackgroundDrawList()->AddRectFilled({x, y}, {x + 300 * BKCImGuiHooker::scale_factor, y * BKCImGuiHooker::scale_factor + modc * (size + 2) + 10}, color_bg, 10);
+        ImGui::GetBackgroundDrawList()->AddRectFilled({x, y}, {x + 400, y + modc * (size + 2) + 10}, color_bg, 10);
         for (auto& module : BKCImGuiHooker::modules)
         {
             if (module -> enabled)
             {
-                ImGui::GetBackgroundDrawList()->AddText(NULL, size, {x + 5, y * BKCImGuiHooker::scale_factor + 2}, color_array, module->name.c_str());
+                ImGui::GetBackgroundDrawList()->AddText(NULL, size, {x + 5, y + 2}, color_array, module->name.c_str());
                 y += size + 2;
             }
         }
