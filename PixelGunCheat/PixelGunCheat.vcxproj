@@ -259,6 +259,7 @@
     <ClInclude Include="Cheat\Module\Impl\ModuleFOVChanger.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleFrostAura.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleFullAuto.h" />
+    <ClInclude Include="Cheat\Module\Impl\ModuleAntiHeadshot.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleHeal.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleInfiniteAmmo.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleInfiniteGemClaim.h" />
@@ -266,6 +267,7 @@
     <ClInclude Include="Cheat\Module\Impl\ModuleRapidFire.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleReach.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleRecoil.h" />
+    <ClInclude Include="Cheat\Module\Impl\ModuleHeadshotMultiplier.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleScoreMultiplier.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleInstantCharge.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleSpeed.h" />

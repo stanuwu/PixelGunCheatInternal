@@ -31,8 +31,10 @@
 
 #include "../IL2CPPResolver/IL2CPP_Resolver.hpp"
 #include "../Module/Impl/ModuleAimBot.h"
+#include "../Module/Impl/ModuleAntiHeadshot.h"
 #include "../Module/Impl/ModuleArrayList.h"
 #include "../Module/Impl/ModuleESP.h"
+#include "../Module/Impl/ModuleHeadshotMultiplier.h"
 
 class ModuleSpeed;
 uintptr_t GameBase;
@@ -45,6 +47,7 @@ ModuleBase* infinite_gem_claim_module;
 ModuleBase* fast_levels_module;
 std::list<ModuleBase*> player_move_c_modules = { };
 std::list<ModuleBase*> weapon_sounds_modules = { };
+std::list<ModuleBase*> weapon_sound_others_modules = { };
 std::list<ModuleBase*> player_damageable_modules = { };
 std::list<ModuleBase*> on_pre_render_modules = { };
 std::list<ModuleBase*> Hooks::on_imgui_draw_modules = { };
@@ -108,6 +111,14 @@ bool is_my_player_weapon_sounds(void* weapon_sounds)
     return is_my_player_move_c(player_move_c);
 }
 
+std::string get_player_name_from_weapon_sounds(void* weapon_sounds)
+{
+    void* player_move_c = (void*)*(uint64_t*)((uint64_t)weapon_sounds + 0x500);
+    if (player_move_c == nullptr) return "";
+    return Hooks::get_player_name(player_move_c);
+}
+
+
 Unity::CCamera* find_main_camera()
 {
     Unity::CCamera* camera = Unity::Camera::GetMain();
@@ -127,7 +138,10 @@ inline void __stdcall weapon_sounds_call(void* arg)
     }
     else
     {
-        // Other Player
+        for (ModuleBase* weapon_sounds_other_module : weapon_sound_others_modules)
+        {
+            weapon_sounds_other_module->run(arg);
+        }
     }
 
     return weapon_sounds_original(arg);
@@ -149,12 +163,14 @@ inline void __stdcall player_move_c(void* arg)
 
         if (Hooks::tick % 60 == 0)
         {
-            Hooks::our_player = arg;
             Hooks::main_camera = find_main_camera();
+            if (Hooks::main_camera == nullptr) return player_move_c_original(arg);
+            Hooks::our_player = arg;
         }
     }
     else
     {
+        if (Hooks::main_camera == nullptr) return player_move_c_original(arg);
         working_player_list.push_back(arg);  
     }
 
@@ -205,7 +221,7 @@ inline float __stdcall on_pre_render(void* arg)
     Hooks::player_list = working_player_list;
     const std::list<void*> tl;
     working_player_list = tl;
-
+    
     for (ModuleBase* on_pre_render_module : on_pre_render_modules)
     {
         on_pre_render_module->run(arg);
@@ -265,6 +281,7 @@ void Hooks::load()
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleCriticals());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleReach());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleRecoil());
+    weapon_sounds_modules.push_back((ModuleBase*) new ModuleHeadshotMultiplier());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleSpread());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleDebuffer());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleAOEBullets());
@@ -274,6 +291,9 @@ void Hooks::load()
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleBetterScope());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleScoreMultiplier());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleXRay());
+
+    // Will wreak havoc on literally everyone, even other cheaters :D
+    weapon_sounds_modules.push_back((ModuleBase*) new ModuleAntiHeadshot());
     
     player_damageable_modules.push_back((ModuleBase*) new ModuleInfiniteAmmo());
     player_damageable_modules.push_back((ModuleBase*) new ModuleHeal());

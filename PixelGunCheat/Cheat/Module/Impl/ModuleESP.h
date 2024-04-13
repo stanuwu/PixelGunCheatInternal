@@ -20,51 +20,62 @@ public:
     
     void do_module(void* arg) override
     {
-        if (Hooks::tick % 60 == 0)
+        try
         {
-            GetWindowRect(GetActiveWindow(), &window_size);
-        }
-
-        const int height = window_size.bottom - window_size.top;
+            if (Hooks::tick % 60 == 0)
+            {
+                GetWindowRect(GetActiveWindow(), &window_size);
+            }
+            
+            const int height = window_size.bottom - window_size.top;
         
-        if (Hooks::main_camera == nullptr) return;
-        for (auto player : Hooks::player_list)
+            if (Hooks::main_camera == nullptr) return;
+            for (auto player : Hooks::player_list)
+            {
+                if (player == nullptr || Hooks::our_player == nullptr) return;
+            
+                Unity::CTransform* transform = (Unity::CTransform*)Hooks::get_player_transform(player);
+                Unity::Vector3 positon;
+                Functions::TransformGetPosition(transform, &positon);
+                Unity::Vector3 top_world = {
+                    positon.x,
+                    positon.y + 2,
+                    positon.z
+                };
+
+                Unity::Vector3 screen_pos;
+                Unity::Vector3 screen_top;
+                Functions::CameraWorldToScreen(Hooks::main_camera, &positon, &screen_pos);
+                Functions::CameraWorldToScreen(Hooks::main_camera, &top_world, &screen_top);
+
+                if (screen_pos.z < 0) continue;
+                if (!is_on_screen(screen_pos)) continue;
+                float scaled_dist = screen_pos.y - screen_top.y;
+
+                float width2 = scaled_dist / 2;
+                float height2 = scaled_dist * 1.5f / 2;
+            
+                screen_pos = {screen_pos.x, (float)height - screen_pos.y, screen_pos.z};
+            
+                std::string player_name = Hooks::get_player_name(player);
+            
+                if (Hooks::is_player_enemy(player))
+                {
+                    draw_esp(screen_pos, width2, height2, color_enemy, player_name);
+                }
+                else if (__esp_teammates.enabled)
+                {
+                    draw_esp(screen_pos, width2, height2, color_ally, player_name);
+                }
+            }
+        }
+        catch (...)
         {
-            if (player == nullptr || Hooks::our_player == nullptr) return;
-            
-            Unity::CTransform* transform = (Unity::CTransform*)Hooks::get_player_transform(player);
-            Unity::Vector3 positon;
-            Functions::TransformGetPosition(transform, &positon);
-            Unity::Vector3 top_world = {
-                positon.x,
-                positon.y + 2,
-                positon.z
-            };
-
-            Unity::Vector3 screen_pos;
-            Unity::Vector3 screen_top;
-            Functions::CameraWorldToScreen(Hooks::main_camera, &positon, &screen_pos);
-            Functions::CameraWorldToScreen(Hooks::main_camera, &top_world, &screen_top);
-
-            if (screen_pos.z < 0) continue;
-            if (!is_on_screen(screen_pos)) continue;
-            float scaled_dist = screen_pos.y - screen_top.y;
-
-            float width2 = scaled_dist / 2;
-            float height2 = scaled_dist * 1.5f / 2;
-            
-            screen_pos = {screen_pos.x, (float)height - screen_pos.y, screen_pos.z};
-            
-            std::string player_name = Hooks::get_player_name(player);
-            
-            if (Hooks::is_player_enemy(player))
-            {
-                draw_esp(screen_pos, width2, height2, color_enemy, player_name);
-            }
-            else if (__esp_teammates.enabled)
-            {
-                draw_esp(screen_pos, width2, height2, color_ally, player_name);
-            }
+            Logger::log_err("ESP failed to properly resolve player data, trying to catch error to prevent crash!");
+            Logger::log_err("Copy the info below and send it to @george2bush or @hiderikzki on discord! (if none present, please still inform us) (thank you <3)");
+            std::stringstream exinfo;
+            exinfo << "!! EXINFO !! : t_count=" << Hooks::tick << ", pl_cnt=" << Hooks::player_list.size() << "/" << Hooks::player_list.max_size() << ", p_ptr=" << Hooks::our_player << ", c_ptr=" << Hooks::main_camera << " ;;;";
+            Logger::log_err(exinfo.str());
         }
     }
 

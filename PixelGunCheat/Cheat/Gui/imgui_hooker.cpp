@@ -7,6 +7,9 @@
 #include <vector>
 
 #include "imgui_hooker.h"
+
+#include <algorithm>
+
 #include "../Logger/Logger.h"
 
 #include <fstream>
@@ -254,7 +257,9 @@ void load_config()
     }
     
     // Read Other Configs
-    
+    std::stringstream msg;
+    msg << "Loaded config " << config_file;
+    Logger::log_info(msg.str());
     fclose(file);
 }
 
@@ -287,7 +292,10 @@ void save_config()
     }
     
     // Write Other Config
-    
+
+    std::stringstream msg;
+    msg << "Saved config " << config_file;
+    Logger::log_info(msg.str());
     out.close();
     fclose(file);
 }
@@ -333,9 +341,9 @@ void BKCImGuiHooker::setup_imgui_hwnd(HWND handle, ID3D11Device* device, ID3D11D
     Logger::log_info(multi_out.str());
 
     // create font from file (thank god doesn't need to be only loaded from memory, but still can be)
-    gui_font = io.Fonts->AddFontFromFileTTF(R"(C:\Windows\Fonts\comic.ttf)", 16.0f * scale_factor);
-    watermark_font = io.Fonts->AddFontFromFileTTF(R"(C:\Windows\Fonts\comic.ttf)", 28.0f * scale_factor);
-    arraylist_font = io.Fonts->AddFontFromFileTTF(R"(C:\Windows\Fonts\comic.ttf)", 20.0f * scale_factor);
+    gui_font = io.Fonts->AddFontFromFileTTF(R"(C:\Windows\Fonts\comic.ttf)", 20.0f * scale_factor);
+    watermark_font = io.Fonts->AddFontFromFileTTF(R"(C:\Windows\Fonts\comic.ttf)", 32.0f * scale_factor);
+    arraylist_font = io.Fonts->AddFontFromFileTTF(R"(C:\Windows\Fonts\comic.ttf)", 24.0f * scale_factor);
 }
 
 void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D11DeviceContext* g_pd3dDeviceContext)
@@ -402,8 +410,9 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
     // Watermark
     ImGui::PushFont(watermark_font);
     float size = ImGui::GetFontSize();
-    ImGui::GetBackgroundDrawList()->AddRectFilled({5, 5}, {15 + ImGui::CalcTextSize(full_title.str().c_str()).x * scale_factor, 5 + size * scale_factor + 10}, color_bg, 10);
-    ImGui::GetBackgroundDrawList()->AddText(nullptr, size * scale_factor, {10, 5}, color_title, full_title.str().c_str());
+    ImVec2 true_size = ImGui::CalcTextSize(full_title.str().c_str());
+    ImGui::GetBackgroundDrawList()->AddRectFilled({5, 5}, {15 + true_size.x * scale_factor, 10 + true_size.y * scale_factor}, color_bg, 10);
+    ImGui::GetBackgroundDrawList()->AddText(nullptr, size, {10, 5}, color_title, full_title.str().c_str());
     ImGui::PopFont();
     
     ImGui::Render();
@@ -429,6 +438,22 @@ void HandleModuleSettingRendering(BKCModule& module)
             auto* slider = (BKCSlider*)setting;
             per_module_name << setting->name << "##" << module.name << setting->type;
             ImGui::SliderFloat(per_module_name.str().c_str(), &slider->value, slider->minimum, slider->maximum);
+            slider->value = std::ranges::clamp(slider->value, slider->minimum, slider->maximum);
+        }
+        else if (setting->type == 3)
+        {
+            auto* slider = (BKCSliderInt*)setting;
+            per_module_name << setting->name << "##" << module.name << setting->type;
+            ImGui::SliderInt(per_module_name.str().c_str(), &slider->value, slider->minimum, slider->maximum);
+            slider->value = std::ranges::clamp(slider->value, slider->minimum, slider->maximum);
+        }
+
+        if (!setting->tooltip.empty())
+        {
+            if (ImGui::IsItemHovered())
+            {
+                ImGui::SetTooltip(setting->tooltip.c_str());
+            }
         }
     }
 }

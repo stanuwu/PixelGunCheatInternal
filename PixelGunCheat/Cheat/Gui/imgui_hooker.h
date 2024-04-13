@@ -12,15 +12,17 @@ class BKCSetting
 public:
     int type = 0;
     std::string name;
+    std::string tooltip;
 };
 
 class BKCCheckbox : public BKCSetting
 {
 public:
-    BKCCheckbox(const std::string& setting_name, const bool checked)
+    BKCCheckbox(const std::string& setting_name, const bool checked, const std::string& extra_info = "")
     {
         name = setting_name;
         enabled = checked;
+        tooltip = extra_info;
         type = 1;
     }
     bool enabled;
@@ -29,12 +31,13 @@ public:
 class BKCSlider : public BKCSetting
 {
 public:
-    BKCSlider(const std::string& setting_name, const float val, const float min, const float max)
+    BKCSlider(const std::string& setting_name, const float val, const float min, const float max, const std::string& extra_info = "")
     {
         name = setting_name;
         value = val;
         minimum = min;
         maximum = max;
+        tooltip = extra_info;
         type = 2;
     }
     float value;
@@ -42,6 +45,22 @@ public:
     float maximum;
 };
 
+class BKCSliderInt : public BKCSetting
+{
+public:
+    BKCSliderInt(const std::string& setting_name, const int val, const int min, const int max, const std::string& extra_info = "")
+    {
+        name = setting_name;
+        value = val;
+        minimum = min;
+        maximum = max;
+        tooltip = extra_info;
+        type = 3;
+    }
+    int value;
+    int minimum;
+    int maximum;
+};
 
 enum BKCCategory
 {
