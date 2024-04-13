@@ -202,14 +202,14 @@ inline float __stdcall speed(void* arg)
 inline float(__stdcall* on_pre_render_original)(void* arg);
 inline float __stdcall on_pre_render(void* arg)
 {
+    Hooks::player_list = working_player_list;
+    const std::list<void*> tl;
+    working_player_list = tl;
+
     for (ModuleBase* on_pre_render_module : on_pre_render_modules)
     {
         on_pre_render_module->run(arg);
     }
-
-    Hooks::player_list = working_player_list;
-    const std::list<void*> tl;
-    working_player_list = tl;
 
     return on_pre_render_original(arg);
 }
