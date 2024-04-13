@@ -255,6 +255,7 @@
     <ClInclude Include="Cheat\Module\Impl\ModuleBetterScope.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleCriticals.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleDebuffer.h" />
+    <ClInclude Include="Cheat\Module\Impl\ModuleDoubleJump.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleESP.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleFOVChanger.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleFrostAura.h" />
