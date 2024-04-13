@@ -7,8 +7,10 @@
 
 #include "../IL2CPPResolver/IL2CPP_Resolver.hpp"
 
+static BKCDropdown __esp_style = BKCDropdown("ESP Style", "Simple", { "Simple", "CS-like" });
+static BKCSliderInt __esp_thickness = BKCSliderInt("Border Thickness", 1, 1, 5);
 static BKCCheckbox __esp_teammates = BKCCheckbox("Teammates",  true);
-static BKCModule __esp = { "ESP", VISUAL, 0x0, true, {&__esp_teammates} };
+static BKCModule __esp = { "ESP", VISUAL, 0x0, true, { &__esp_style, &__esp_thickness, &__esp_teammates } };
 
 static ImU32 color_enemy = ImGui::ColorConvertFloat4ToU32({1.00f, 0.00f, 0.00f, 1.00f});
 static ImU32 color_ally = ImGui::ColorConvertFloat4ToU32({0.33f, 0.33f, 0.33f, 1.00f});
@@ -85,6 +87,6 @@ public:
     {
         ImVec2 size = ImGui::CalcTextSize(player_name.c_str());
         ImGui::GetBackgroundDrawList()->AddText({screen_pos.x - size.x / 2, screen_pos.y - height2}, color, player_name.c_str());
-        ImGui::GetBackgroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, color, 0, 0, 3);
+        ImGui::GetBackgroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, color, 0, 0, (float)__esp_thickness.value);
     }
 };

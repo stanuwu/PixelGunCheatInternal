@@ -227,15 +227,16 @@ void load_config()
         
         for (const auto setting : module->settings)
         {
-            std::stringstream cb;
+            std::stringstream data;
             bool cbv;
-            std::stringstream sl;
             float slv;
+            int islv;
+            int dtv;
             switch (setting->type)
             {
             case 1:
-                cb << module->name << ";" << setting->name << ";" << "checkbox" << ";";
-                found = find_or_default_config(lines, cb.str());
+                data << module->name << ";" << setting->name << ";" << "checkbox" << ";";
+                found = find_or_default_config(lines, data.str());
                 if (found != NOT_FOUND)
                 {
                     std::istringstream(found) >> cbv;
@@ -243,12 +244,31 @@ void load_config()
                 }
                 break;
             case 2:
-                sl << module->name << ";" << setting->name << ";" << "slider" << ";";
-                found = find_or_default_config(lines, sl.str());
+                data << module->name << ";" << setting->name << ";" << "slider" << ";";
+                found = find_or_default_config(lines, data.str());
                 if (found != NOT_FOUND)
                 {
                     slv = std::stof(found);
                     ((BKCSlider*)setting)->value = slv;
+                }
+                break;
+            case 3:
+                data << module->name << ";" << setting->name << ";" << "int_slider" << ";";
+                found = find_or_default_config(lines, data.str());
+                if (found != NOT_FOUND)
+                {
+                    islv = std::stoi(found);
+                    ((BKCSliderInt*)setting)->value = islv;
+                }
+                break;
+            case 4:
+                data << module->name << ";" << setting->name << ";" << "dropdown" << ";";
+                found = find_or_default_config(lines, data.str());
+                if (found != NOT_FOUND)
+                {
+                    dtv = std::stoi(found);
+                    ((BKCDropdown*)setting)->current_index = dtv;
+                    ((BKCDropdown*)setting)->current_value = ((BKCDropdown*)setting)->values[dtv];
                 }
                 break;
             default: break;
@@ -285,6 +305,12 @@ void save_config()
                 break;
             case 2:
                 out << module->name << ";" << setting->name << ";" << "slider" << ";" << ((BKCSlider*)setting)->value << std::endl;
+                break;
+            case 3:
+                out << module->name << ";" << setting->name << ";" << "int_slider" << ";" << ((BKCSliderInt*)setting)->value << std::endl;
+                break;
+            case 4:
+                out << module->name << ";" << setting->name << ";" << "dropdown" << ";" << ((BKCDropdown*)setting)->indexof(((BKCDropdown*)setting)->current_value) << std::endl;
                 break;
             default: break;
             }
@@ -411,7 +437,7 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
     ImGui::PushFont(watermark_font);
     float size = ImGui::GetFontSize();
     ImVec2 true_size = ImGui::CalcTextSize(full_title.str().c_str());
-    ImGui::GetBackgroundDrawList()->AddRectFilled({5, 5}, {15 + true_size.x * scale_factor, 10 + true_size.y * scale_factor}, color_bg, 10);
+    ImGui::GetBackgroundDrawList()->AddRectFilled({5, 5}, {15 + true_size.x, 10 + true_size.y}, color_bg, 10);
     ImGui::GetBackgroundDrawList()->AddText(nullptr, size, {10, 5}, color_title, full_title.str().c_str());
     ImGui::PopFont();
     
@@ -446,6 +472,27 @@ void HandleModuleSettingRendering(BKCModule& module)
             per_module_name << setting->name << "##" << module.name << setting->type;
             ImGui::SliderInt(per_module_name.str().c_str(), &slider->value, slider->minimum, slider->maximum);
             slider->value = std::ranges::clamp(slider->value, slider->minimum, slider->maximum);
+        }
+        else if (setting->type == 4)
+        {
+            auto* dropdown = (BKCDropdown*)setting;
+            per_module_name << setting->name << "##" << module.name << setting->type;
+            if (ImGui::BeginCombo(per_module_name.str().c_str(), dropdown->current_value.c_str()))
+            {
+                for (std::string::size_type i = 0; i < dropdown->values.size(); i++)
+                {
+                    const bool selected = dropdown->current_value == dropdown->values[i];
+                    
+                    if (ImGui::Selectable(dropdown->values[i].c_str(), selected))
+                    {
+                        dropdown->current_value = dropdown->values[i];
+                        dropdown->current_index = dropdown->indexof(dropdown->current_value);
+                    }
+                    if (selected) ImGui::SetItemDefaultFocus();
+                }
+
+                ImGui::EndCombo();
+            }
         }
 
         if (!setting->tooltip.empty())
