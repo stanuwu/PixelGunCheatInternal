@@ -260,6 +260,7 @@
     <ClInclude Include="Cheat\Module\Impl\ModuleDebuffPoison.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleDebuffSlow.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleDebuffStun.h" />
+    <ClInclude Include="Cheat\Module\Impl\ModuleESP.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleFOVChanger.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleFrostAura.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleFullAuto.h" />

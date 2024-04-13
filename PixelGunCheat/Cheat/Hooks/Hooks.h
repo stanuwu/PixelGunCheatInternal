@@ -2,6 +2,8 @@
 #include <list>
 #include <xstring>
 
+#include "../Module/ModuleBase.h"
+
 class Hooks
 {
 public:
@@ -15,4 +17,5 @@ public:
     static bool is_player_enemy(void* player);
     void load();
     void unload();
+    static std::list<ModuleBase*> on_imgui_draw_modules;
 };

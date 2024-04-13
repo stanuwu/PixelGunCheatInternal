@@ -37,6 +37,7 @@
 
 #include "../IL2CPPResolver/IL2CPP_Resolver.hpp"
 #include "../Module/Impl/ModuleAimBot.h"
+#include "../Module/Impl/ModuleESP.h"
 
 class ModuleSpeed;
 uintptr_t GameBase;
@@ -51,6 +52,7 @@ std::list<ModuleBase*> player_move_c_modules = { };
 std::list<ModuleBase*> weapon_sounds_modules = { };
 std::list<ModuleBase*> player_damageable_modules = { };
 std::list<ModuleBase*> on_pre_render_modules = { };
+std::list<ModuleBase*> Hooks::on_imgui_draw_modules = { };
 
 uint64_t Hooks::tick = 0;
 std::list<void*> working_player_list;
@@ -285,6 +287,8 @@ void Hooks::load()
     player_damageable_modules.push_back((ModuleBase*) new ModuleHeal());
 
     on_pre_render_modules.push_back((ModuleBase*) new ModuleFOVChanger());
+
+    on_imgui_draw_modules.push_back((ModuleBase*) new ModuleESP());
 
     // Post Module Load
     BKCImGuiHooker::modules_loaded = true;
