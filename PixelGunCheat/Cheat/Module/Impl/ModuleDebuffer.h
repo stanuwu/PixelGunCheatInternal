@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "../ModuleBase.h"
 
-static BKCCheckbox __blind = BKCCheckbox("Blind", false);
+static BKCCheckbox __blind = BKCCheckbox("Blind", true);
 static BKCSlider __blind_duration = BKCSlider("Blind Duration",  9999, 0, 9999);
 
 static BKCCheckbox __charm = BKCCheckbox{ "Charm", false };
@@ -12,10 +12,10 @@ static BKCSlider __curse_damage = BKCSlider("Curse Damage",  10, 0, 100);
 
 static BKCCheckbox __lightning = BKCCheckbox{ "Lightning", false };
 
-static BKCCheckbox __poison = BKCCheckbox{ "Poison", false };
+static BKCCheckbox __poison = BKCCheckbox{ "Poison", true };
 static BKCSlider __poison_amount = BKCSlider("Poison Amount",  9999, 0, 9999);
 
-static BKCCheckbox __slow = BKCCheckbox{ "Slow", false };
+static BKCCheckbox __slow = BKCCheckbox{ "Slow", true };
 static BKCSlider __slow_duration = BKCSlider("Slow Duration",  9999, 0, 9999);
 static BKCSlider __slow_factor = BKCSlider("Slow Factor",  0.001f, 0.001f, 10);
 

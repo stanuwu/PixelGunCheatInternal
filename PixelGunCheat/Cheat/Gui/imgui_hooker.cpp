@@ -297,7 +297,7 @@ ImFont* main_font;
 std::list<BKCModule*> BKCImGuiHooker::modules = {};
 bool BKCImGuiHooker::modules_loaded = false;
 bool BKCImGuiHooker::config_loaded = false;
-bool BKCImGuiHooker::c_GuiEnabled = true;
+bool BKCImGuiHooker::c_GuiEnabled = false;
 void BKCImGuiHooker::setup_imgui_hwnd(HWND handle, ID3D11Device* device, ID3D11DeviceContext* device_context)
 {
     imgui_hwnd = handle;
@@ -340,18 +340,6 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
         load_config();
         Logger::log_info("Loaded default config!");
     }
-    
-    // ImVec4 clear_color = ImVec4(0.0f, 0.0f, 0.0f, 0.0f)
-
-    /*
-    if (g_ResizeWidth != 0 && g_ResizeHeight != 0)
-    {
-        CleanupRenderTarget();
-        g_pSwapChain->ResizeBuffers(0, g_ResizeWidth, g_ResizeHeight, DXGI_FORMAT_UNKNOWN, 0);
-        g_ResizeWidth = g_ResizeHeight = 0;
-        CreateRenderTarget();
-    }
-    */
     
     // Start the Dear ImGui frame
     ImGui_ImplDX11_NewFrame();
@@ -409,39 +397,13 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
     
     ImGui::PopFont();
     ImGui::Render();
-        
-    // const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
+    
     g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr);
-    // g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, clear_color_with_alpha);
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
 
-/*
-void InitModules(const std::vector<BKCModule>& init_mods)
-{
-    std::cout << "Loading modules..." << std::endl;
-    std::vector<BKCModule> new_mods;
-    new_mods.reserve(init_mods.size());
-    for (const auto& init_mod : init_mods)
-    {
-        new_mods.push_back(init_mod);
-        std::cout << "Added " << init_mod.name << std::endl;
-    }
-    modules = new_mods;
-}
-*/
-
 void HandleModuleSettingRendering(BKCModule& module)
 {
-    /*
-    for (auto& setting : module.checkboxes)
-    {
-        std::stringstream per_module_name;
-        per_module_name << setting->name << "##" << module.name << setting->type;
-        ImGui::Checkbox(per_module_name.str().c_str(), &setting->enabled);
-    }
-    */
-
     for (auto& setting : module.settings)
     { 
         std::stringstream per_module_name;

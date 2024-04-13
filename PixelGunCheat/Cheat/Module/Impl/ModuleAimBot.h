@@ -9,7 +9,7 @@
 #include "../../Internal/Functions.h"
 
 static BKCCheckbox __aim_bot_through_walls = BKCCheckbox("Through Walls", false);
-static BKCModule __aim_bot = { "Aim Bot", COMBAT, 0x0, false, {&__aim_bot_through_walls} };
+static BKCModule __aim_bot = { "Aim Bot", COMBAT, 0x0, true, {&__aim_bot_through_walls} };
 
 static std::map<std::string, Unity::Vector3> player_pos_cache;
 static RECT window_size;

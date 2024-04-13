@@ -255,30 +255,30 @@ void Hooks::load()
     rapid_fire_module = new ModuleRapidFire();
     speed_module = new ModuleSpeed();
     infinite_gem_claim_module = (ModuleBase*) new ModuleInfiniteGemClaim();
-    
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleAOEBullets());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleBetterScope());
+
+    player_move_c_modules.push_back((ModuleBase*) new ModuleAimBot());
+    player_move_c_modules.push_back((ModuleBase*) new ModuleInvisibility());
+
+    on_imgui_draw_modules.push_back((ModuleBase*) new ModuleESP());
+    on_imgui_draw_modules.push_back((ModuleBase*) new ModuleArrayList());
+
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleCriticals());
+    weapon_sounds_modules.push_back((ModuleBase*) new ModuleReach());
+    weapon_sounds_modules.push_back((ModuleBase*) new ModuleRecoil());
+    weapon_sounds_modules.push_back((ModuleBase*) new ModuleSpread());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleDebuffer());
+    weapon_sounds_modules.push_back((ModuleBase*) new ModuleAOEBullets());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleFrostAura());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleFullAuto());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleInstantCharge());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleReach());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleRecoil());
+    weapon_sounds_modules.push_back((ModuleBase*) new ModuleBetterScope());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleScoreMultiplier());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleSpread());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleXRay());
-    
-    player_move_c_modules.push_back((ModuleBase*) new ModuleInvisibility());
-    player_move_c_modules.push_back((ModuleBase*) new ModuleAimBot());
     
     player_damageable_modules.push_back((ModuleBase*) new ModuleInfiniteAmmo());
     player_damageable_modules.push_back((ModuleBase*) new ModuleHeal());
 
     on_pre_render_modules.push_back((ModuleBase*) new ModuleFOVChanger());
-
-    on_imgui_draw_modules.push_back((ModuleBase*) new ModuleESP());
-    on_imgui_draw_modules.push_back((ModuleBase*) new ModuleArrayList());
 
     // Post Module Load
     BKCImGuiHooker::modules_loaded = true;

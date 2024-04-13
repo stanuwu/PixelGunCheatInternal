@@ -7,9 +7,8 @@
 
 #include "../IL2CPPResolver/IL2CPP_Resolver.hpp"
 
-static BKCCheckbox __esp_target = BKCCheckbox("Target",  true);
 static BKCCheckbox __esp_teammates = BKCCheckbox("Teammates",  true);
-static BKCModule __esp = { "ESP", VISUAL, 0x0, true, {&__esp_teammates, &__esp_target} };
+static BKCModule __esp = { "ESP", VISUAL, 0x0, true, {&__esp_teammates} };
 
 static ImU32 color_enemy = ImGui::ColorConvertFloat4ToU32({1.00f, 0.00f, 0.00f, 1.00f});
 static ImU32 color_ally = ImGui::ColorConvertFloat4ToU32({0.33f, 0.33f, 0.33f, 1.00f});

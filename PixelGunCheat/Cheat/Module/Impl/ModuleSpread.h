@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "../ModuleBase.h"
 
-static BKCModule __spread_modifier = { "Spread Modifier", COMBAT, 0x0, false, {} };
+static BKCModule __spread_modifier = { "No Spread", COMBAT, 0x0, true, {} };
 
 class ModuleSpread : ModuleBase
 {

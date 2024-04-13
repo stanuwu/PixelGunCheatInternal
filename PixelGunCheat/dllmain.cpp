@@ -26,7 +26,7 @@ extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam
 
 // Data
 static UINT g_ResizeWidth = 0, g_ResizeHeight = 0;
-bool isWindowVisible = true;
+bool isWindowVisible = false;
 
 void ShowMouseCursor(bool show) {
     if (show) {
@@ -154,7 +154,7 @@ void native_font_list(bool ttf_only)
     {
         const std::filesystem::path& p = entry.path();
         if (ttf_only && !p.extension().string().contains("ttf")) continue;
-        Logger::log_debug("Found font file: " + p.string() + ", Size:" + std::to_string(entry.file_size()));
+        // Logger::log_debug("Found font file: " + p.string() + ", Size:" + std::to_string(entry.file_size()));
     }
 }
 
@@ -227,7 +227,8 @@ int64_t WINAPI MainThread(LPVOID param)
     Logger::console = console;
     SetConsoleTextAttribute(console, 0x000F);
     // ShowWindow(GetConsoleWindow(), SW_MINIMIZE);
-    
+
+    /*
     Logger::log_debug("--- LOGGER TEST ---");
     
     Logger::log_debug("This is a debug log!");
@@ -237,6 +238,8 @@ int64_t WINAPI MainThread(LPVOID param)
     Logger::log_fatal("This is a FATAL log!");
     
     Logger::log_debug("--- LOGGER TEST ---");
+    */
+    
     Logger::log_info("Starting injection...");
     
     native_font_list(true);
@@ -268,15 +271,19 @@ int64_t WINAPI MainThread(LPVOID param)
     }
 
     Logger::log_info("Injected successfully!");
-    Logger::log_info("(Insert to Close)");
+    // Logger::log_info("(Insert to Close)");
 
     while(true)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        // Removed for now...
+        // TODO: Fix crash on eject
+        /*
         if (GetAsyncKeyState(VK_INSERT) & 1)
         {
             break;
         }
+        */
     }
     
     // Unload

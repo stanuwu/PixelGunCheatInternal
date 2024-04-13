@@ -2,7 +2,7 @@
 #include "../ModuleBase.h"
 #include "../../Internal/Functions.h"
 
-static BKCModule __auto_heal = { "Auto Heal", PLAYER, 0x0, false, {} };
+static BKCModule __auto_heal = { "Auto Heal", PLAYER, 0x0, true, {} };
 class ModuleHeal : ModuleBase
 {
 public:
@@ -12,7 +12,7 @@ public:
     {
         if (Hooks::tick % 30 == 0)
         {
-            Functions::AddHealthFromWeaponOnline(arg, 99999);
+            Functions::AddHealthFromWeaponOnline(arg, 100);
         }
     }
 };

@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "../ModuleBase.h"
 
-static BKCModule __criticals = { "Criticals", COMBAT, 0x0, false, {} };
+static BKCModule __criticals = { "Criticals", COMBAT, 0x0, true, {} };
 
 class ModuleCriticals : ModuleBase
 {
