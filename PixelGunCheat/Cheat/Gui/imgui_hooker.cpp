@@ -402,7 +402,7 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
     // Watermark
     ImGui::PushFont(watermark_font);
     float size = ImGui::GetFontSize();
-    ImGui::GetBackgroundDrawList()->AddRectFilled({5, 5}, {10 + ImGui::CalcTextSize(full_title.str().c_str()).x, 5 + size * scale_factor + 10}, color_bg, 10);
+    ImGui::GetBackgroundDrawList()->AddRectFilled({5, 5}, {15 + ImGui::CalcTextSize(full_title.str().c_str()).x * scale_factor, 5 + size * scale_factor + 10}, color_bg, 10);
     ImGui::GetBackgroundDrawList()->AddText(nullptr, size * scale_factor, {10, 5}, color_title, full_title.str().c_str());
     ImGui::PopFont();
     
