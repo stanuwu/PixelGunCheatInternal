@@ -192,6 +192,14 @@ inline void __stdcall player_move_c(void* arg)
         if (Hooks::main_camera == nullptr) return player_move_c_original(arg);
         working_player_list.push_back(arg);  
     }
+    
+    return player_move_c_original(arg);
+}
+
+inline void(__stdcall* player_move_c_fixed_original)(void* arg);
+inline void __stdcall player_move_c_fixed(void* arg)
+{
+    bool my_player = is_my_player_move_c(arg);
 
     // Player Damageable
     void* player_damageable = (void*)*(uint64_t*)((uint64_t)arg + 0x650);
@@ -207,7 +215,7 @@ inline void __stdcall player_move_c(void* arg)
         // Other Players
     }
     
-    return player_move_c_original(arg);
+    return player_move_c_fixed_original(arg);
 }
 
 inline bool(__stdcall* infinite_gem_claim_original)(void* arg);
@@ -314,6 +322,7 @@ void Hooks::load()
     hook_function(0x42D0540, &on_pre_render, &on_pre_render_original);
     hook_function(0x414C1B0, &on_scene_unload, &on_scene_unload_original);
     hook_function(0x781F00, &free_lottery, &free_lottery_original);
+    hook_function(0x1AC4C70, &player_move_c_fixed, &player_move_c_fixed_original);
     
     // Init Modules Here
     rapid_fire_module = new ModuleRapidFire();

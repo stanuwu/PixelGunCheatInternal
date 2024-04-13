@@ -180,7 +180,7 @@ public:
             };
         }
         
-        if (target != nullptr)
+        if (target != nullptr && Hooks::main_camera != nullptr)
         {
             Unity::CTransform* target_t = (Unity::CTransform*)Hooks::get_player_transform(target);
             Unity::Vector3 target_p;
