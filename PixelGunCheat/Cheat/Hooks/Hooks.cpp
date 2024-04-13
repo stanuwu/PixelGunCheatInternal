@@ -10,13 +10,7 @@
 #include "../Module/Impl/ModuleAOEBullets.h"
 #include "../Module/Impl/ModuleBetterScope.h"
 #include "../Module/Impl/ModuleCriticals.h"
-#include "../Module/Impl/ModuleDebuffCharm.h"
-#include "../Module/Impl/ModuleDebuffCursing.h"
 #include "../Module/Impl/ModuleDebuffer.h"
-#include "../Module/Impl/ModuleDebuffLightning.h"
-#include "../Module/Impl/ModuleDebuffPoison.h"
-#include "../Module/Impl/ModuleDebuffSlow.h"
-#include "../Module/Impl/ModuleDebuffStun.h"
 #include "../Module/Impl/ModuleFrostAura.h"
 #include "../Module/Impl/ModuleFullAuto.h"
 #include "../Module/Impl/ModuleHeal.h"
@@ -37,6 +31,7 @@
 
 #include "../IL2CPPResolver/IL2CPP_Resolver.hpp"
 #include "../Module/Impl/ModuleAimBot.h"
+#include "../Module/Impl/ModuleArrayList.h"
 #include "../Module/Impl/ModuleESP.h"
 
 class ModuleSpeed;
@@ -265,12 +260,6 @@ void Hooks::load()
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleBetterScope());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleCriticals());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleDebuffer());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleDebuffCharm());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleDebuffCursing());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleDebuffLightning());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleDebuffPoison());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleDebuffSlow());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleDebuffStun());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleFrostAura());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleFullAuto());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleInstantCharge());
@@ -289,6 +278,7 @@ void Hooks::load()
     on_pre_render_modules.push_back((ModuleBase*) new ModuleFOVChanger());
 
     on_imgui_draw_modules.push_back((ModuleBase*) new ModuleESP());
+    on_imgui_draw_modules.push_back((ModuleBase*) new ModuleArrayList());
 
     // Post Module Load
     BKCImGuiHooker::modules_loaded = true;

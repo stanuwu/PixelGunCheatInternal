@@ -7,10 +7,10 @@
 
 #include "../IL2CPPResolver/IL2CPP_Resolver.hpp"
 
+static BKCCheckbox __esp_target = BKCCheckbox("Target",  true);
 static BKCCheckbox __esp_teammates = BKCCheckbox("Teammates",  true);
-static BKCModule __esp = { "ESP", VISUAL, 0x0, true, {&__esp_teammates} };
+static BKCModule __esp = { "ESP", VISUAL, 0x0, true, {&__esp_teammates, &__esp_target} };
 
-static ImU32 color_shadow = ImGui::ColorConvertFloat4ToU32({1.00f, 1.00f, 1.00f, 1.00f});
 static ImU32 color_enemy = ImGui::ColorConvertFloat4ToU32({1.00f, 0.00f, 0.00f, 1.00f});
 static ImU32 color_ally = ImGui::ColorConvertFloat4ToU32({0.33f, 0.33f, 0.33f, 1.00f});
 
@@ -25,6 +25,8 @@ public:
         {
             GetWindowRect(GetActiveWindow(), &window_size);
         }
+
+        const int height = window_size.bottom - window_size.top;
         
         if (Hooks::main_camera == nullptr) return;
         for (auto player : Hooks::player_list)
@@ -49,8 +51,7 @@ public:
 
             float width2 = scaled_dist / 2;
             float height2 = scaled_dist * 1.5f / 2;
-
-            const int height = window_size.bottom - window_size.top;
+            
             screen_pos = {screen_pos.x, height - screen_pos.y, screen_pos.z};
             
             std::string player_name = Hooks::get_player_name(player);
@@ -68,7 +69,7 @@ public:
     static void draw_esp(Unity::Vector3 screen_pos, float width2, float height2, ImU32 color, const std::string player_name)
     {
         ImVec2 size = ImGui::CalcTextSize(player_name.c_str());
-        ImGui::GetForegroundDrawList()->AddText({screen_pos.x - size.x / 2, screen_pos.y - height2}, color, player_name.c_str());
-        ImGui::GetForegroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, color, 0, 0, 2);
+        ImGui::GetBackgroundDrawList()->AddText({screen_pos.x - size.x / 2, screen_pos.y - height2}, color, player_name.c_str());
+        ImGui::GetBackgroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, color, 10, 0, 3);
     }
 };

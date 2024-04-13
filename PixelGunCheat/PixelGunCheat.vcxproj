@@ -251,15 +251,10 @@
     <ClInclude Include="Cheat\Logger\Logger.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleAimBot.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleAOEBullets.h" />
+    <ClInclude Include="Cheat\Module\Impl\ModuleArrayList.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleBetterScope.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleCriticals.h" />
-    <ClInclude Include="Cheat\Module\Impl\ModuleDebuffCharm.h" />
-    <ClInclude Include="Cheat\Module\Impl\ModuleDebuffCursing.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleDebuffer.h" />
-    <ClInclude Include="Cheat\Module\Impl\ModuleDebuffLightning.h" />
-    <ClInclude Include="Cheat\Module\Impl\ModuleDebuffPoison.h" />
-    <ClInclude Include="Cheat\Module\Impl\ModuleDebuffSlow.h" />
-    <ClInclude Include="Cheat\Module\Impl\ModuleDebuffStun.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleESP.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleFOVChanger.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleFrostAura.h" />
