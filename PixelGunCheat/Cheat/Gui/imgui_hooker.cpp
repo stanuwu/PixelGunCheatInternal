@@ -9,10 +9,12 @@
 #include "imgui_hooker.h"
 
 #include <algorithm>
+#include <filesystem>
 
 #include "../Logger/Logger.h"
 
 #include <fstream>
+#include <thread>
 
 #include "../Hooks/Hooks.h"
 
@@ -27,12 +29,14 @@ WPARAM MapLeftRightKeys(const MSG& msg);
 
 // Boykisser Central Vars
 std::string BKCImGuiHooker::c_Title = "Boykisser Central";
-std::string BKCImGuiHooker::c_RealBuild = "v1.0-BETA";
+std::string BKCImGuiHooker::c_RealBuild = "v1.2";
 static std::string c_Build = ":3";
 std::stringstream full_title;
-static char config_file[32] = "default";
+std::string combo_file = "default";
+static char input_file[32] = "default";
 static ImU32 color_title = ImGui::ColorConvertFloat4ToU32({0.91f, 0.64f, 0.13f, 1.00f});
 static ImU32 color_bg = ImGui::ColorConvertFloat4ToU32({0.00f, 0.00f, 0.00f, 0.85f});
+std::string current_font = "C:/Windows/Fonts/comic.ttf";
 
 void InitModules(const std::vector<BKCModule>& init_mods);
 void HandleModuleSettingRendering(BKCModule& module);
@@ -42,7 +46,7 @@ void HandleCategoryRendering(const std::string& name, BKCCategory cat);
 // https://github.com/ocornut/imgui/issues/707
 void embraceTheDarkness()
 {
-ImGuiStyle* style = &ImGui::GetStyle();
+    ImGuiStyle* style = &ImGui::GetStyle();
     ImVec4* colors = style->Colors;
 
     colors[ImGuiCol_Text]                   = ImVec4(0.92f, 0.92f, 0.92f, 1.00f);
@@ -157,7 +161,7 @@ std::wstring get_executing_directory()
     return std::wstring(buffer).substr(0, pos);
 }
 
-std::string sanity_config(const std::wstring* dir)
+std::string sanity_config(const std::wstring* dir, const char* config_file)
 {
     const std::wstring config_dir = *dir + L"/bkc_config";
     CreateDirectory(config_dir.c_str(), nullptr);
@@ -183,10 +187,25 @@ std::string find_or_default_config(std::list<std::string> lines, std::string sea
     return "not_found";
 }
 
-void load_config()
+std::vector<std::string> get_config_names() {
+	std::vector<std::string> files;
+	const std::wstring dir = get_executing_directory();
+	const std::wstring config_dir = dir + L"/bkc_config";
+	for (const auto& entry : std::filesystem::directory_iterator(config_dir))
+	{
+		const std::filesystem::path& p = entry.path();
+		std::string str_path = p.generic_string();
+		str_path = str_path.substr(str_path.find_last_of("\\/") + 1);
+		str_path = str_path.substr(0, str_path.find_last_of("."));
+		files.push_back(str_path);
+	}
+	return files;
+}
+
+void load_config(const char* config_file)
 {
     const std::wstring dir = get_executing_directory();
-    const std::string file_path = sanity_config(&dir);
+    const std::string file_path = sanity_config(&dir, config_file);
     FILE* file;
     fopen_s(&file, file_path.c_str(), "r+");
     std::ifstream in(file);
@@ -283,10 +302,10 @@ void load_config()
     fclose(file);
 }
 
-void save_config()
+void save_config(const char* config_file)
 {
     const std::wstring dir = get_executing_directory();
-    const std::string file_path = sanity_config(&dir);
+    const std::string file_path = sanity_config(&dir, config_file);
     FILE* file;
     fopen_s(&file, file_path.c_str(), "w+");
     std::ofstream out(file);
@@ -326,6 +345,22 @@ void save_config()
     fclose(file);
 }
 
+std::vector<std::string> native_font_list(bool ttf_only)
+{
+    std::vector<std::string> paths;
+    const std::string path = "C:/Windows/Fonts";
+    for (const auto & entry : std::filesystem::directory_iterator(path))
+    {
+        const std::filesystem::path& p = entry.path();
+        if (ttf_only && !p.extension().string().contains("ttf")) continue;
+        if (p.extension().string().contains("wing")) continue;
+        // std::string str_path = p.generic_string();
+        // str_path = str_path.replace(str_path.begin(), str_path.end(), "/", "\\");
+        paths.push_back(p.generic_string());
+    }
+    return paths;
+}
+
 HWND imgui_hwnd;
 std::list<BKCModule*> BKCImGuiHooker::modules = {};
 ImFont* BKCImGuiHooker::gui_font = nullptr;
@@ -335,12 +370,12 @@ bool BKCImGuiHooker::modules_loaded = false;
 bool BKCImGuiHooker::config_loaded = false;
 bool BKCImGuiHooker::c_GuiEnabled = false;
 float BKCImGuiHooker::scale_factor = 1;
+std::vector<std::string> fonts = native_font_list(true);
 void BKCImGuiHooker::setup_imgui_hwnd(HWND handle, ID3D11Device* device, ID3D11DeviceContext* device_context)
 {
     imgui_hwnd = handle;
     Logger::log_info("Setting up ImGui instance...");
     full_title << c_Title << " - Build " << c_Build << " (" << c_RealBuild << ")"; // init the full title
-    Logger::log_info("Found current version: " + full_title.str());
     
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -367,19 +402,24 @@ void BKCImGuiHooker::setup_imgui_hwnd(HWND handle, ID3D11Device* device, ID3D11D
     Logger::log_info(multi_out.str());
 
     // create font from file (thank god doesn't need to be only loaded from memory, but still can be)
-    gui_font = io.Fonts->AddFontFromFileTTF(R"(C:\Windows\Fonts\comic.ttf)", 20.0f * scale_factor);
-    watermark_font = io.Fonts->AddFontFromFileTTF(R"(C:\Windows\Fonts\comic.ttf)", 32.0f * scale_factor);
-    arraylist_font = io.Fonts->AddFontFromFileTTF(R"(C:\Windows\Fonts\comic.ttf)", 24.0f * scale_factor);
+    gui_font = io.Fonts->AddFontFromFileTTF(current_font.c_str(), 20.0f * scale_factor);
+    watermark_font = io.Fonts->AddFontFromFileTTF(current_font.c_str(), 32.0f * scale_factor);
+    arraylist_font = io.Fonts->AddFontFromFileTTF(current_font.c_str(), 24.0f * scale_factor);
 }
 
 void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D11DeviceContext* g_pd3dDeviceContext)
 {
+    while (gui_font == nullptr || watermark_font == nullptr || arraylist_font == nullptr)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    }
+    
     // Load Config
     if (modules_loaded && !config_loaded)
     {
         config_loaded = true;
-        load_config();
-        save_config();
+        load_config("default");
+        save_config("default");
         Logger::log_info("Loaded default config!");
     }
     
@@ -400,24 +440,79 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
         HandleCategoryRendering("Movement", MOVEMENT);
         HandleCategoryRendering("Player", PLAYER);
         HandleCategoryRendering("Exploit", EXPLOIT);
-        HandleCategoryRendering("Uncategorized", NONE);
+
+        if (ImGui::CollapsingHeader("Client Settings"))
+        {
+            if (ImGui::BeginCombo("Font", current_font.c_str()))
+            {
+                for (std::string::size_type i = 0; i < fonts.size(); i++)
+                {
+                    const bool selected = current_font == fonts[i];
+                    
+                    if (ImGui::Selectable(fonts[i].c_str(), selected))
+                    {
+                        current_font = fonts[i];
+                        ImGuiIO& io = ImGui::GetIO(); (void) io;
+                        gui_font = io.Fonts->AddFontFromFileTTF(current_font.c_str(), 20.0f * scale_factor);
+                        watermark_font = io.Fonts->AddFontFromFileTTF(current_font.c_str(), 32.0f * scale_factor);
+                        arraylist_font = io.Fonts->AddFontFromFileTTF(current_font.c_str(), 24.0f * scale_factor);
+                        io.Fonts->Build();
+                        // force invalidation and new frames
+                        ImGui_ImplDX11_InvalidateDeviceObjects();
+                        ImGui_ImplDX11_NewFrame();
+                        ImGui_ImplWin32_NewFrame();
+                        ImGui::NewFrame();
+                        Logger::log_info("Changed client font to " + current_font);
+                        return;
+                    }
+                    if (selected) ImGui::SetItemDefaultFocus();
+                }
+
+                ImGui::EndCombo();
+            } 
+        }
 
         // Configs
         if (ImGui::CollapsingHeader("Config"))
         {
-            ImGui::Indent();
+			ImGui::Indent();
+
+            ImGui::InputText("##config_text", input_file, sizeof(input_file));
+            ImGui::SameLine();
+			if (ImGui::Button("Create"))
+			{
+				save_config(input_file);
+			}
+
+			std::vector<std::string> files = get_config_names();
+
+			if (ImGui::BeginCombo("##config_combo", combo_file.c_str()))
+			{
+				for (std::string::size_type i = 0; i < files.size(); i++)
+				{
+					const bool selected = combo_file == files[i];
+
+					if (ImGui::Selectable(files[i].c_str(), selected))
+					{
+						combo_file = files[i];
+					}
+					if (selected) ImGui::SetItemDefaultFocus();
+				}
+
+				ImGui::EndCombo();
+			}
+            ImGui::SameLine();
             if (ImGui::Button("Load"))
             {
-                load_config();
+                load_config(combo_file.c_str());
             }
             ImGui::SameLine();
             if (ImGui::Button("Save"))
             {
-                save_config();
+                save_config(combo_file.c_str());
             }
-            ImGui::SameLine();
-            ImGui::InputText("", config_file, sizeof(config_file));
-            ImGui::Unindent();
+
+			ImGui::Unindent();
         }
         
         ImGui::End();

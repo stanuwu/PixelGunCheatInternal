@@ -45,20 +45,33 @@ public:
             {
                 if (player == nullptr || Hooks::our_player == nullptr) continue;
                 Unity::CTransform* transform = (Unity::CTransform*)Hooks::get_player_transform(player);
-                Unity::Vector3 positon;
+                Unity::Vector3 position;
 
-                Functions::TransformGetPosition(transform, &positon);
+                if (transform == nullptr)
+                {
+                    Logger::log_warn("Unity::CTransform* transform ptr was nullptr during player_list loop!");
+                    continue;
+                }
+                
+                Functions::TransformGetPosition(transform, &position);
                 Unity::Vector3 top_world = {
-                    positon.x,
-                    positon.y + 2,
-                    positon.z
+                    position.x,
+                    position.y + 2,
+                    position.z
                 };
             
                 Unity::Vector3 screen_pos;
                 Unity::Vector3 screen_top;
-                Functions::CameraWorldToScreen(Hooks::main_camera, &positon, &screen_pos);
+                
+                if (Hooks::main_camera == nullptr)
+                {
+                    Logger::log_warn("Hooks::main_camera ptr was nullptr during player_list loop!");
+                    return;
+                }
+                
+                Functions::CameraWorldToScreen(Hooks::main_camera, &position, &screen_pos);
                 Functions::CameraWorldToScreen(Hooks::main_camera, &top_world, &screen_top);
-
+                
                 if (screen_pos.z < 0) continue;
                 if (!is_on_screen(screen_pos)) continue;
                 float scaled_dist = screen_pos.y - screen_top.y;
@@ -67,8 +80,20 @@ public:
                 float height2 = scaled_dist * 1.5f / 2;
             
                 screen_pos = {screen_pos.x, (float)height - screen_pos.y, screen_pos.z};
+
+                if (player == nullptr)
+                {
+                    Logger::log_warn("Player ptr was nullptr during player_list loop! (1st-phase)");
+                    continue;
+                }
                 
                 std::string player_name = Hooks::get_player_name(player);
+
+                if (player == nullptr)
+                {
+                    Logger::log_warn("Player ptr was nullptr during player_list loop! (2nd-phase)");
+                    continue;
+                }
                 
                 if (Hooks::is_player_enemy(player))
                 {
