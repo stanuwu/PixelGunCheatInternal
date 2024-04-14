@@ -12,7 +12,7 @@ public:
     
     void do_module(void* arg) override
     {
-        set_bool(arg, 0x284, true); // isHeadshotDamageIncreased (0x28c = isReducedHeadshotDamage, maybe applicable to enemies)
-        set_float(arg, 0x288, __oshs_multi.value); // increasedHeadshotDamageMultiplier (0x290 = reducedHeadshotDamageMultiplier, maybe applicable to enemies)
+        set_bool(arg, Offsets::isHeadshotDamageIncreased, true); // isHeadshotDamageIncreased
+        set_float(arg, Offsets::increasedHeadshotDamageMultiplier, __oshs_multi.value); // increasedHeadshotDamageMultiplier
     }
 };

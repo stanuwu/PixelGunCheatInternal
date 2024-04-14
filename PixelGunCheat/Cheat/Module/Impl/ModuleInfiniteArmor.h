@@ -10,7 +10,7 @@ public:
     
     void do_module(void* arg) override
     {
-        set_float(arg, 0x3F0, 100); // armorRegenerationPercent
-        set_bool(arg, 0x3EC, true); // isArmorRegeneration
+        set_float(arg, Offsets::armorRegenerationPercent, 100); // armorRegenerationPercent
+        set_bool(arg, Offsets::isArmorRegeneration, true); // isArmorRegeneration
     }
 };

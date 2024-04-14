@@ -160,7 +160,7 @@ public:
                 RaycastHit hit_info;
                 if (Functions::PhysicsRaycast(&ray, &hit_info, 800))
                 {
-                    void* head_collider = (void*)*(uint64_t*)((uint64_t)player + 0x128);
+                    void* head_collider = (void*)*(uint64_t*)((uint64_t)player + Offsets::headCollider);
                     int id = Functions::ObjectGetInstanceID(head_collider);
                     if (hit_info.collider != id) continue;
                 }

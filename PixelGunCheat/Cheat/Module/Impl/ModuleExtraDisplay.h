@@ -3,6 +3,7 @@
 
 static BKCModule __display = { "Extra Display", GENERAL, 0x0, false, {} };
 
+// TODO: Check what this does and if it should even exist
 class ModuleExtraDisplay : ModuleBase
 {
 public:

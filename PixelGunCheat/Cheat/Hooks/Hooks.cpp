@@ -41,6 +41,7 @@
 #include "../Module/Impl/ModuleExtraDisplay.h"
 #include "../Module/Impl/ModuleInfiniteArmor.h"
 #include "../Module/Impl/ModuleSeasonPass.h"
+#include "../Offsets/Offsets.h"
 
 class ModuleSpeed;
 uintptr_t Hooks::GameBase;
@@ -102,7 +103,7 @@ std::string clean_string(std::string string)
 
 std::string Hooks::get_player_name(void* player_move_c)
 {
-    void* nick_label = (void*)*(uint64_t*)((uint64_t)player_move_c + 0x3B8);
+    void* nick_label = (void*)*(uint64_t*)((uint64_t)player_move_c + Offsets::nickLabel);
     void* name_ptr = Functions::TextMeshGetText(nick_label);
     if (name_ptr == nullptr) return "";
     std::string name = ((Unity::System_String*)name_ptr)->ToString();
@@ -111,12 +112,12 @@ std::string Hooks::get_player_name(void* player_move_c)
 
 void* Hooks::get_player_transform(void* player)
 {
-    return (void*)*(uint64_t*)((uint64_t)player + 0x3A0);
+    return (void*)*(uint64_t*)((uint64_t)player + Offsets::myPlayerTransform);
 }
 
 bool Hooks::is_player_enemy(void* player)
 {
-    void* nick_label = (void*)*(uint64_t*)((uint64_t)player + 0x3B8);
+    void* nick_label = (void*)*(uint64_t*)((uint64_t)player + Offsets::nickLabel);
     Unity::Color color = {0, 0,  0, 0};
     Functions::TextMeshGetColor(nick_label, &color);
     return color.r == 1 && color.g == 0 && color.b == 0;
@@ -129,14 +130,14 @@ bool is_my_player_move_c(void* player_move_c)
 
 bool is_my_player_weapon_sounds(void* weapon_sounds)
 {
-    void* player_move_c = (void*)*(uint64_t*)((uint64_t)weapon_sounds + 0x500);
+    void* player_move_c = (void*)*(uint64_t*)((uint64_t)weapon_sounds + Offsets::weaponSoundsPlayerMoveC);
     if (player_move_c == nullptr) return false;
     return is_my_player_move_c(player_move_c);
 }
 
 std::string get_player_name_from_weapon_sounds(void* weapon_sounds)
 {
-    void* player_move_c = (void*)*(uint64_t*)((uint64_t)weapon_sounds + 0x500);
+    void* player_move_c = (void*)*(uint64_t*)((uint64_t)weapon_sounds + Offsets::weaponSoundsPlayerMoveC);
     if (player_move_c == nullptr) return "";
     return Hooks::get_player_name(player_move_c);
 }
@@ -187,11 +188,6 @@ inline void __stdcall player_move_c(void* arg)
     {
         // My Player
         Hooks::tick++;
-        
-        for (ModuleBase* player_move_c_module : player_move_c_modules)
-        {
-            player_move_c_module->run(arg);
-        }
 
         if (Hooks::tick % 30 == 0)
         {
@@ -201,6 +197,11 @@ inline void __stdcall player_move_c(void* arg)
                 if (Hooks::main_camera == nullptr) return player_move_c_original(arg);
             }
             Hooks::our_player = arg;
+        }
+        
+        for (ModuleBase* player_move_c_module : player_move_c_modules)
+        {
+            player_move_c_module->run(arg);
         }
     }
     else
@@ -218,7 +219,7 @@ inline void __stdcall player_move_c_fixed(void* arg)
     bool my_player = is_my_player_move_c(arg);
 
     // Player Damageable
-    void* player_damageable = (void*)*(uint64_t*)((uint64_t)arg + 0x650);
+    void* player_damageable = (void*)*(uint64_t*)((uint64_t)arg + Offsets::playerMoveCPlayerDamageable);
     if (my_player)
     {
         for (ModuleBase* player_damageable_module : player_damageable_modules)
@@ -334,7 +335,7 @@ inline bool __stdcall season_pass_premium(void* arg)
 }
 
 // Static
-void hook_function(uintptr_t offset, LPVOID detour, void* original)
+void hook_function(uint64_t offset, LPVOID detour, void* original)
 {
     if (MH_CreateHook((LPVOID*)(Hooks::GameAssembly + offset), detour, (LPVOID*)original) == MH_OK)
     {
@@ -363,18 +364,18 @@ void Hooks::load()
     MH_Initialize();
     
     // Hook Functions Here
-    hook_function(0x7F0070, &weapon_sounds_call, &weapon_sounds_original);
-    hook_function(0x1B677D0, &player_move_c, &player_move_c_original);
-    hook_function(0x4BBE80, &infinite_gem_claim, &infinite_gem_claim_original);
-    hook_function(0x111B350, &rapid_fire, &rapid_fire_original);
-    hook_function(0x11383E0, &speed, &speed_original);
-    hook_function(0x42D0540, &on_pre_render, &on_pre_render_original);
-    hook_function(0x414C1B0, &on_scene_unload, &on_scene_unload_original);
-    hook_function(0x781F00, &free_lottery, &free_lottery_original);
-    hook_function(0x1AC4C70, &player_move_c_fixed, &player_move_c_fixed_original);
-    hook_function(0xC326E0, &reward_multiplier, &reward_multiplier_original);
-    hook_function(0xC33660, &double_rewards, &double_rewards_original);
-    hook_function(0x18881E0, &season_pass_premium, &season_pass_premium_original);
+    hook_function(Offsets::WeaponSoundsUpdate, &weapon_sounds_call, &weapon_sounds_original);
+    hook_function(Offsets::PlayerMoveCUpdate, &player_move_c, &player_move_c_original);
+    hook_function(Offsets::InfiniteGemClaim, &infinite_gem_claim, &infinite_gem_claim_original);
+    hook_function(Offsets::RapidFire, &rapid_fire, &rapid_fire_original);
+    hook_function(Offsets::Speed, &speed, &speed_original);
+    hook_function(Offsets::OnPreRender, &on_pre_render, &on_pre_render_original);
+    hook_function(Offsets::OnSceneUnload, &on_scene_unload, &on_scene_unload_original);
+    hook_function(Offsets::PriceModifier, &free_lottery, &free_lottery_original);
+    hook_function(Offsets::PlayerMoveCFixedUpdate, &player_move_c_fixed, &player_move_c_fixed_original);
+    hook_function(Offsets::RewardMultiplier, &reward_multiplier, &reward_multiplier_original);
+    hook_function(Offsets::DoubleRewards, &double_rewards, &double_rewards_original);
+    hook_function(Offsets::PremiumPass, &season_pass_premium, &season_pass_premium_original);
     
     // Init Modules Here
     rapid_fire_module = new ModuleRapidFire();

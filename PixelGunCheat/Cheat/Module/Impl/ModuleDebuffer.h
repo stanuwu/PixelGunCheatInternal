@@ -37,49 +37,49 @@ public:
     {
         if (__blind.enabled)
         {
-            set_bool(arg, 0x268, true); // isBlindEffect
-            set_float(arg, 0x270, __blind_duration.value); // isBlindEffectTime
+            set_bool(arg, Offsets::isBlindEffect, true); // isBlindEffect
+            set_float(arg, Offsets::isBlindEffectTime, __blind_duration.value); // isBlindEffectTime
         }
 
         if (__charm.enabled)
         {
-            set_bool(arg, 0x274, true); // isCharm
+            set_bool(arg, Offsets::isCharm, true); // isCharm
         }
 
         if (__curse.enabled)
         {
-            set_bool(arg, 0x214, true); // isCursing
-            set_float(arg, 0x218, __curse_duration.value); // curseTime
-            set_float(arg, 0x21C, __curse_damage.value); // curseDamageMultiplier
+            set_bool(arg, Offsets::isCursing, true); // isCursing
+            set_float(arg, Offsets::curseTime, __curse_duration.value); // curseTime
+            set_float(arg, Offsets::curseDamageMultiplier, __curse_damage.value); // curseDamageMultiplier
         }
 
         if (__lightning.enabled)
         {
-            set_bool(arg, 0x155, true); // isLightning
+            set_bool(arg, Offsets::isLightning, true); // isLightning
         }
 
         if (__poison.enabled)
         {
-            set_bool(arg, 0x1F8, true); // isPoisoning
-            set_int(arg, 0x1FC, __poison_amount.value); // poisonCount
-            set_float(arg, 0x200, __poison_multi.value); // poisonDamageMultiplier
-            set_float(arg, 0x204, __poison_time.value); // poisonTime
+            set_bool(arg, Offsets::isPoisoning, true); // isPoisoning
+            set_int(arg, Offsets::poisonCount, __poison_amount.value); // poisonCount
+            set_float(arg, Offsets::poisonDamageMultiplier, __poison_multi.value); // poisonDamageMultiplier
+            set_float(arg, Offsets::poisonTime, __poison_time.value); // poisonTime
         }
 
         if (__slow.enabled)
         {
-            set_bool(arg, 0x224, true); // isSlowdown
-            set_float(arg, 0x228, __slow_factor.value); // slowdownCoeff
-            set_float(arg, 0x22C, __slow_duration.value); // slowdownTime
-            set_bool(arg, 0x230, true); // isSlowdownStack
+            set_bool(arg, Offsets::isSlowdown, true); // isSlowdown
+            set_float(arg, Offsets::slowdownCoeff, __slow_factor.value); // slowdownCoeff
+            set_float(arg, Offsets::slowdownTime, __slow_duration.value); // slowdownTime
+            set_bool(arg, Offsets::isSlowdownStack, true); // isSlowdownStack
         }
 
         if (__stun.enabled)
         {
-            set_bool(arg, 0x238, true); // isStun
-            set_float(arg, 0x23C, __stun_factor.value); // stunCoeff
-            set_float(arg, 0x240, __stun_duration.value); // stunTime
-            set_float(arg, 0x244, __stun_radius.value); // stunRadius
+            set_bool(arg, Offsets::isStun, true); // isStun
+            set_float(arg, Offsets::stunCoeff, __stun_factor.value); // stunCoeff
+            set_float(arg, Offsets::stunTime, __stun_duration.value); // stunTime
+            set_float(arg, Offsets::stunRadius, __stun_radius.value); // stunRadius
         }
     }
 };
