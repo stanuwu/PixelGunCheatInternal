@@ -37,6 +37,7 @@ static char input_file[32] = "default";
 static ImU32 color_title = ImGui::ColorConvertFloat4ToU32({0.91f, 0.64f, 0.13f, 1.00f});
 static ImU32 color_bg = ImGui::ColorConvertFloat4ToU32({0.00f, 0.00f, 0.00f, 0.85f});
 std::string current_font = "C:/Windows/Fonts/comic.ttf";
+static bool boundless_value_setting = false;
 
 void InitModules(const std::vector<BKCModule>& init_mods);
 void HandleModuleSettingRendering(BKCModule& module);
@@ -443,6 +444,8 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
 
         if (ImGui::CollapsingHeader("Client Settings"))
         {
+            ImGui::Indent();
+            
             if (ImGui::BeginCombo("Font", current_font.c_str()))
             {
                 for (std::string::size_type i = 0; i < fonts.size(); i++)
@@ -469,7 +472,16 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
                 }
 
                 ImGui::EndCombo();
-            } 
+            }
+
+            ImGui::Checkbox("Boundless Sliders", &boundless_value_setting);
+
+            if (ImGui::IsItemHovered())
+            {
+                ImGui::SetTooltip("Allow setting values on sliders below or above minimum and maximum when manually changing them (CTRL Clicking)");
+            }
+
+            ImGui::Unindent();
         }
 
         // Configs
@@ -501,6 +513,7 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
 
 				ImGui::EndCombo();
 			}
+            
             ImGui::SameLine();
             if (ImGui::Button("Load"))
             {
@@ -562,14 +575,14 @@ void HandleModuleSettingRendering(BKCModule& module)
             auto* slider = (BKCSlider*)setting;
             per_module_name << setting->name << "##" << module.name << setting->type;
             ImGui::SliderFloat(per_module_name.str().c_str(), &slider->value, slider->minimum, slider->maximum);
-            slider->value = std::ranges::clamp(slider->value, slider->minimum, slider->maximum);
+            if (!boundless_value_setting) slider->value = std::ranges::clamp(slider->value, slider->minimum, slider->maximum);
         }
         else if (setting->type == 3)
         {
             auto* slider = (BKCSliderInt*)setting;
             per_module_name << setting->name << "##" << module.name << setting->type;
             ImGui::SliderInt(per_module_name.str().c_str(), &slider->value, slider->minimum, slider->maximum);
-            slider->value = std::ranges::clamp(slider->value, slider->minimum, slider->maximum);
+            if (!boundless_value_setting) slider->value = std::ranges::clamp(slider->value, slider->minimum, slider->maximum);
         }
         else if (setting->type == 4)
         {
