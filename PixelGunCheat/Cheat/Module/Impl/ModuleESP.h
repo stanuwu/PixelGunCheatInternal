@@ -138,23 +138,15 @@ public:
             ImVec2 end_pos = { screen_pos.x + width2, screen_pos.y + height2 };
 
             static float rainbow_hue = 0.0f;
-            float saturation = 0.7f;
-            float value = 0.9f;
             float out_r, out_g, out_b;
-            ImGui::ColorConvertHSVtoRGB(rainbow_hue, saturation, value, out_r, out_g, out_b);
-            ImU32 color = ImGui::ColorConvertFloat4ToU32({ out_r, out_g, out_b, 1.0f });
+            ImGui::ColorConvertHSVtoRGB(rainbow_hue, 0.7f, 0.9f, out_r, out_g, out_b);
+            ImU32 esp_color = ImGui::ColorConvertFloat4ToU32({ out_r, out_g, out_b, 1.0f });
 
+            if (color == color_ally) esp_color = color_ally;
 
-            ImGui::GetBackgroundDrawList()->AddText({ screen_pos.x + 1 - size.x / 2, screen_pos.y + 1 - height2 }, color_black, player_name.c_str());
-            ImGui::GetBackgroundDrawList()->AddText({ screen_pos.x - size.x / 2, screen_pos.y - height2 }, color, player_name.c_str());
-            ImGui::GetBackgroundDrawList()->AddRect(start_pos, end_pos, color_black, 0, 0, (float)__esp_thickness.value + 1);
-            ImGui::GetBackgroundDrawList()->AddRect(start_pos, end_pos, color, 0, 0, (float)__esp_thickness.value);
-
-
-            ImVec2 bottom_middle_pos = { (start_pos.x + end_pos.x) / 2, end_pos.y };
-            ImVec2 screen_bottom_middle = { ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y };
-            ImGui::GetBackgroundDrawList()->AddLine(screen_bottom_middle, bottom_middle_pos, color);
-
+            ImGui::GetBackgroundDrawList()->AddText({ screen_pos.x - size.x / 2, screen_pos.y - height2 }, esp_color, player_name.c_str());
+            ImGui::GetBackgroundDrawList()->AddRect({ screen_pos.x - width2, screen_pos.y - height2 }, { screen_pos.x + width2, screen_pos.y + height2 }, esp_color, 0, 0, (float)__esp_thickness.value);
+            ImGui::GetBackgroundDrawList()->AddLine({ ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y }, { (start_pos.x + end_pos.x) / 2, end_pos.y }, color);
 
             rainbow_hue += __esp_rainbow_speed.value;
             if (rainbow_hue > 1.0f)
