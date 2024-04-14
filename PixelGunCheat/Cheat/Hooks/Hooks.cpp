@@ -38,7 +38,7 @@
 #include "../Module/Impl/ModuleHeadshotMultiplier.h"
 #include "../Module/Impl/ModulePriceModifier.h"
 #include "../Module/Impl/ModuleRewardsMultiplier.h"
-#include "../Module/Impl/ModuleTestFlight.h"
+#include "../Module/Impl/ModuleExtraDisplay.h"
 
 class ModuleSpeed;
 uintptr_t GameBase;
@@ -156,11 +156,13 @@ inline void __stdcall weapon_sounds_call(void* arg)
             weapon_sounds_module->run(arg);
         }
 
+        /*
         void* fps_controller_sharp = (void*)*(uint64_t*)((uint64_t)arg + 0x508);
         for (ModuleBase* player_fps_controller_sharp_module : player_fps_controller_sharp_modules)
         {
             player_fps_controller_sharp_module->run(fps_controller_sharp);
         }
+        */
     }
     else
     {
@@ -369,10 +371,13 @@ void Hooks::load()
     player_move_c_modules.push_back((ModuleBase*) esp_module);
     player_move_c_modules.push_back((ModuleBase*) new ModuleAimBot());
     player_move_c_modules.push_back((ModuleBase*) new ModuleInvisibility());
+
+    /*
+     does fucking nothing with these vals xddddd
+    player_move_c_modules.push_back((ModuleBase*) new ModuleExtraDisplay());
+    */
     
     on_imgui_draw_modules.push_back((ModuleBase*) new ModuleArrayList());
-
-    player_fps_controller_sharp_modules.push_back((ModuleBase*) new ModuleTestFlight());
     
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleCriticals());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleReach());
