@@ -32,7 +32,8 @@ std::string BKCImGuiHooker::c_Title = "Boykisser Central";
 std::string BKCImGuiHooker::c_RealBuild = "v1.2";
 static std::string c_Build = ":3";
 std::stringstream full_title;
-static char config_file[32] = "default";
+std::string combo_file = "default";
+static char input_file[32] = "default";
 static ImU32 color_title = ImGui::ColorConvertFloat4ToU32({0.91f, 0.64f, 0.13f, 1.00f});
 static ImU32 color_bg = ImGui::ColorConvertFloat4ToU32({0.00f, 0.00f, 0.00f, 0.85f});
 std::string current_font = "C:/Windows/Fonts/comic.ttf";
@@ -160,7 +161,7 @@ std::wstring get_executing_directory()
     return std::wstring(buffer).substr(0, pos);
 }
 
-std::string sanity_config(const std::wstring* dir)
+std::string sanity_config(const std::wstring* dir, const char* config_file)
 {
     const std::wstring config_dir = *dir + L"/bkc_config";
     CreateDirectory(config_dir.c_str(), nullptr);
@@ -186,10 +187,25 @@ std::string find_or_default_config(std::list<std::string> lines, std::string sea
     return "not_found";
 }
 
-void load_config()
+std::vector<std::string> get_config_names() {
+	std::vector<std::string> files;
+	const std::wstring dir = get_executing_directory();
+	const std::wstring config_dir = dir + L"/bkc_config";
+	for (const auto& entry : std::filesystem::directory_iterator(config_dir))
+	{
+		const std::filesystem::path& p = entry.path();
+		std::string str_path = p.generic_string();
+		str_path = str_path.substr(str_path.find_last_of("\\/") + 1);
+		str_path = str_path.substr(0, str_path.find_last_of("."));
+		files.push_back(str_path);
+	}
+	return files;
+}
+
+void load_config(const char* config_file)
 {
     const std::wstring dir = get_executing_directory();
-    const std::string file_path = sanity_config(&dir);
+    const std::string file_path = sanity_config(&dir, config_file);
     FILE* file;
     fopen_s(&file, file_path.c_str(), "r+");
     std::ifstream in(file);
@@ -286,10 +302,10 @@ void load_config()
     fclose(file);
 }
 
-void save_config()
+void save_config(const char* config_file)
 {
     const std::wstring dir = get_executing_directory();
-    const std::string file_path = sanity_config(&dir);
+    const std::string file_path = sanity_config(&dir, config_file);
     FILE* file;
     fopen_s(&file, file_path.c_str(), "w+");
     std::ofstream out(file);
@@ -402,8 +418,8 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
     if (modules_loaded && !config_loaded)
     {
         config_loaded = true;
-        load_config();
-        save_config();
+        load_config("default");
+        save_config("default");
         Logger::log_info("Loaded default config!");
     }
     
@@ -459,19 +475,44 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
         // Configs
         if (ImGui::CollapsingHeader("Config"))
         {
-            ImGui::Indent();
-            if (ImGui::Button("Load"))
-            {
-                load_config();
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("Save"))
-            {
-                save_config();
-            }
-            ImGui::SameLine();
-            ImGui::InputText("", config_file, sizeof(config_file));
-            ImGui::Unindent();
+			ImGui::Indent();
+
+			if (ImGui::Button("Create"))
+			{
+				save_config(input_file);
+			}
+			ImGui::SameLine();
+			ImGui::InputText("", input_file, sizeof(input_file));
+
+			if (ImGui::Button("Load"))
+			{
+				load_config(combo_file.c_str());
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Save"))
+			{
+				save_config(combo_file.c_str());
+			}
+
+			std::vector<std::string> files = get_config_names();
+
+			if (ImGui::BeginCombo("Configs", combo_file.c_str()))
+			{
+				for (std::string::size_type i = 0; i < files.size(); i++)
+				{
+					const bool selected = combo_file == files[i];
+
+					if (ImGui::Selectable(files[i].c_str(), selected))
+					{
+						combo_file = files[i];
+					}
+					if (selected) ImGui::SetItemDefaultFocus();
+				}
+
+				ImGui::EndCombo();
+			}
+
+			ImGui::Unindent();
         }
         
         ImGui::End();
