@@ -145,8 +145,8 @@ public:
             if (color == color_ally) esp_color = color_ally;
 
             ImGui::GetBackgroundDrawList()->AddText({ screen_pos.x - size.x / 2, screen_pos.y - height2 }, esp_color, player_name.c_str());
-            ImGui::GetBackgroundDrawList()->AddRect({ screen_pos.x - width2, screen_pos.y - height2 }, { screen_pos.x + width2, screen_pos.y + height2 }, esp_color, 0, 0, (float)__esp_thickness.value);
-            ImGui::GetBackgroundDrawList()->AddLine({ ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y }, { (start_pos.x + end_pos.x) / 2, end_pos.y }, color);
+            ImGui::GetBackgroundDrawList()->AddRect({ screen_pos.x - width2, screen_pos.y - height2 }, { screen_pos.x + width2, screen_pos.y + height2 }, esp_color, __esp_corner_rounding.value, 0, (float)__esp_thickness.value);
+            ImGui::GetBackgroundDrawList()->AddLine({ ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y }, { (start_pos.x + end_pos.x) / 2, end_pos.y }, esp_color);
 
             rainbow_hue += __esp_rainbow_speed.value;
             if (rainbow_hue > 1.0f)
