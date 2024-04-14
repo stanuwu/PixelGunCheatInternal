@@ -433,6 +433,10 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
     {
         module->run(nullptr);
     }
+    for (auto module : BKCImGuiHooker::modules)
+    {
+        module->CheckHotkeyToggle();
+    }
 
     ImGui::PopFont();
 
@@ -450,12 +454,15 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
 
+static bool listeningForKey = false;
+static BKCModule* currentModule = nullptr;
+
 void HandleModuleSettingRendering(BKCModule& module)
 {
     for (auto& setting : module.settings)
-    { 
+    {
         std::stringstream per_module_name;
-        
+
         if (setting->type == 1)
         {
             auto* checkbox = (BKCCheckbox*)setting;
@@ -485,7 +492,7 @@ void HandleModuleSettingRendering(BKCModule& module)
                 for (std::string::size_type i = 0; i < dropdown->values.size(); i++)
                 {
                     const bool selected = dropdown->current_value == dropdown->values[i];
-                    
+
                     if (ImGui::Selectable(dropdown->values[i].c_str(), selected))
                     {
                         dropdown->current_value = dropdown->values[i];
@@ -506,6 +513,40 @@ void HandleModuleSettingRendering(BKCModule& module)
             }
         }
     }
+    ImGui::Separator();
+    ImGuiKey imguiKey = static_cast<ImGuiKey>(module.key);
+    ImGui::Text("Keybind: %s", module.key == 0 ? "None" : ImGui::GetKeyName(imguiKey));
+    if(listeningForKey && currentModule == &module)
+	{
+		ImGui::Button("Listening...");
+        if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape)))
+        {
+			listeningForKey = false;
+			currentModule = nullptr;
+        }
+        else
+        {
+            for (int key = 0; key < IM_ARRAYSIZE(ImGui::GetIO().KeysDown); key++)
+            {
+                if (ImGui::IsKeyPressed((ImGuiKey)key))
+                {
+                    module.key = key;
+                    listeningForKey = false;
+                    currentModule = nullptr;
+                    break;
+                }
+            }
+        }
+	}
+    else
+    {
+        if (ImGui::Button("Set Keybind"))
+		{
+			listeningForKey = true;
+			currentModule = &module;
+		}
+    }
+    
 }
 
 void HandleModuleRendering(BKCModule& module)

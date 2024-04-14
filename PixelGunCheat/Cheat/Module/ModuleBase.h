@@ -12,11 +12,11 @@ public:
         module = m;
         BKCImGuiHooker::modules.push_back(m);
     }
-    
+
     WPARAM key = 0x00;
     std::string name;
     BKCModule* module;
-    
+
     void run(void* arg)
     {
         if (module->enabled) do_module(arg);
@@ -26,12 +26,18 @@ public:
     {
         return module->enabled;
     }
-    
+
     void toggle()
     {
         module->enabled = !module->enabled;
     }
-    
+
+    void SetKey(WPARAM newKey)
+    {
+        key = newKey;
+        module->key = newKey;
+    }
+
     virtual void do_module(void* arg) = 0;
 
 protected:

@@ -5,6 +5,8 @@
 #include <vector>
 #include <d3d11.h>
 #include <list>
+#include "../Logger/Logger.h"
+#include "imgui.h"
 
 // Boykisser Central Module Vars
 class BKCSetting
@@ -97,15 +99,46 @@ enum BKCCategory
 
 class BKCModule
 {
+private:
+    bool wasPressed = false;
 public:
     std::string name;
     BKCCategory category = NONE;
     WPARAM key = 0x0;
     bool enabled = false;
     std::vector<BKCSetting*> settings = {};
+
+    BKCModule(const std::string& module_name, BKCCategory module_category, WPARAM module_key, bool module_enabled, const std::vector<BKCSetting*>& module_settings)
+        : name(module_name), category(module_category), key(module_key), enabled(module_enabled), settings(module_settings)
+    {
+    }
+
     void toggle()
     {
         enabled = !enabled;
+		Logger::log_info(name + " Set to" + (enabled ? " Enabled" : " Disabled"));
+    }
+
+    void CheckHotkeyToggle()
+    {
+        if (key == 0x0)
+			return;
+        if (IsHotkeyPressed())
+            toggle();
+    }
+    bool IsHotkeyPressed()
+    {
+        bool isPressed = GetAsyncKeyState(key) & 0x8000;
+        if (isPressed && !wasPressed)
+        {
+            wasPressed = true;
+            return true;
+        }
+        else if (!isPressed && wasPressed)
+        {
+            wasPressed = false;
+        }
+        return false;
     }
 };
 
