@@ -8,11 +8,12 @@
 
 #include "../IL2CPPResolver/IL2CPP_Resolver.hpp"
 
-static BKCDropdown __esp_style = BKCDropdown("ESP Style", "Simple", { "Simple", "CS-like" });
+static BKCDropdown __esp_style = BKCDropdown("ESP Style", "Simple", { "Simple", "CS-like", "Boy Kisser Mode"});
 static BKCSliderInt __esp_thickness = BKCSliderInt("Border Thickness", 2, 1, 5);
 static BKCSliderInt __esp_corner_rounding = BKCSliderInt("Corner Rounding", 0, -10, 10);
+static BKCSlider __esp_rainbow_speed = BKCSlider("Rainbow Speed", 0.01f, 0.001f, 0.1f);
 static BKCCheckbox __esp_teammates = BKCCheckbox("Teammates",  true);
-static BKCModule __esp = { "ESP", VISUAL, 0x0, true, { &__esp_style, &__esp_thickness, &__esp_corner_rounding, &__esp_teammates } };
+static BKCModule __esp = { "ESP", VISUAL, 0x0, true, { &__esp_style, &__esp_thickness, &__esp_corner_rounding, &__esp_rainbow_speed, &__esp_teammates } };
 
 static ImU32 color_enemy = ImGui::ColorConvertFloat4ToU32({1.00f, 0.00f, 0.00f, 1.00f});
 static ImU32 color_ally = ImGui::ColorConvertFloat4ToU32({0.33f, 0.33f, 0.33f, 1.00f});
@@ -105,6 +106,34 @@ public:
             ImGui::GetBackgroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, color_black, 0, 0, (float)__esp_thickness.value * 2);
             ImGui::GetBackgroundDrawList()->AddText({screen_pos.x - size.x / 2, screen_pos.y - height2}, color, player_name.c_str());
             ImGui::GetBackgroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, color, 0, 0, (float)__esp_thickness.value);
+        }
+        else if (__esp_style.current_value == "Boy Kisser Mode")
+        {
+            ImVec2 start_pos = { screen_pos.x - width2, screen_pos.y - height2 };
+            ImVec2 end_pos = { screen_pos.x + width2, screen_pos.y + height2 };
+
+            static float rainbow_hue = 0.0f;
+            float saturation = 0.7f;
+            float value = 0.9f;
+            float out_r, out_g, out_b;
+            ImGui::ColorConvertHSVtoRGB(rainbow_hue, saturation, value, out_r, out_g, out_b);
+            ImU32 color = ImGui::ColorConvertFloat4ToU32({ out_r, out_g, out_b, 1.0f });
+
+
+            ImGui::GetBackgroundDrawList()->AddText({ screen_pos.x + 1 - size.x / 2, screen_pos.y + 1 - height2 }, color_black, player_name.c_str());
+            ImGui::GetBackgroundDrawList()->AddText({ screen_pos.x - size.x / 2, screen_pos.y - height2 }, color, player_name.c_str());
+            ImGui::GetBackgroundDrawList()->AddRect(start_pos, end_pos, color_black, 0, 0, (float)__esp_thickness.value + 1);
+            ImGui::GetBackgroundDrawList()->AddRect(start_pos, end_pos, color, 0, 0, (float)__esp_thickness.value);
+
+
+            ImVec2 screen_bottom_middle = { ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y };
+            ImGui::GetBackgroundDrawList()->AddLine(screen_bottom_middle, { (start_pos.x + end_pos.x) / 2, end_pos.y }, color);
+
+
+            // Update rainbow hue
+            rainbow_hue += __esp_rainbow_speed.value;
+            if (rainbow_hue > 1.0f)
+                rainbow_hue -= 1.0f;
         }
     }
 
