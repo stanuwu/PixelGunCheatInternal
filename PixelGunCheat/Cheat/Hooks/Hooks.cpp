@@ -38,6 +38,7 @@
 #include "../Module/Impl/ModuleHeadshotMultiplier.h"
 #include "../Module/Impl/ModulePriceModifier.h"
 #include "../Module/Impl/ModuleRewardsMultiplier.h"
+#include "../Module/Impl/ModuleTestFlight.h"
 
 class ModuleSpeed;
 uintptr_t GameBase;
@@ -52,6 +53,7 @@ ModuleBase* fast_levels_module;
 ModuleRewardsMultiplier* rewards_multiplier_module;
 ModuleESP* esp_module;
 std::list<ModuleBase*> player_move_c_modules = { };
+std::list<ModuleBase*> player_fps_controller_sharp_modules = { };
 std::list<ModuleBase*> weapon_sounds_modules = { };
 std::list<ModuleBase*> weapon_sound_others_modules = { };
 std::list<ModuleBase*> player_damageable_modules = { };
@@ -152,6 +154,12 @@ inline void __stdcall weapon_sounds_call(void* arg)
         for (ModuleBase* weapon_sounds_module : weapon_sounds_modules)
         {
             weapon_sounds_module->run(arg);
+        }
+
+        void* fps_controller_sharp = (void*)*(uint64_t*)((uint64_t)arg + 0x508);
+        for (ModuleBase* player_fps_controller_sharp_module : player_fps_controller_sharp_modules)
+        {
+            player_fps_controller_sharp_module->run(fps_controller_sharp);
         }
     }
     else
@@ -364,6 +372,8 @@ void Hooks::load()
     
     on_imgui_draw_modules.push_back((ModuleBase*) new ModuleArrayList());
 
+    player_fps_controller_sharp_modules.push_back((ModuleBase*) new ModuleTestFlight());
+    
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleCriticals());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleReach());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleRecoil());
