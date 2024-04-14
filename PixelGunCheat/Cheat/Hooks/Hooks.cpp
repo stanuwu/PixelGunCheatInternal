@@ -39,11 +39,12 @@
 #include "../Module/Impl/ModulePriceModifier.h"
 #include "../Module/Impl/ModuleRewardsMultiplier.h"
 #include "../Module/Impl/ModuleExtraDisplay.h"
+#include "../Module/Impl/ModuleSeasonPass.h"
 
 class ModuleSpeed;
-uintptr_t GameBase;
-uintptr_t GameAssembly;
-uintptr_t UnityPlayer;
+uintptr_t Hooks::GameBase;
+uintptr_t Hooks::GameAssembly;
+uintptr_t Hooks::UnityPlayer;
 
 ModuleRapidFire* rapid_fire_module;
 ModuleSpeed* speed_module;
@@ -52,6 +53,7 @@ ModulePriceModifier* lottery_price_module;
 ModuleBase* fast_levels_module;
 ModuleRewardsMultiplier* rewards_multiplier_module;
 ModuleESP* esp_module;
+ModuleSeasonPass* season_pass_module;
 std::list<ModuleBase*> player_move_c_modules = { };
 std::list<ModuleBase*> player_fps_controller_sharp_modules = { };
 std::list<ModuleBase*> weapon_sounds_modules = { };
@@ -160,6 +162,7 @@ inline void __stdcall weapon_sounds_call(void* arg)
         void* fps_controller_sharp = (void*)*(uint64_t*)((uint64_t)arg + 0x508);
         for (ModuleBase* player_fps_controller_sharp_module : player_fps_controller_sharp_modules)
         {
+            std::cout << fps_controller_sharp << std::endl;
             player_fps_controller_sharp_module->run(fps_controller_sharp);
         }
         */
@@ -318,12 +321,23 @@ inline bool __stdcall double_rewards(void* arg)
     return double_rewards_original(arg);
 }
 
+inline bool (__stdcall* season_pass_premium_original)(void* arg);
+inline bool __stdcall season_pass_premium(void* arg)
+{
+    if (((ModuleBase*)season_pass_module)->is_enabled() && season_pass_module->spoof_premium())
+    {
+        return true;
+    }
+    
+    return season_pass_premium_original(arg);
+}
+
 // Static
 void hook_function(uintptr_t offset, LPVOID detour, void* original)
 {
-    if (MH_CreateHook((LPVOID*)(GameAssembly + offset), detour, (LPVOID*)original) == MH_OK)
+    if (MH_CreateHook((LPVOID*)(Hooks::GameAssembly + offset), detour, (LPVOID*)original) == MH_OK)
     {
-        MH_EnableHook((LPVOID*)(GameAssembly + offset));
+        MH_EnableHook((LPVOID*)(Hooks::GameAssembly + offset));
     }
 }
 
@@ -359,6 +373,7 @@ void Hooks::load()
     hook_function(0x1AC4C70, &player_move_c_fixed, &player_move_c_fixed_original);
     hook_function(0xC326E0, &reward_multiplier, &reward_multiplier_original);
     hook_function(0xC33660, &double_rewards, &double_rewards_original);
+    hook_function(0x18881E0, &season_pass_premium, &season_pass_premium_original);
     
     // Init Modules Here
     rapid_fire_module = new ModuleRapidFire();
@@ -366,6 +381,7 @@ void Hooks::load()
     infinite_gem_claim_module = (ModuleBase*) new ModuleInfiniteGemClaim();
     lottery_price_module = new ModulePriceModifier;
     rewards_multiplier_module = new ModuleRewardsMultiplier();
+    season_pass_module = new ModuleSeasonPass();
 
     esp_module = new ModuleESP();
     player_move_c_modules.push_back((ModuleBase*) esp_module);

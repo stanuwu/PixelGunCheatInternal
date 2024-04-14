@@ -19,5 +19,8 @@ public:
     static bool is_player_enemy(void* player);
     void load();
     void unload();
+    static uintptr_t GameBase;
+    static uintptr_t GameAssembly;
+    static uintptr_t UnityPlayer;
     static std::list<ModuleBase*> on_imgui_draw_modules;
 };
