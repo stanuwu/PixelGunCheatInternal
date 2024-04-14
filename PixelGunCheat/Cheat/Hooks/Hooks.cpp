@@ -278,7 +278,7 @@ inline void (__stdcall* on_scene_unload_original)(void* arg);
 inline void __stdcall on_scene_unload(void* arg)
 {
     Hooks::main_camera = nullptr;
-    nuke_player_list();
+    // nuke_player_list();
 
     // Get Old Scene Name
     /*
