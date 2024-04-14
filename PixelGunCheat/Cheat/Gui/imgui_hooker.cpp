@@ -518,8 +518,8 @@ void HandleModuleSettingRendering(BKCModule& module)
     ImGui::Text("Keybind: %s", module.key == 0 ? "None" : ImGui::GetKeyName(imguiKey));
     if(listeningForKey && currentModule == &module)
 	{
-		ImGui::Button("Listening...");
-        if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape)))
+		
+        if (ImGui::Button("cancel"))
         {
 			listeningForKey = false;
 			currentModule = nullptr;
@@ -530,10 +530,13 @@ void HandleModuleSettingRendering(BKCModule& module)
             {
                 if (ImGui::IsKeyPressed((ImGuiKey)key))
                 {
-                    module.key = key;
-                    listeningForKey = false;
-                    currentModule = nullptr;
-                    break;
+                    if (key != ImGuiKey::ImGuiKey_MouseLeft && key != ImGuiKey::ImGuiKey_MouseRight)
+                    {
+                        module.key = key;
+                        listeningForKey = false;
+                        currentModule = nullptr;
+                        break;
+                    }
                 }
             }
         }
