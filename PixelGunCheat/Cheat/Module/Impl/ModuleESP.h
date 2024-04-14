@@ -126,11 +126,11 @@ public:
             ImGui::GetBackgroundDrawList()->AddRect(start_pos, end_pos, color, 0, 0, (float)__esp_thickness.value);
 
 
+            ImVec2 bottom_middle_pos = { (start_pos.x + end_pos.x) / 2, end_pos.y };
             ImVec2 screen_bottom_middle = { ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y };
-            ImGui::GetBackgroundDrawList()->AddLine(screen_bottom_middle, { (start_pos.x + end_pos.x) / 2, end_pos.y }, color);
+            ImGui::GetBackgroundDrawList()->AddLine(screen_bottom_middle, bottom_middle_pos, color);
 
 
-            // Update rainbow hue
             rainbow_hue += __esp_rainbow_speed.value;
             if (rainbow_hue > 1.0f)
                 rainbow_hue -= 1.0f;
