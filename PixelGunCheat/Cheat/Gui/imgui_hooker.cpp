@@ -519,7 +519,7 @@ void HandleModuleSettingRendering(BKCModule& module)
     if(listeningForKey && currentModule == &module)
 	{
 		
-        if (ImGui::Button("cancel"))
+        if (ImGui::Button("Cancel"))
         {
 			listeningForKey = false;
 			currentModule = nullptr;
@@ -549,6 +549,11 @@ void HandleModuleSettingRendering(BKCModule& module)
 			currentModule = &module;
 		}
     }
+    ImGui::SameLine();
+    if(ImGui::Button("Clear Keybind"))
+	{
+		module.key = 0;
+	}
     
 }
 
