@@ -261,6 +261,7 @@
     <ClInclude Include="Cheat\Module\Impl\ModuleFrostAura.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleFullAuto.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleAntiHeadshot.h" />
+    <ClInclude Include="Cheat\Module\Impl\ModuleInfiniteArmor.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleHeal.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleInfiniteAmmo.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleInfiniteGemClaim.h" />

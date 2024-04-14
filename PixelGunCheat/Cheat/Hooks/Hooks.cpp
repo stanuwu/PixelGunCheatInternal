@@ -39,6 +39,7 @@
 #include "../Module/Impl/ModulePriceModifier.h"
 #include "../Module/Impl/ModuleRewardsMultiplier.h"
 #include "../Module/Impl/ModuleExtraDisplay.h"
+#include "../Module/Impl/ModuleInfiniteArmor.h"
 #include "../Module/Impl/ModuleSeasonPass.h"
 
 class ModuleSpeed;
@@ -409,6 +410,7 @@ void Hooks::load()
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleScoreMultiplier());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleXRay());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleDoubleJump());
+    weapon_sounds_modules.push_back((ModuleBase*) new InfiniteArmor());
 
     // Will wreak havoc on literally everyone, even other cheaters :D
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleAntiHeadshot());
