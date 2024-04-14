@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "../ModuleBase.h"
 
-static BKCSlider __rapid_fire_speed = BKCSlider("Speed", 2, 0.1f, 25, "Speed values too high will cause kicks! (Depending on weapon)");
+static BKCSlider __rapid_fire_speed = BKCSlider("Speed", 2, -50, 50, "Speed values too high will cause kicks! (Depending on weapon)");
 static BKCModule __rapid_fire = { "Rapid Fire", COMBAT, 0x0, true, {&__rapid_fire_speed} };
 
 class ModuleRapidFire : ModuleBase

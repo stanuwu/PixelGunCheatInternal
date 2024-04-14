@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include <imgui.h>
 #include <map>
 
 #include "../IL2CPPResolver/IL2CPP_Resolver.hpp"
