@@ -12,12 +12,12 @@ static BKCCheckbox __aim_bot_body_shot = BKCCheckbox("Body Shot", false);
 static BKCModule __aim_bot = { "Aim Bot", COMBAT, 0x0, true, {&__aim_bot_through_walls, &__aim_bot_body_shot} };
 
 static std::map<std::string, Unity::Vector3> player_pos_cache;
-static RECT window_size;
+static RECT window_size_aim;
 
-static bool is_on_screen(Unity::Vector3 pos)
+static bool is_on_screen_aim(Unity::Vector3 pos)
 {
-    const int width = window_size.right - window_size.left;
-    const int height = window_size.bottom - window_size.top;
+    const int width = window_size_aim.right - window_size_aim.left;
+    const int height = window_size_aim.bottom - window_size_aim.top;
     return pos.z > 0.01f && pos.x > -100 && pos.y > -100 && pos.x < (float)width + 100 && pos.y < (float)height + 100;
 }
 
@@ -74,7 +74,7 @@ public:
     {
         if (Hooks::tick % 60 == 0)
         {
-            GetWindowRect(GetActiveWindow(), &window_size);
+            GetWindowRect(GetActiveWindow(), &window_size_aim);
         }
         
         Unity::Vector3 prediction;
@@ -93,7 +93,7 @@ public:
             Unity::Vector3 screen;
             Functions::CameraWorldToScreen(camera, &world, &screen);
 
-            if (!is_on_screen(screen)) continue;
+            if (!is_on_screen_aim(screen)) continue;
             if (screen.z <= 0) continue;
             
             Unity::Vector3 velocity = {0, 0, 0};

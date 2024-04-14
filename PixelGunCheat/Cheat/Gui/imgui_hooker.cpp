@@ -526,7 +526,7 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
                 
                 ImGui::InputText("Offset##rhd", offsets_rhd, sizeof(offsets_rhd));
                 ImGui::InputText("Return##rhd", return_rhd, sizeof(return_rhd));
-                if (ImGui::Button("Create"))
+                if (ImGui::Button("Create##rhd"))
                 {
                     try_runtime_hook();
                 }
@@ -547,6 +547,7 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
 			if (ImGui::Button("Create##config"))
 			{
 				save_config(input_file);
+			    combo_file = input_file;
 			}
 
 			std::vector<std::string> files = get_config_names();
