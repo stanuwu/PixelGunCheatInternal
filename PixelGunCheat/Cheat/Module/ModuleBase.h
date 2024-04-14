@@ -32,12 +32,6 @@ public:
         module->enabled = !module->enabled;
     }
 
-    void SetKey(WPARAM newKey)
-    {
-        key = newKey;
-        module->key = newKey;
-    }
-
     virtual void do_module(void* arg) = 0;
 
 protected:
