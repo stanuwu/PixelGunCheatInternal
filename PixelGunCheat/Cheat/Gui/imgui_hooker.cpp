@@ -477,26 +477,16 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
         {
 			ImGui::Indent();
 
+            ImGui::InputText("##config_text", input_file, sizeof(input_file));
+            ImGui::SameLine();
 			if (ImGui::Button("Create"))
 			{
 				save_config(input_file);
 			}
-			ImGui::SameLine();
-			ImGui::InputText("", input_file, sizeof(input_file));
-
-			if (ImGui::Button("Load"))
-			{
-				load_config(combo_file.c_str());
-			}
-			ImGui::SameLine();
-			if (ImGui::Button("Save"))
-			{
-				save_config(combo_file.c_str());
-			}
 
 			std::vector<std::string> files = get_config_names();
 
-			if (ImGui::BeginCombo("Configs", combo_file.c_str()))
+			if (ImGui::BeginCombo("##config_combo", combo_file.c_str()))
 			{
 				for (std::string::size_type i = 0; i < files.size(); i++)
 				{
@@ -511,6 +501,16 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
 
 				ImGui::EndCombo();
 			}
+            ImGui::SameLine();
+            if (ImGui::Button("Load"))
+            {
+                load_config(combo_file.c_str());
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Save"))
+            {
+                save_config(combo_file.c_str());
+            }
 
 			ImGui::Unindent();
         }
