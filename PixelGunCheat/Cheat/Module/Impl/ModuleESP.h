@@ -8,8 +8,9 @@
 
 #include "../IL2CPPResolver/IL2CPP_Resolver.hpp"
 
-static BKCDropdown __esp_style = BKCDropdown("ESP Style", "Simple", { "Simple", "CS-like" });
+static BKCDropdown __esp_style = BKCDropdown("ESP Style", "Simple", { "Simple", "CS-like", "Rainbow Mode"});
 static BKCSliderInt __esp_thickness = BKCSliderInt("Border Thickness", 2, 1, 5);
+static BKCSlider __esp_rainbow_speed = BKCSlider("Rainbow Speed", 0.01f, 0.001f, 0.01f);
 static BKCSliderInt __esp_corner_rounding = BKCSliderInt("Corner Rounding", 0, -10, 10);
 static BKCCheckbox __esp_teammates = BKCCheckbox("Teammates",  true);
 static BKCModule __esp = { "ESP", VISUAL, 0x0, true, { &__esp_style, &__esp_thickness, &__esp_corner_rounding, &__esp_teammates } };
@@ -131,6 +132,23 @@ public:
             ImGui::GetBackgroundDrawList()->AddText({screen_pos.x - size.x / 2, screen_pos.y - height2}, color, player_name.c_str());
             ImGui::GetBackgroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, color, 0, 0, (float)__esp_thickness.value);
         }
+        else if (__esp_style.current_value == "Rainbow Mode")
+		{
+            static float rainbow_hue = 0.0f;
+            float out_r, out_g, out_b;
+
+            ImGui::ColorConvertHSVtoRGB(rainbow_hue, 0.7f, 0.9f, out_r, out_g, out_b);
+            ImU32 esp_color = ImGui::ColorConvertFloat4ToU32({ out_r, out_g, out_b, 1.0f });
+
+            if (color == color_ally) esp_color = color_ally;
+
+            ImGui::GetBackgroundDrawList()->AddText({ screen_pos.x - size.x / 2, screen_pos.y - height2 }, esp_color, player_name.c_str());
+            ImGui::GetBackgroundDrawList()->AddRect({ screen_pos.x - width2, screen_pos.y - height2 }, { screen_pos.x + width2, screen_pos.y + height2 }, esp_color, 0, 0, (float)__esp_thickness.value);
+
+            rainbow_hue += __esp_rainbow_speed.value;
+            if (rainbow_hue > 1.0f)
+                rainbow_hue -= 1.0f;
+		}
     }
 
     void draw_all()
