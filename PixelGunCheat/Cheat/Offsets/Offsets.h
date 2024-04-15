@@ -126,5 +126,4 @@ public:
     static inline uint64_t fireImmunity = 0x248;
     static inline uint64_t bleedingImmunity = 0x249;
     static inline uint64_t toxicImmunity = 0x24A;
-    static inline uint64_t speedModifier = 0x66C;
 };
