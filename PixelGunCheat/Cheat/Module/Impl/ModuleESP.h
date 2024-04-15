@@ -11,6 +11,8 @@ static BKCDropdown __esp_style = BKCDropdown("ESP Style", "Simple", { "Simple", 
 static BKCSliderInt __esp_thickness = BKCSliderInt("Border Thickness", 2, 1, 5);
 static BKCSliderInt __esp_corner_rounding = BKCSliderInt("Corner Rounding", 0, -10, 10);
 static BKCCheckbox __esp_teammates = BKCCheckbox("Teammates",  true);
+static BKCCheckbox __esp_tracers = BKCCheckbox("Tracers",  false);
+static BKCCheckbox __esp_rainbow = BKCCheckbox("Rainbow :3", false);
 static BKCModule __esp = { "ESP", VISUAL, 0x0, true, { &__esp_style, &__esp_thickness, &__esp_corner_rounding, &__esp_teammates } };
 
 static ImU32 color_enemy = ImGui::ColorConvertFloat4ToU32({1.00f, 0.00f, 0.00f, 1.00f});
@@ -130,6 +132,7 @@ public:
     static void draw_esp(Unity::Vector3 screen_pos, float width2, float height2, ImU32 color, const std::string player_name)
     {
         ImVec2 size = ImGui::CalcTextSize(player_name.c_str());
+        ImU32 final_color = color;
         
         if (__esp_style.current_value == "Simple")
         {
@@ -143,7 +146,16 @@ public:
             ImGui::GetBackgroundDrawList()->AddText({screen_pos.x - size.x / 2, screen_pos.y - height2}, color, player_name.c_str());
             ImGui::GetBackgroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, color, 0, 0, (float)__esp_thickness.value);
         }
+        if (__esp_rainbow.enabled)
+        {
+            final_color = get_rainbow_color(0.1f, 0.5f, ImGui::GetTime());
+        }
+        if (__esp_tracers.enabled)
+        {
+            ImGui::GetBackgroundDrawList()->AddLine({ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y}, {screen_pos.x, screen_pos.y}, color, 1.0f);
+        }
     }
+
 
     void draw_all()
     {
