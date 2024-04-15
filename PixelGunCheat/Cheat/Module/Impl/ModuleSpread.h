@@ -11,7 +11,16 @@ public:
     
     void do_module(void* arg) override
     {
-        set_float(arg, 0xB8, __spread_coeff.value); // moveScatterCoeff
-        set_float(arg, 0x11C, __spread_coeff.value); // moveScatterCoeffZoom
+        set_float(arg, Offsets::moveScatterCoeff, __spread_coeff.value); // moveScatterCoeff
+        set_float(arg, Offsets::moveScatterCoeffZoom, __spread_coeff.value); // moveScatterCoeffZoom
+        set_float(arg, Offsets::maxKoofZoom, __spread_coeff.value); // maxKoofZoom
+        set_float(arg, Offsets::upKoofFireZoom, __spread_coeff.value); // upKoofFireZoom
+        set_float(arg, Offsets::downKoofFirstZoom, __spread_coeff.value); // downKoofFirstZoom
+        set_float(arg, Offsets::downKoofZoom, __spread_coeff.value); // downKoofZoom
+        set_float(arg, Offsets::maxKoofZoom, __spread_coeff.value); // maxKoofZoom
+        set_float(arg, Offsets::tekKoof, __spread_coeff.value); // tekKoof
+        set_float(arg, Offsets::upKoofFireZoom, __spread_coeff.value); // upKoofFireZoom
+        set_float(arg, Offsets::downKoofFirst, __spread_coeff.value); // downKoofFirst
+        set_float(arg, Offsets::downKoof, __spread_coeff.value); // downKoof
     }
 };

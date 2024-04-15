@@ -2,7 +2,6 @@
 #include <imgui.h>
 
 #include "../ModuleBase.h"
-#include "ModuleAimBot.h"
 #include "../../Hooks/Hooks.h"
 #include "../../Internal/Functions.h"
 
@@ -18,7 +17,8 @@ static BKCModule __esp = { "ESP", VISUAL, 0x0, true, { &__esp_style, &__esp_thic
 static ImU32 color_enemy = ImGui::ColorConvertFloat4ToU32({1.00f, 0.00f, 0.00f, 1.00f});
 static ImU32 color_ally = ImGui::ColorConvertFloat4ToU32({0.33f, 0.33f, 0.33f, 1.00f});
 static ImU32 color_black = ImGui::ColorConvertFloat4ToU32({0.0f, 0.0f, 0.0f, 1.00f});
-static int do_esp_timer = 0;
+
+static RECT window_size_esp;
 
 struct EspPlayer
 {
@@ -31,6 +31,13 @@ struct EspPlayer
 
 static std::list<EspPlayer> to_draw;
 
+static bool is_on_screen_esp(Unity::Vector3 pos)
+{
+    const int width = window_size_esp.right - window_size_esp.left;
+    const int height = window_size_esp.bottom - window_size_esp.top;
+    return pos.z > 0.01f && pos.x > -100 && pos.y > -100 && pos.x < (float)width + 100 && pos.y < (float)height + 100;
+}
+
 class  ModuleESP : ModuleBase
 {
 public:
@@ -38,9 +45,14 @@ public:
     
     void do_module(void* arg) override
     {
+        if ((Hooks::tick + 30) % 60 == 0)
+        {
+            GetWindowRect(GetActiveWindow(), &window_size_esp);
+        }
+        
         try
         {
-            const int height = window_size.bottom - window_size.top;
+            const int height = window_size_esp.bottom - window_size_esp.top;
             
             for (auto player : Hooks::player_list)
             {
@@ -74,7 +86,7 @@ public:
                 Functions::CameraWorldToScreen(Hooks::main_camera, &top_world, &screen_top);
                 
                 if (screen_pos.z < 0) continue;
-                if (!is_on_screen(screen_pos)) continue;
+                if (!is_on_screen_esp(screen_pos)) continue;
                 float scaled_dist = screen_pos.y - screen_top.y;
 
                 float width2 = scaled_dist / 2;
@@ -113,6 +125,7 @@ public:
             std::stringstream exinfo;
             exinfo << "!! EXINFO !! : t_count=" << Hooks::tick << ", pl_cnt=" << Hooks::player_list.size() << "/" << Hooks::player_list.max_size() << ", p_ptr=" << Hooks::our_player << ", c_ptr=" << Hooks::main_camera << " ;;;";
             Logger::log_err(exinfo.str());
+            to_draw.clear();
         }
     }
 

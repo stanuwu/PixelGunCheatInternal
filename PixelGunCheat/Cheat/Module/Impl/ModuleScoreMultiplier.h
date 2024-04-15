@@ -11,13 +11,13 @@ public:
     
     void do_module(void* arg) override
     {
-        set_bool(arg, 0x390, true); // isBuffPoints
-        set_bool(arg,0x3A0, true); // buffPointsKillDesigner
-        set_bool(arg, 0x3A8, true); // buffPointsAssistDesigner
-        set_bool(arg, 0x398, true); // buffPointsRevengeDesigner
-        set_float(arg, 0x3AC, __score_amount.value); // buffPointsOther
-        set_float(arg, 0x39C, __score_amount.value); // buffBonusPointsForKill
-        set_float(arg, 0x3A4, __score_amount.value); // buffBonusPointsForAssist
-        set_float(arg, 0x394, __score_amount.value); // buffPointsRevenge
+        set_bool(arg, Offsets::isBuffPoints, true); // isBuffPoints
+        set_bool(arg,Offsets::buffPointsKillDesigner, true); // buffPointsKillDesigner
+        set_bool(arg, Offsets::buffPointsAssistDesigner, true); // buffPointsAssistDesigner
+        set_bool(arg, Offsets::buffPointsRevengeDesigner, true); // buffPointsRevengeDesigner
+        set_float(arg, Offsets::buffPointsOther, __score_amount.value); // buffPointsOther
+        set_float(arg, Offsets::buffBonusPointsForKill, __score_amount.value); // buffBonusPointsForKill
+        set_float(arg, Offsets::buffBonusPointsForAssist, __score_amount.value); // buffBonusPointsForAssist
+        set_float(arg, Offsets::buffPointsRevenge, __score_amount.value); // buffPointsRevenge
     }
 };
