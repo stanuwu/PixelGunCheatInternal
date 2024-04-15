@@ -120,4 +120,7 @@ public:
     static inline uint64_t downKoof = 0x9C;
     static inline uint64_t poisonDamageMultiplier = 0x200;
     static inline uint64_t poisonTime = 0x204;
+    static inline uint64_t ignoreBarrier = 0x128;
+    static inline uint64_t ignoreSlyWolf = 0x129;
+    static inline uint64_t ignoreReflector = 0x12A;
 };
