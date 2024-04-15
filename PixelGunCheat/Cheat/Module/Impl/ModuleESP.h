@@ -62,7 +62,7 @@ public:
 
             if (transform == nullptr)
             {
-                Logger::log_warn("Unity::CTransform* transform ptr was nullptr during player_list loop!");
+                // Logger::log_warn("Unity::CTransform* transform ptr was nullptr during player_list loop!");
                 return;
             }
             
@@ -95,7 +95,7 @@ public:
 
             if (player == nullptr)
             {
-                Logger::log_warn("Player ptr was nullptr during player_list loop! (1st-phase)");
+                // Logger::log_warn("Player ptr was nullptr during player_list loop! (1st-phase)");
                 return;
             }
             
@@ -103,7 +103,7 @@ public:
 
             if (player == nullptr)
             {
-                Logger::log_warn("Player ptr was nullptr during player_list loop! (2nd-phase)");
+                // Logger::log_warn("Player ptr was nullptr during player_list loop! (2nd-phase)");
                 return;
             }
             
@@ -118,11 +118,13 @@ public:
         }
         catch (...)
         {
+            /*
             Logger::log_err("ESP failed to properly resolve player data, trying to catch error to prevent crash!");
             Logger::log_err("Copy the info below and send it to @george2bush or @hiderikzki on discord! (if none present, please still inform us) (thank you <3)");
             std::stringstream exinfo;
             exinfo << "!! EXINFO !! : t_count=" << Hooks::tick << ", pl_cnt=" << Hooks::player_list.size() << "/" << Hooks::player_list.max_size() << ", p_ptr=" << Hooks::our_player << ", c_ptr=" << Hooks::main_camera << " ;;;";
             Logger::log_err(exinfo.str());
+            */
             to_draw.clear();
         }
     }
