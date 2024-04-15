@@ -1,7 +1,7 @@
 ﻿# PixelGun3D Internal Utility Modification
 
-## ! Note !
-THIS IS ENTIRELY FOR EDUCATIONAL PURPOSES :)
+## !!! DISCLAIMER !!!  
+We are not encouraging modding or cheating with this repository. It is purely for educational purposes only. to companies including but not limited to Epic Games, EA, Bohemia Interative, Bluehole, Daybreak, Activision, Rockstar, Cubic Games, and Devolver Digital this is a copyright disclaimer Under Section 107 of the Copyright Act 1976, allowance is made for "fair use" for purposes such as criticism, comment, news reporting, teaching, scholarship, and research. Fair use is a use permitted by copyright statute that might otherwise be infringing. Non-profit, educational or personal use tips the balance in favor of fair use.
 
 ## Warning!
 - This Program is FREE SOFTWARE.
