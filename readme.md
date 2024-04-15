@@ -1,4 +1,7 @@
-﻿# PixelGun3D Internal Cheat
+﻿# PixelGun3D Internal Utility Modification
+
+## ! Note !
+THIS IS ENTIRELY FOR EDUCATIONAL PURPOSES :)
 
 ## Warning!
 - This Program is FREE SOFTWARE.
