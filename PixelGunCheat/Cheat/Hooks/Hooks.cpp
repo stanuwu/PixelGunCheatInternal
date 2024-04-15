@@ -40,11 +40,11 @@
 #include "../Module/Impl/ModulePriceModifier.h"
 #include "../Module/Impl/ModuleRewardsMultiplier.h"
 #include "../Module/Impl/ModuleExtraDisplay.h"
+#include "../Module/Impl/ModuleImmunity.h"
 #include "../Module/Impl/ModuleInfiniteArmor.h"
 #include "../Module/Impl/ModuleSeasonPass.h"
 #include "../Offsets/Offsets.h"
 
-class ModuleSpeed;
 uintptr_t Hooks::GameBase;
 uintptr_t Hooks::GameAssembly;
 uintptr_t Hooks::UnityPlayer;
@@ -414,14 +414,15 @@ void Hooks::load()
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleScoreMultiplier());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleXRay());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleDoubleJump());
-    weapon_sounds_modules.push_back((ModuleBase*) new InfiniteArmor());
+    // weapon_sounds_modules.push_back((ModuleBase*) new InfiniteArmor());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleAntiBarrier());
+    weapon_sounds_modules.push_back((ModuleBase*) new ModuleImmunity());
 
     // Will wreak havoc on literally everyone, even other cheaters :D
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleAntiHeadshot());
     
     player_damageable_modules.push_back((ModuleBase*) new ModuleInfiniteAmmo());
-    player_damageable_modules.push_back((ModuleBase*) new ModuleHeal());
+    // player_damageable_modules.push_back((ModuleBase*) new ModuleHeal());
 
     on_pre_render_modules.push_back((ModuleBase*) new ModuleFOVChanger());
 

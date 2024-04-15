@@ -123,4 +123,8 @@ public:
     static inline uint64_t ignoreBarrier = 0x128;
     static inline uint64_t ignoreSlyWolf = 0x129;
     static inline uint64_t ignoreReflector = 0x12A;
+    static inline uint64_t fireImmunity = 0x248;
+    static inline uint64_t bleedingImmunity = 0x249;
+    static inline uint64_t toxicImmunity = 0x24A;
+    static inline uint64_t speedModifier = 0x66C;
 };
