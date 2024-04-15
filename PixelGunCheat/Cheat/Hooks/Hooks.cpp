@@ -159,6 +159,8 @@ inline void __stdcall weapon_sounds_call(void* arg)
 {
     if (is_my_player_weapon_sounds(arg))
     {
+        if (Hooks::our_player != nullptr) ((ModuleBase*)aim_bot_module)->run(Hooks::our_player);
+        
         for (ModuleBase* weapon_sounds_module : weapon_sounds_modules)
         {
             weapon_sounds_module->run(arg);
@@ -224,7 +226,7 @@ inline void(__stdcall* player_move_c_fixed_original)(void* arg);
 inline void __stdcall player_move_c_fixed(void* arg)
 {
     bool my_player = is_my_player_move_c(arg);
-
+    
     // Player Damageable
     void* player_damageable = (void*)*(uint64_t*)((uint64_t)arg + Offsets::playerMoveCPlayerDamageable);
     if (my_player)
@@ -395,7 +397,6 @@ void Hooks::load()
     esp_module = new ModuleESP();
     player_move_c_modules.push_back((ModuleBase*) esp_module);
     aim_bot_module = new ModuleAimBot();
-    player_move_c_modules.push_back((ModuleBase*) aim_bot_module);
     player_move_c_modules.push_back((ModuleBase*) new ModuleInvisibility());
 
     /*

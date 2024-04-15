@@ -149,6 +149,7 @@ public:
     {
         if (is_enabled())
         {
+            if (Hooks::main_camera == nullptr) return;
             std::list<EspPlayer> list = to_draw;
             for (auto draw : list)
             {

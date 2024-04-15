@@ -227,8 +227,8 @@ public:
         to_draw_aim.clear();
     }
 
-    static void draw_aim(Unity::Vector3 screen_pos)
+    void draw_aim(Unity::Vector3 screen_pos)
     {
-        if (__aim_bot_target_marker.enabled) ImGui::GetBackgroundDrawList()->AddCircleFilled({screen_pos.x, screen_pos.y}, 10, color_marker);
+        if (is_enabled() && __aim_bot_target_marker.enabled) ImGui::GetBackgroundDrawList()->AddCircleFilled({screen_pos.x, screen_pos.y}, 10, color_marker);
     }
 };
