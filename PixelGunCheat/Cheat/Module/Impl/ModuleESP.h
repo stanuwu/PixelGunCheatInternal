@@ -48,72 +48,72 @@ public:
         {
             GetWindowRect(GetActiveWindow(), &window_size_esp);
         }
-        
+    }
+
+    static void add_esp(void* player)
+    {
         try
         {
+            if (player == nullptr || Hooks::our_player == nullptr) return;
+            Unity::CTransform* transform = (Unity::CTransform*)Hooks::get_player_transform(player);
+            Unity::Vector3 position;
+
             const int height = window_size_esp.bottom - window_size_esp.top;
-            
-            for (auto player : Hooks::player_list)
+
+            if (transform == nullptr)
             {
-                if (player == nullptr || Hooks::our_player == nullptr) continue;
-                Unity::CTransform* transform = (Unity::CTransform*)Hooks::get_player_transform(player);
-                Unity::Vector3 position;
-
-                if (transform == nullptr)
-                {
-                    Logger::log_warn("Unity::CTransform* transform ptr was nullptr during player_list loop!");
-                    continue;
-                }
-                
-                Functions::TransformGetPosition(transform, &position);
-                Unity::Vector3 top_world = {
-                    position.x,
-                    position.y + 2,
-                    position.z
-                };
+                Logger::log_warn("Unity::CTransform* transform ptr was nullptr during player_list loop!");
+                return;
+            }
             
-                Unity::Vector3 screen_pos;
-                Unity::Vector3 screen_top;
-                
-                if (Hooks::main_camera == nullptr)
-                {
-                    return;
-                }
-                
-                Functions::CameraWorldToScreen(Hooks::main_camera, &position, &screen_pos);
-                Functions::CameraWorldToScreen(Hooks::main_camera, &top_world, &screen_top);
-                
-                if (screen_pos.z < 0) continue;
-                if (!is_on_screen_esp(screen_pos)) continue;
-                float scaled_dist = screen_pos.y - screen_top.y;
-
-                float width2 = scaled_dist / 2;
-                float height2 = scaled_dist * 1.5f / 2;
+            Functions::TransformGetPosition(transform, &position);
+            Unity::Vector3 top_world = {
+                position.x,
+                position.y + 2,
+                position.z
+            };
+        
+            Unity::Vector3 screen_pos;
+            Unity::Vector3 screen_top;
             
-                screen_pos = {screen_pos.x, (float)height - screen_pos.y, screen_pos.z};
+            if (Hooks::main_camera == nullptr)
+            {
+                return;
+            }
+            
+            Functions::CameraWorldToScreen(Hooks::main_camera, &position, &screen_pos);
+            Functions::CameraWorldToScreen(Hooks::main_camera, &top_world, &screen_top);
+            
+            if (screen_pos.z < 0) return;
+            if (!is_on_screen_esp(screen_pos)) return;
+            float scaled_dist = screen_pos.y - screen_top.y;
 
-                if (player == nullptr)
-                {
-                    Logger::log_warn("Player ptr was nullptr during player_list loop! (1st-phase)");
-                    continue;
-                }
-                
-                std::string player_name = Hooks::get_player_name(player);
+            float width2 = scaled_dist / 2;
+            float height2 = scaled_dist * 1.5f / 2;
+        
+            screen_pos = {screen_pos.x, (float)height - screen_pos.y, screen_pos.z};
 
-                if (player == nullptr)
-                {
-                    Logger::log_warn("Player ptr was nullptr during player_list loop! (2nd-phase)");
-                    continue;
-                }
-                
-                if (Hooks::is_player_enemy(player))
-                {
-                    to_draw.push_back({screen_pos, width2, height2, color_enemy, player_name});
-                }
-                else if (__esp_teammates.enabled)
-                {
-                    to_draw.push_back({screen_pos, width2, height2, color_ally, player_name});
-                }
+            if (player == nullptr)
+            {
+                Logger::log_warn("Player ptr was nullptr during player_list loop! (1st-phase)");
+                return;
+            }
+            
+            std::string player_name = Hooks::get_player_name(player);
+
+            if (player == nullptr)
+            {
+                Logger::log_warn("Player ptr was nullptr during player_list loop! (2nd-phase)");
+                return;
+            }
+            
+            if (Hooks::is_player_enemy(player))
+            {
+                to_draw.push_back({screen_pos, width2, height2, color_enemy, player_name});
+            }
+            else if (__esp_teammates.enabled)
+            {
+                to_draw.push_back({screen_pos, width2, height2, color_ally, player_name});
             }
         }
         catch (...)
