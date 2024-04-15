@@ -184,7 +184,13 @@ inline void(__stdcall* player_move_c_original)(void* arg);
 inline void __stdcall player_move_c(void* arg)
 {
     bool my_player = is_my_player_move_c(arg);
-    if (my_player)
+    if (!my_player)
+    {
+        // Other Players
+        if (Hooks::main_camera == nullptr) return player_move_c_original(arg);
+        working_player_list.push_back(arg);  
+    }
+    else
     {
         // My Player
         Hooks::tick++;
@@ -204,11 +210,7 @@ inline void __stdcall player_move_c(void* arg)
             player_move_c_module->run(arg);
         }
     }
-    else
-    {
-        if (Hooks::main_camera == nullptr) return player_move_c_original(arg);
-        working_player_list.push_back(arg);  
-    }
+    
     
     return player_move_c_original(arg);
 }
@@ -278,7 +280,7 @@ inline void (__stdcall* on_scene_unload_original)(void* arg);
 inline void __stdcall on_scene_unload(void* arg)
 {
     Hooks::main_camera = nullptr;
-    // nuke_player_list();
+    nuke_player_list();
 
     // Get Old Scene Name
     /*
