@@ -77,7 +77,6 @@ public:
                 
                 if (Hooks::main_camera == nullptr)
                 {
-                    Logger::log_warn("Hooks::main_camera ptr was nullptr during player_list loop!");
                     return;
                 }
                 
