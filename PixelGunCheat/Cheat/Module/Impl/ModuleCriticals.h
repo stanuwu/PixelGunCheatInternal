@@ -10,7 +10,7 @@ public:
     
     void do_module(void* arg) override
     {
-        set_bool(arg, 0x388, true); // firstKillCritical
+        set_bool(arg, Offsets::firstKillCritical, true); // firstKillCritical
         Functions::SetNextHitCritical(arg, true);
     }
 };

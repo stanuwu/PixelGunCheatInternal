@@ -14,6 +14,7 @@
 #include "../Logger/Logger.h"
 
 #include <fstream>
+#include <MinHook.h>
 #include <thread>
 
 #include "../Hooks/Hooks.h"
@@ -34,6 +35,9 @@ static std::string c_Build = ":3";
 std::stringstream full_title;
 std::string combo_file = "default";
 static char input_file[32] = "default";
+static char offsets_rhd[32] = "";
+static char return_rhd[32] = "";
+static LPVOID last_rhd = nullptr;
 static ImU32 color_title = ImGui::ColorConvertFloat4ToU32({0.91f, 0.64f, 0.13f, 1.00f});
 static ImU32 color_bg = ImGui::ColorConvertFloat4ToU32({0.00f, 0.00f, 0.00f, 0.85f});
 std::string current_font = "C:/Windows/Fonts/comic.ttf";
@@ -152,6 +156,41 @@ void GetDesktopResolution(int& horizontal, int& vertical)
     // (horizontal, vertical)
     horizontal = desktop.right;
     vertical = desktop.bottom;
+}
+
+inline int(__stdcall* rhd_original)(void* arg);
+inline int __stdcall rhd(void* arg)
+{
+    Logger::log_debug("Dev Hook Called!");
+    return std::stoi(return_rhd);
+}
+
+void try_runtime_hook()
+{
+    if (!last_rhd == 0)
+    {
+        Logger::log_debug("Clearing Last Hook");
+        MH_DisableHook(last_rhd);
+        MH_RemoveHook(last_rhd);
+    }
+    uint64_t offset;
+    std::stringstream stringstream;
+    stringstream << std::hex << offsets_rhd;
+    stringstream >> offset;
+    std::stringstream s2;
+    if(offset == 0)
+    {
+        Logger::log_debug("Not Creating Null Hook!");
+        return;
+    }
+    s2 << "Creating Hook | Offset: " << offset << " | Return: " << return_rhd;
+    Logger::log_debug(s2.str());
+    last_rhd = (LPVOID*)offset;
+    if (MH_CreateHook((LPVOID*)(Hooks::GameAssembly + offset), &rhd, (LPVOID*)&rhd_original) == MH_OK)
+    {
+        Logger::log_debug("Hook Created");
+        MH_EnableHook((LPVOID*)(Hooks::GameAssembly + offset));
+    }
 }
 
 std::wstring get_executing_directory()
@@ -481,19 +520,34 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
                 ImGui::SetTooltip("Allow setting values on sliders below or above minimum and maximum when manually changing them (CTRL Clicking)");
             }
 
+            if (ImGui::CollapsingHeader("Runtime Hooks (Dev)"))
+            {
+                ImGui::Indent();
+                
+                ImGui::InputText("Offset##rhd", offsets_rhd, sizeof(offsets_rhd));
+                ImGui::InputText("Return##rhd", return_rhd, sizeof(return_rhd));
+                if (ImGui::Button("Create##rhd"))
+                {
+                    try_runtime_hook();
+                }
+                
+                ImGui::Unindent();
+            }
+
             ImGui::Unindent();
         }
 
         // Configs
-        if (ImGui::CollapsingHeader("Config"))
+        if (ImGui::CollapsingHeader("Config##config"))
         {
 			ImGui::Indent();
 
             ImGui::InputText("##config_text", input_file, sizeof(input_file));
             ImGui::SameLine();
-			if (ImGui::Button("Create"))
+			if (ImGui::Button("Create##config"))
 			{
 				save_config(input_file);
+			    combo_file = input_file;
 			}
 
 			std::vector<std::string> files = get_config_names();

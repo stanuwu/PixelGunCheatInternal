@@ -261,6 +261,7 @@
     <ClInclude Include="Cheat\Module\Impl\ModuleFrostAura.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleFullAuto.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleAntiHeadshot.h" />
+    <ClInclude Include="Cheat\Module\Impl\ModuleInfiniteArmor.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleHeal.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleInfiniteAmmo.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleInfiniteGemClaim.h" />
@@ -273,11 +274,14 @@
     <ClInclude Include="Cheat\Module\Impl\ModuleRewardsMultiplier.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleScoreMultiplier.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleInstantCharge.h" />
+    <ClInclude Include="Cheat\Module\Impl\ModuleSeasonPass.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleSpeed.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleSpread.h" />
+    <ClInclude Include="Cheat\Module\Impl\ModuleExtraDisplay.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleXRay.h" />
     <ClInclude Include="Cheat\Module\ModuleBase.h" />
     <ClCompile Include="kiero\kiero.h" />
+    <ClInclude Include="Cheat\Offsets\Offsets.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

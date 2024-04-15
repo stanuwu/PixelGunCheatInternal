@@ -14,6 +14,6 @@ public:
     
     void do_module(void* arg) override
     {
-        set_float(arg, 0x658, __reach_range.value); // reach
+        set_float(arg, Offsets::range, __reach_range.value); // range
     }
 };
