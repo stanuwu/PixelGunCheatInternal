@@ -33,6 +33,7 @@
 #include "../Module/Impl/ModuleAimBot.h"
 #include "../Module/Impl/ModuleAntiBarrier.h"
 #include "../Module/Impl/ModuleAntiHeadshot.h"
+#include "../Module/Impl/ModuleAntiKick.h"
 #include "../Module/Impl/ModuleArrayList.h"
 #include "../Module/Impl/ModuleDoubleJump.h"
 #include "../Module/Impl/ModuleESP.h"
@@ -50,6 +51,7 @@ uintptr_t Hooks::GameAssembly;
 uintptr_t Hooks::UnityPlayer;
 
 ModuleRapidFire* rapid_fire_module;
+ModuleAntiKick* anti_kick;
 ModuleSpeed* speed_module;
 ModuleBase* infinite_gem_claim_module;
 ModulePriceModifier* lottery_price_module;
@@ -302,7 +304,7 @@ inline void __stdcall on_scene_unload(void* arg)
 {
     Hooks::main_camera = nullptr;
     nuke_player_list();
-
+    return on_scene_unload_original(arg);
     // Get Old Scene Name
     /*
     void* name_ptr = (void*)*(uint64_t*)((uint64_t)arg + 0x10);
@@ -357,6 +359,17 @@ inline bool __stdcall season_pass_premium(void* arg)
     return season_pass_premium_original(arg);
 }
 
+inline void (__stdcall* anti_disconnect_original)(void* arg);
+inline void __stdcall anti_disconnect(void* arg)
+{
+    /*
+    if (!((ModuleBase*)anti_kick)->is_enabled())
+    {
+        return anti_disconnect_original(arg);
+    }
+    */
+}
+
 // Static
 void hook_function(uint64_t offset, LPVOID detour, void* original)
 {
@@ -399,6 +412,7 @@ void Hooks::load()
     hook_function(Offsets::RewardMultiplier, &reward_multiplier, &reward_multiplier_original);
     hook_function(Offsets::DoubleRewards, &double_rewards, &double_rewards_original);
     hook_function(Offsets::PremiumPass, &season_pass_premium, &season_pass_premium_original);
+    hook_function(Offsets::CancelKickReason, &anti_disconnect, &anti_disconnect_original);
     
     // Init Modules Here
     rapid_fire_module = new ModuleRapidFire();
@@ -407,6 +421,7 @@ void Hooks::load()
     lottery_price_module = new ModulePriceModifier;
     rewards_multiplier_module = new ModuleRewardsMultiplier();
     season_pass_module = new ModuleSeasonPass();
+    anti_kick = new ModuleAntiKick();
 
     esp_module = new ModuleESP();
     player_move_c_modules.push_back((ModuleBase*) esp_module);
