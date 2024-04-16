@@ -13,6 +13,7 @@ static BKCSliderInt __esp_corner_rounding = BKCSliderInt("Corner Rounding", 0, -
 static BKCCheckbox __esp_teammates = BKCCheckbox("Teammates",  true);
 static BKCSlider __esp_rgb_speed = BKCSlider("RGB Speed", 0.1f, 0.01f, 1.0f);
 static BKCCheckbox __esp_tracers = BKCCheckbox("Tracers",  false);
+static BKCSlider __esp_tracers_screen_pos = BKCSlider("Tracers Vertical", 0.5f, 0, 1);
 static BKCCheckbox __esp_rainbow = BKCCheckbox("Rainbow :3", false);
 static BKCModule __esp = { "ESP", VISUAL, 0x0, true, { &__esp_style, &__esp_thickness, &__esp_corner_rounding, &__esp_teammates, &__esp_tracers, &__esp_rainbow, &__esp_rgb_speed } };
 
@@ -29,6 +30,7 @@ struct EspPlayer
     float height2;
     ImU32 color;
     const std::string player_name;
+    bool is_teammate;
 };
 
 static std::list<EspPlayer> to_draw;
@@ -121,11 +123,11 @@ public:
             
             if (Hooks::is_player_enemy(player))
             {
-                to_draw.push_back({screen_pos, width2, height2, color_enemy, player_name});
+                to_draw.push_back({screen_pos, width2, height2, color_enemy, player_name, false});
             }
             else if (__esp_teammates.enabled)
             {
-                to_draw.push_back({screen_pos, width2, height2, color_ally, player_name});
+                to_draw.push_back({screen_pos, width2, height2, color_ally, player_name, true});
             }
         }
         catch (...)
@@ -140,35 +142,35 @@ public:
             to_draw.clear();
         }
     }
-static void draw_esp(Unity::Vector3 screen_pos, float width2, float height2, ImU32 color, const std::string player_name)
-{
-    ImVec2 size = ImGui::CalcTextSize(player_name.c_str());
-    ImU32 final_color = color;
     
-    if (__esp_rainbow.enabled)
+    static void draw_esp(Unity::Vector3 screen_pos, float width2, float height2, ImU32 color, const std::string player_name, const bool is_teammate)
     {
-        final_color = get_rainbow_color((float)ImGui::GetTime(), 1.0f, 1.0f, __esp_rgb_speed.value); 
+        ImVec2 size = ImGui::CalcTextSize(player_name.c_str());
+        ImU32 final_color = color;
+        
+        if (__esp_rainbow.enabled && !is_teammate)
+        {
+            final_color = get_rainbow_color((float)ImGui::GetTime(), 1.0f, 1.0f, __esp_rgb_speed.value); 
+        }
+        
+        if (__esp_style.current_value == "Simple")
+        {
+            ImGui::GetBackgroundDrawList()->AddText({screen_pos.x - size.x / 2, screen_pos.y - height2}, final_color, player_name.c_str());
+            ImGui::GetBackgroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, final_color, (float)__esp_corner_rounding.value, 0, (float)__esp_thickness.value);
+        }
+        else if (__esp_style.current_value == "CS-like")
+        {
+            ImGui::GetBackgroundDrawList()->AddText({screen_pos.x + 1 - size.x / 2, screen_pos.y + 1 - height2}, color_black, player_name.c_str());
+            ImGui::GetBackgroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, color_black, (float)__esp_corner_rounding.value, 0, (float)__esp_thickness.value * 2);
+            ImGui::GetBackgroundDrawList()->AddText({screen_pos.x - size.x / 2, screen_pos.y - height2}, final_color, player_name.c_str());
+            ImGui::GetBackgroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, final_color, (float)__esp_corner_rounding.value, 0, (float)__esp_thickness.value);
+        }
+        
+        if (__esp_tracers.enabled && !is_teammate)
+        {
+            ImGui::GetBackgroundDrawList()->AddLine({ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y * __esp_tracers_screen_pos.value}, {screen_pos.x, screen_pos.y}, final_color, 1.0f);
+        }
     }
-    
-    if (__esp_style.current_value == "Simple")
-    {
-        ImGui::GetBackgroundDrawList()->AddText({screen_pos.x - size.x / 2, screen_pos.y - height2}, final_color, player_name.c_str());
-        ImGui::GetBackgroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, final_color, 0, 0, (float)__esp_thickness.value);
-    }
-    else if (__esp_style.current_value == "CS-like")
-    {
-        ImGui::GetBackgroundDrawList()->AddText({screen_pos.x + 1 - size.x / 2, screen_pos.y + 1 - height2}, color_black, player_name.c_str());
-        ImGui::GetBackgroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, color_black, 0, 0, (float)__esp_thickness.value * 2);
-        ImGui::GetBackgroundDrawList()->AddText({screen_pos.x - size.x / 2, screen_pos.y - height2}, final_color, player_name.c_str());
-        ImGui::GetBackgroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, final_color, 0, 0, (float)__esp_thickness.value);
-    }
-    
-    if (__esp_tracers.enabled)
-    {
-        ImGui::GetBackgroundDrawList()->AddLine({ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y}, {screen_pos.x, screen_pos.y}, final_color, 1.0f);
-    }
-}
-
 
     void draw_all()
     {
@@ -178,7 +180,7 @@ static void draw_esp(Unity::Vector3 screen_pos, float width2, float height2, ImU
             std::list<EspPlayer> list = to_draw;
             for (auto draw : list)
             {
-                draw_esp(draw.screen_pos, draw.width2, draw.height2, draw.color, draw.player_name);
+                draw_esp(draw.screen_pos, draw.width2, draw.height2, draw.color, draw.player_name, draw.is_teammate);
             }
         }
         to_draw.clear();
