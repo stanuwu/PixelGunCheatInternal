@@ -150,8 +150,17 @@ std::string get_player_name_from_weapon_sounds(void* weapon_sounds)
 
 Unity::CCamera* find_main_camera()
 {
-    Unity::CCamera* camera = Unity::Camera::GetMain();
-    return camera;
+    Unity::il2cppClass* camera_class = IL2CPP::Class::Find("UnityEngine.Camera");
+    Unity::il2cppObject* camera_type = IL2CPP::Class::GetSystemType(camera_class);
+    Unity::il2cppArray<Unity::CCamera*>* cameras = Unity::Object::FindObjectsOfType<Unity::CCamera>(camera_type);
+    for (int i = 0; i < cameras->m_uMaxLength; i++)
+    {
+        Unity::CCamera* camera = cameras->At(i);
+        std::string name = clean_string((*camera->GetName()).ToString());
+        if (name == "ThirdPersonCamera(Clone)") return camera;
+    }
+    
+    return Unity::Camera::GetMain();
 }
 
 // Hook Functions

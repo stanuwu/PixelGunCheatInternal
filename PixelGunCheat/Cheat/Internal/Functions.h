@@ -48,4 +48,8 @@ public:
     static void TransformLookAt(void* arg, void* position, void* up);
     static bool PhysicsRaycast(void* ray, void* hit_info, float max_distance);
     static int ObjectGetInstanceID(void* arg);
+    static void* FindObjectsOfType(void* arg);
+    static void* FindObjectOfType(void* arg);
+    static void* TypeGetType(void* arg);
+    static bool BehaviourGetEnabled(void* arg);
 };

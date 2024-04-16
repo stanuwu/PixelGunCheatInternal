@@ -109,3 +109,31 @@ int Functions::ObjectGetInstanceID(void* arg)
     static const auto fn = (int(*)(void*))(GameAssembly_ + Offsets::ObjectGetInstanceID);
     return fn(arg);
 }
+
+void* Functions::FindObjectsOfType(void* arg)
+{
+    if (!arg) return nullptr;
+    static const auto fn = (void*(*)(void*))(GameAssembly_ + Offsets::FindObjectsOfType);
+    return fn(arg);
+}
+
+void* Functions::FindObjectOfType(void* arg)
+{
+    if (!arg) return nullptr;
+    static const auto fn = (void*(*)(void*))(GameAssembly_ + Offsets::FindObjectOfType);
+    return fn(arg);
+}
+
+void* Functions::TypeGetType(void* arg)
+{
+    if (!arg) return nullptr;
+    static const auto fn = (void*(*)(void*))(GameAssembly_ + Offsets::TypeGetType);
+    return fn(arg);
+}
+
+bool Functions::BehaviourGetEnabled(void* arg)
+{
+    if (!arg) return false;
+    static const auto fn = (bool(*)(void*))(GameAssembly_ + Offsets::BehaviourGetEnabled);
+    return fn(arg);
+}
