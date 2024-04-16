@@ -251,6 +251,7 @@
     <ClInclude Include="Cheat\Logger\Logger.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleAimBot.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleAntiBarrier.h" />
+    <ClInclude Include="Cheat\Module\Impl\ModuleAntiKick.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleAOEBullets.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleArrayList.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleBetterScope.h" />

@@ -33,6 +33,7 @@ public:
     static inline uint64_t RewardMultiplier = 0xC326E0;
     static inline uint64_t DoubleRewards = 0xC33660;
     static inline uint64_t PremiumPass = 0x18881E0;
+    static inline uint64_t CancelKickReason = 0x45D440;
 
     // Fields
     static inline uint64_t scopeSpeed = 0xF8;
