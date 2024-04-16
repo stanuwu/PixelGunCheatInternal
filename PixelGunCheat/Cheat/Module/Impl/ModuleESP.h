@@ -11,10 +11,10 @@ static BKCDropdown __esp_style = BKCDropdown("ESP Style", "Simple", { "Simple", 
 static BKCSliderInt __esp_thickness = BKCSliderInt("Border Thickness", 2, 1, 5);
 static BKCSliderInt __esp_corner_rounding = BKCSliderInt("Corner Rounding", 0, -10, 10);
 static BKCCheckbox __esp_teammates = BKCCheckbox("Teammates",  true);
-static BKCSliderFloat __esp_rgb_speed = BKCSliderFloat("RGB Speed", 0.1f, 0.01f, 1.0f);
+static BKCSlider __esp_rgb_speed = BKCSlider("RGB Speed", 0.1f, 0.01f, 1.0f);
 static BKCCheckbox __esp_tracers = BKCCheckbox("Tracers",  false);
 static BKCCheckbox __esp_rainbow = BKCCheckbox("Rainbow :3", false);
-static BKCModule __esp = { "ESP", VISUAL, 0x0, true, { &__esp_style, &__esp_thickness, &__esp_corner_rounding, &__esp_teammates } };
+static BKCModule __esp = { "ESP", VISUAL, 0x0, true, { &__esp_style, &__esp_thickness, &__esp_corner_rounding, &__esp_teammates, &__esp_tracers, &__esp_rainbow, &__esp_rgb_speed } };
 
 static ImU32 color_enemy = ImGui::ColorConvertFloat4ToU32({1.00f, 0.00f, 0.00f, 1.00f});
 static ImU32 color_ally = ImGui::ColorConvertFloat4ToU32({0.33f, 0.33f, 0.33f, 1.00f});
@@ -53,14 +53,14 @@ public:
         }
     }
 
-    ImU32 get_rainbow_color(float time, float saturation, float value, float speed)
-{
-    float hue = std::fmod(time * speed, 1.0f);
-    ImVec4 color_hsv(hue, saturation, value, 1.0f);
-    ImVec4 color_rgb;
-    ImGui::ColorConvertHSVtoRGB(color_hsv.x, color_hsv.y, color_hsv.z, color_rgb.x, color_rgb.y, color_rgb.z);
-    return ImGui::ColorConvertFloat4ToU32(color_rgb);
-}
+    static ImU32 get_rainbow_color(float time, float saturation, float value, float speed)
+    {
+        float hue = std::fmod(time * speed, 1.0f);
+        ImVec4 color_hsv(hue, saturation, value, 1.0f);
+        ImVec4 color_rgb;
+        ImGui::ColorConvertHSVtoRGB(color_hsv.x, color_hsv.y, color_hsv.z, color_rgb.x, color_rgb.y, color_rgb.z);
+        return ImGui::ColorConvertFloat4ToU32({color_rgb.x, color_rgb.y, color_rgb.z, 1.0f});
+    }
     
     static void add_esp(void* player)
     {
@@ -147,7 +147,7 @@ static void draw_esp(Unity::Vector3 screen_pos, float width2, float height2, ImU
     
     if (__esp_rainbow.enabled)
     {
-        final_color = get_rainbow_color(ImGui::GetTime(), 1.0f, 1.0f, __esp_rgb_speed.value); 
+        final_color = get_rainbow_color((float)ImGui::GetTime(), 1.0f, 1.0f, __esp_rgb_speed.value); 
     }
     
     if (__esp_style.current_value == "Simple")
