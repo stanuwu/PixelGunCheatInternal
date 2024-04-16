@@ -250,6 +250,7 @@
     <ClInclude Include="Cheat\Internal\Functions.h" />
     <ClInclude Include="Cheat\Logger\Logger.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleAimBot.h" />
+    <ClInclude Include="Cheat\Module\Impl\ModuleAntiBarrier.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleAOEBullets.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleArrayList.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleBetterScope.h" />
@@ -262,6 +263,7 @@
     <ClInclude Include="Cheat\Module\Impl\ModuleFrostAura.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleFullAuto.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleAntiHeadshot.h" />
+    <ClInclude Include="Cheat\Module\Impl\ModuleImmunity.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleInfiniteArmor.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleHeal.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleInfiniteAmmo.h" />

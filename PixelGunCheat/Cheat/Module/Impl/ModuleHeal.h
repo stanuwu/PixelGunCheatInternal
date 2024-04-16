@@ -2,7 +2,7 @@
 #include "../ModuleBase.h"
 #include "../../Internal/Functions.h"
 
-static BKCModule __auto_heal = { "Auto Heal", PLAYER, 0x0, true, {} };
+static BKCModule __auto_heal = { "Auto Heal", PLAYER, 0x0, false, {} };
 class ModuleHeal : ModuleBase
 {
 public:

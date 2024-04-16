@@ -31,6 +31,7 @@
 
 #include "../IL2CPPResolver/IL2CPP_Resolver.hpp"
 #include "../Module/Impl/ModuleAimBot.h"
+#include "../Module/Impl/ModuleAntiBarrier.h"
 #include "../Module/Impl/ModuleAntiHeadshot.h"
 #include "../Module/Impl/ModuleArrayList.h"
 #include "../Module/Impl/ModuleDoubleJump.h"
@@ -39,11 +40,11 @@
 #include "../Module/Impl/ModulePriceModifier.h"
 #include "../Module/Impl/ModuleRewardsMultiplier.h"
 #include "../Module/Impl/ModuleExtraDisplay.h"
+#include "../Module/Impl/ModuleImmunity.h"
 #include "../Module/Impl/ModuleInfiniteArmor.h"
 #include "../Module/Impl/ModuleSeasonPass.h"
 #include "../Offsets/Offsets.h"
 
-class ModuleSpeed;
 uintptr_t Hooks::GameBase;
 uintptr_t Hooks::GameAssembly;
 uintptr_t Hooks::UnityPlayer;
@@ -55,6 +56,7 @@ ModulePriceModifier* lottery_price_module;
 ModuleBase* fast_levels_module;
 ModuleRewardsMultiplier* rewards_multiplier_module;
 ModuleESP* esp_module;
+ModuleAimBot* aim_bot_module;
 ModuleSeasonPass* season_pass_module;
 std::list<ModuleBase*> player_move_c_modules = { };
 std::list<ModuleBase*> player_fps_controller_sharp_modules = { };
@@ -77,6 +79,8 @@ void Hooks::draw_all()
 {
     if (esp_module == nullptr) return;
     esp_module->draw_all();
+    if (aim_bot_module == nullptr) return;
+    aim_bot_module->draw_all_aim();
 }
 
 void nuke_player_list()
@@ -155,6 +159,8 @@ inline void __stdcall weapon_sounds_call(void* arg)
 {
     if (is_my_player_weapon_sounds(arg))
     {
+        if (Hooks::our_player != nullptr) ((ModuleBase*)aim_bot_module)->run(Hooks::our_player);
+        
         for (ModuleBase* weapon_sounds_module : weapon_sounds_modules)
         {
             weapon_sounds_module->run(arg);
@@ -184,12 +190,13 @@ inline void(__stdcall* player_move_c_original)(void* arg);
 inline void __stdcall player_move_c(void* arg)
 {
     bool my_player = is_my_player_move_c(arg);
+
     if (my_player)
     {
         // My Player
         Hooks::tick++;
 
-        if (Hooks::tick % 30 == 0)
+        if (Hooks::tick % 5 == 0)
         {
             Hooks::main_camera = find_main_camera();
             if (Hooks::main_camera == nullptr)
@@ -198,7 +205,6 @@ inline void __stdcall player_move_c(void* arg)
             }
             Hooks::our_player = arg;
         }
-        
         for (ModuleBase* player_move_c_module : player_move_c_modules)
         {
             player_move_c_module->run(arg);
@@ -206,9 +212,12 @@ inline void __stdcall player_move_c(void* arg)
     }
     else
     {
+        // Other Players
         if (Hooks::main_camera == nullptr) return player_move_c_original(arg);
+        esp_module->add_esp(arg);
         working_player_list.push_back(arg);  
     }
+    
     
     return player_move_c_original(arg);
 }
@@ -217,7 +226,7 @@ inline void(__stdcall* player_move_c_fixed_original)(void* arg);
 inline void __stdcall player_move_c_fixed(void* arg)
 {
     bool my_player = is_my_player_move_c(arg);
-
+    
     // Player Damageable
     void* player_damageable = (void*)*(uint64_t*)((uint64_t)arg + Offsets::playerMoveCPlayerDamageable);
     if (my_player)
@@ -278,7 +287,7 @@ inline void (__stdcall* on_scene_unload_original)(void* arg);
 inline void __stdcall on_scene_unload(void* arg)
 {
     Hooks::main_camera = nullptr;
-    // nuke_player_list();
+    nuke_player_list();
 
     // Get Old Scene Name
     /*
@@ -387,7 +396,7 @@ void Hooks::load()
 
     esp_module = new ModuleESP();
     player_move_c_modules.push_back((ModuleBase*) esp_module);
-    player_move_c_modules.push_back((ModuleBase*) new ModuleAimBot());
+    aim_bot_module = new ModuleAimBot();
     player_move_c_modules.push_back((ModuleBase*) new ModuleInvisibility());
 
     /*
@@ -411,13 +420,15 @@ void Hooks::load()
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleScoreMultiplier());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleXRay());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleDoubleJump());
-    weapon_sounds_modules.push_back((ModuleBase*) new InfiniteArmor());
+    // weapon_sounds_modules.push_back((ModuleBase*) new InfiniteArmor());
+    weapon_sounds_modules.push_back((ModuleBase*) new ModuleAntiBarrier());
+    weapon_sounds_modules.push_back((ModuleBase*) new ModuleImmunity());
 
     // Will wreak havoc on literally everyone, even other cheaters :D
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleAntiHeadshot());
     
     player_damageable_modules.push_back((ModuleBase*) new ModuleInfiniteAmmo());
-    player_damageable_modules.push_back((ModuleBase*) new ModuleHeal());
+    // player_damageable_modules.push_back((ModuleBase*) new ModuleHeal());
 
     on_pre_render_modules.push_back((ModuleBase*) new ModuleFOVChanger());
 
