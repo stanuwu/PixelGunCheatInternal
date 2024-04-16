@@ -140,31 +140,35 @@ public:
             to_draw.clear();
         }
     }
-
-    static void draw_esp(Unity::Vector3 screen_pos, float width2, float height2, ImU32 color, const std::string player_name)
-    {
-        ImVec2 size = ImGui::CalcTextSize(player_name.c_str());
-        ImU32 final_color = color;
-        
-        if (__esp_style.current_value == "Simple")
-        {
-            ImGui::GetBackgroundDrawList()->AddText({screen_pos.x - size.x / 2, screen_pos.y - height2}, color, player_name.c_str());
-            ImGui::GetBackgroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, color, 0, 0, (float)__esp_thickness.value);
-        }
-        else if (__esp_style.current_value == "CS-like")
-        {
-            ImGui::GetBackgroundDrawList()->AddText({screen_pos.x + 1 - size.x / 2, screen_pos.y + 1 - height2}, color_black, player_name.c_str());
-            ImGui::GetBackgroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, color_black, 0, 0, (float)__esp_thickness.value * 2);
-            ImGui::GetBackgroundDrawList()->AddText({screen_pos.x - size.x / 2, screen_pos.y - height2}, color, player_name.c_str());
-            ImGui::GetBackgroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, color, 0, 0, (float)__esp_thickness.value);
-        }
-        
-
-if (__esp_rainbow.enabled)
+static void draw_esp(Unity::Vector3 screen_pos, float width2, float height2, ImU32 color, const std::string player_name)
 {
-    final_color = get_rainbow_color(ImGui::GetTime(), 1.0f, 1.0f, __esp_rgb_speed.value); 
+    ImVec2 size = ImGui::CalcTextSize(player_name.c_str());
+    ImU32 final_color = color;
+    
+    if (__esp_rainbow.enabled)
+    {
+        final_color = get_rainbow_color(ImGui::GetTime(), 1.0f, 1.0f, __esp_rgb_speed.value); 
+    }
+    
+    if (__esp_style.current_value == "Simple")
+    {
+        ImGui::GetBackgroundDrawList()->AddText({screen_pos.x - size.x / 2, screen_pos.y - height2}, final_color, player_name.c_str());
+        ImGui::GetBackgroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, final_color, 0, 0, (float)__esp_thickness.value);
+    }
+    else if (__esp_style.current_value == "CS-like")
+    {
+        ImGui::GetBackgroundDrawList()->AddText({screen_pos.x + 1 - size.x / 2, screen_pos.y + 1 - height2}, color_black, player_name.c_str());
+        ImGui::GetBackgroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, color_black, 0, 0, (float)__esp_thickness.value * 2);
+        ImGui::GetBackgroundDrawList()->AddText({screen_pos.x - size.x / 2, screen_pos.y - height2}, final_color, player_name.c_str());
+        ImGui::GetBackgroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, final_color, 0, 0, (float)__esp_thickness.value);
+    }
+    
+    if (__esp_tracers.enabled)
+    {
+        ImGui::GetBackgroundDrawList()->AddLine({ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y}, {screen_pos.x, screen_pos.y}, final_color, 1.0f);
+    }
 }
-}
+
 
     void draw_all()
     {
