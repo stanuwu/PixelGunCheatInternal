@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <imgui.h>
 
 #include "../ModuleBase.h"
@@ -11,6 +11,7 @@ static BKCDropdown __esp_style = BKCDropdown("ESP Style", "Simple", { "Simple", 
 static BKCSliderInt __esp_thickness = BKCSliderInt("Border Thickness", 2, 1, 5);
 static BKCSliderInt __esp_corner_rounding = BKCSliderInt("Corner Rounding", 0, -10, 10);
 static BKCCheckbox __esp_teammates = BKCCheckbox("Teammates",  true);
+static BKCSliderFloat __esp_rgb_speed = BKCSliderFloat("RGB Speed", 0.1f, 0.01f, 1.0f);
 static BKCCheckbox __esp_tracers = BKCCheckbox("Tracers",  false);
 static BKCCheckbox __esp_rainbow = BKCCheckbox("Rainbow :3", false);
 static BKCModule __esp = { "ESP", VISUAL, 0x0, true, { &__esp_style, &__esp_thickness, &__esp_corner_rounding, &__esp_teammates } };
@@ -52,6 +53,15 @@ public:
         }
     }
 
+    ImU32 get_rainbow_color(float time, float saturation, float value, float speed)
+{
+    float hue = std::fmod(time * speed, 1.0f);
+    ImVec4 color_hsv(hue, saturation, value, 1.0f);
+    ImVec4 color_rgb;
+    ImGui::ColorConvertHSVtoRGB(color_hsv.x, color_hsv.y, color_hsv.z, color_rgb.x, color_rgb.y, color_rgb.z);
+    return ImGui::ColorConvertFloat4ToU32(color_rgb);
+}
+    
     static void add_esp(void* player)
     {
         try
@@ -146,16 +156,13 @@ public:
             ImGui::GetBackgroundDrawList()->AddText({screen_pos.x - size.x / 2, screen_pos.y - height2}, color, player_name.c_str());
             ImGui::GetBackgroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, color, 0, 0, (float)__esp_thickness.value);
         }
-        if (__esp_rainbow.enabled)
-        {
-            final_color = get_rainbow_color(0.1f, 0.5f, ImGui::GetTime());
-        }
-        if (__esp_tracers.enabled)
-        {
-            ImGui::GetBackgroundDrawList()->AddLine({ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y}, {screen_pos.x, screen_pos.y}, color, 1.0f);
-        }
-    }
+        
 
+if (__esp_rainbow.enabled)
+{
+    final_color = get_rainbow_color(ImGui::GetTime(), 1.0f, 1.0f, __esp_rgb_speed.value); 
+}
+}
 
     void draw_all()
     {
