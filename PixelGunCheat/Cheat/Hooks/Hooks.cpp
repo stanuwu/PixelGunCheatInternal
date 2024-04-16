@@ -295,7 +295,7 @@ inline void __stdcall on_scene_unload(void* arg)
 {
     Hooks::main_camera = nullptr;
     nuke_player_list();
-    return on_scene_unload_original(arg);
+    // return on_scene_unload_original(arg);
     // Get Old Scene Name
     /*
     void* name_ptr = (void*)*(uint64_t*)((uint64_t)arg + 0x10);
@@ -353,13 +353,14 @@ inline bool __stdcall season_pass_premium(void* arg)
 inline void (__stdcall* anti_disconnect_original)(void* arg);
 inline void __stdcall anti_disconnect(void* arg)
 {
-    /*
+}
+
+/*
     if (!((ModuleBase*)anti_kick)->is_enabled())
     {
         return anti_disconnect_original(arg);
     }
     */
-}
 
 // Static
 void hook_function(uint64_t offset, LPVOID detour, void* original)
@@ -412,7 +413,7 @@ void Hooks::load()
     lottery_price_module = new ModulePriceModifier;
     rewards_multiplier_module = new ModuleRewardsMultiplier();
     season_pass_module = new ModuleSeasonPass();
-    anti_kick = new ModuleAntiKick();
+    // anti_kick = new ModuleAntiKick();
 
     esp_module = new ModuleESP();
     player_move_c_modules.push_back((ModuleBase*) esp_module);

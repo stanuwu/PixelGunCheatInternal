@@ -11,9 +11,9 @@ public:
     
     void do_module(void* arg) override
     {
-        if (Hooks::tick % 10 == 0)
+        if (Hooks::tick % 2 == 0)
         {
-            Functions::AddAmmoFromWeaponOnline(arg, 10);
+            Functions::AddAmmoFromWeaponOnline(arg, 50);
         }
     }
 };
