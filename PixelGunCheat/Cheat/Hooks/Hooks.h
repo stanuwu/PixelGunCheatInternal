@@ -22,5 +22,6 @@ public:
     static uintptr_t GameBase;
     static uintptr_t GameAssembly;
     static uintptr_t UnityPlayer;
+    static ModuleBase* fov_changer_module;
     static std::list<ModuleBase*> on_imgui_draw_modules;
 };

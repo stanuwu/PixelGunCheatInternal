@@ -58,6 +58,7 @@ ModuleRewardsMultiplier* rewards_multiplier_module;
 ModuleESP* esp_module;
 ModuleAimBot* aim_bot_module;
 ModuleSeasonPass* season_pass_module;
+ModuleBase* Hooks::fov_changer_module;
 std::list<ModuleBase*> player_move_c_modules = { };
 std::list<ModuleBase*> player_fps_controller_sharp_modules = { };
 std::list<ModuleBase*> weapon_sounds_modules = { };
@@ -205,6 +206,9 @@ inline void __stdcall player_move_c(void* arg)
             }
             Hooks::our_player = arg;
         }
+
+        Hooks::fov_changer_module->run(nullptr);
+        
         for (ModuleBase* player_move_c_module : player_move_c_modules)
         {
             player_move_c_module->run(arg);
@@ -214,6 +218,7 @@ inline void __stdcall player_move_c(void* arg)
     {
         // Other Players
         if (Hooks::main_camera == nullptr) return player_move_c_original(arg);
+        Hooks::fov_changer_module->run(nullptr);
         esp_module->add_esp(arg);
         working_player_list.push_back(arg);  
     }
@@ -430,7 +435,8 @@ void Hooks::load()
     player_damageable_modules.push_back((ModuleBase*) new ModuleInfiniteAmmo());
     // player_damageable_modules.push_back((ModuleBase*) new ModuleHeal());
 
-    on_pre_render_modules.push_back((ModuleBase*) new ModuleFOVChanger());
+    fov_changer_module = (ModuleBase*) new ModuleFOVChanger();
+    on_pre_render_modules.push_back(fov_changer_module);
 
     // Post Module Load
     BKCImGuiHooker::modules_loaded = true;
