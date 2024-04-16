@@ -62,10 +62,10 @@ Use MSVC Build Tools v143
 
 Dependencies from vcpkg:
 
-`minhook:x64-windows`
+`minhook:x64-windows-static`
 
-`imgui:x64-windows`
+`imgui:x64-windows-static`
 
-`imgui[dx11-binding]:x64-windows`
+`imgui[dx11-binding]:x64-windows-static`
 
-`imgui[win32-binding]:x64-windows`
+`imgui[win32-binding]:x64-windows-static`
