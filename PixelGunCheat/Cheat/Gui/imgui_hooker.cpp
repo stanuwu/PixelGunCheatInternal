@@ -428,6 +428,13 @@ bool BKCImGuiHooker::config_loaded = false;
 bool BKCImGuiHooker::c_GuiEnabled = false;
 float BKCImGuiHooker::scale_factor = 1;
 std::vector<std::string> fonts = native_font_list(true);
+
+void DrawClientSettingsWindow();
+void DrawConfigsWindow();
+
+static bool show_client_settings = false;
+static bool show_configs = false;
+
 void BKCImGuiHooker::setup_imgui_hwnd(HWND handle, ID3D11Device* device, ID3D11DeviceContext* device_context)
 {
     imgui_hwnd = handle;
@@ -506,148 +513,34 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
     
     if (c_GuiEnabled)
     {
-        ImGui::Begin(full_title.str().c_str());
+        ImGui::Begin(full_title.str().c_str(), nullptr, ImGuiWindowFlags_MenuBar);
 
+        if (ImGui::BeginMenuBar())
+        {
+            if (ImGui::BeginMenu("Windows"))
+            {
+                ImGui::MenuItem("Client Settings", nullptr, &show_client_settings);
+                ImGui::MenuItem("Configs", nullptr, &show_configs);
+                ImGui::EndMenu();
+            }
+            
+            ImGui::EndMenuBar();
+        }
+        
         HandleCategoryRendering("General", GENERAL);
         HandleCategoryRendering("Combat", COMBAT);
         HandleCategoryRendering("Visual", VISUAL);
         HandleCategoryRendering("Movement", MOVEMENT);
         HandleCategoryRendering("Player", PLAYER);
         HandleCategoryRendering("Exploit", EXPLOIT);
-
-        if (ImGui::CollapsingHeader("Client Settings"))
-        {
-            ImGui::Indent();
-            
-            if (ImGui::BeginCombo("Font", current_font.c_str()))
-            {
-                for (std::string::size_type i = 0; i < fonts.size(); i++)
-                {
-                    const bool selected = current_font == fonts[i];
-                    
-                    if (ImGui::Selectable(fonts[i].c_str(), selected))
-                    {
-                        current_font = fonts[i];
-                        ImGuiIO& io = ImGui::GetIO(); (void) io;
-                        gui_font = io.Fonts->AddFontFromFileTTF(current_font.c_str(), 20.0f * scale_factor);
-                        watermark_font = io.Fonts->AddFontFromFileTTF(current_font.c_str(), 32.0f * scale_factor);
-                        arraylist_font = io.Fonts->AddFontFromFileTTF(current_font.c_str(), 24.0f * scale_factor);
-                        io.Fonts->Build();
-                        // force invalidation and new frames
-                        ImGui_ImplDX11_InvalidateDeviceObjects();
-                        ImGui_ImplDX11_NewFrame();
-                        ImGui_ImplWin32_NewFrame();
-                        ImGui::NewFrame();
-                        Logger::log_info("Changed client font to " + current_font);
-                        return;
-                    }
-                    if (selected) ImGui::SetItemDefaultFocus();
-                }
-
-                ImGui::EndCombo();
-            }
-
-            ImGui::Checkbox("Boundless Sliders", &boundless_value_setting);
-
-            if (ImGui::IsItemHovered())
-            {
-                ImGui::SetTooltip("Allow setting values on sliders below or above minimum and maximum when manually changing them (CTRL Clicking)");
-            }
-
-            if (ImGui::CollapsingHeader("Item Giver (Dev)"))
-            {
-                ImGui::Indent();
-
-                if (ImGui::BeginCombo("Item Selector", current_weapon.c_str()))
-                {
-                    ImGui::InputText("Weapon Name", weapon_search, sizeof(weapon_search));
-                    
-                    for (std::string::size_type i = 0; i < weapons_names.size(); i++)
-                    {
-                        if (weapons_names[i].find(weapon_search) != std::string::npos)
-                        {
-                            const bool selected = current_weapon == weapons_names[i];
-
-                            if (ImGui::Selectable(weapons_names[i].c_str(), selected))
-                            {
-                                current_weapon = weapons_names[i];
-                            }
-                            if (selected) ImGui::SetItemDefaultFocus();
-                        }
-                    }
-
-                    ImGui::EndCombo();
-                }
-                
-                ImGui::Unindent();
-            }
-            
-            if (ImGui::CollapsingHeader("Runtime Hooks (Dev)"))
-            {
-                ImGui::Indent();
-                
-                ImGui::InputText("Offset##rhd", offsets_rhd, sizeof(offsets_rhd));
-                ImGui::InputText("Return##rhd", return_rhd, sizeof(return_rhd));
-                if (ImGui::Button("Create##rhd"))
-                {
-                    try_runtime_hook();
-                }
-                
-                ImGui::Unindent();
-            }
-
-            ImGui::Unindent();
-        }
-
-        // Configs
-        if (ImGui::CollapsingHeader("Config##config"))
-        {
-			ImGui::Indent();
-
-            ImGui::InputText("##config_text", input_file, sizeof(input_file));
-            ImGui::SameLine();
-			if (ImGui::Button("Create##config"))
-			{
-				save_config(input_file);
-			    combo_file = input_file;
-			}
-
-			std::vector<std::string> files = get_config_names();
-
-			if (ImGui::BeginCombo("##config_combo", combo_file.c_str()))
-			{
-				for (std::string::size_type i = 0; i < files.size(); i++)
-				{
-					const bool selected = combo_file == files[i];
-
-					if (ImGui::Selectable(files[i].c_str(), selected))
-					{
-						combo_file = files[i];
-					}
-					if (selected) ImGui::SetItemDefaultFocus();
-				}
-
-				ImGui::EndCombo();
-			}
-            
-            ImGui::SameLine();
-            if (ImGui::Button("Load"))
-            {
-                load_config(combo_file.c_str());
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("Save"))
-            {
-                save_config(combo_file.c_str());
-            }
-
-			ImGui::Unindent();
-        }
         
         ImGui::End();
 
         // ENABLE THIS FOR EASILY FINDING WHAT YOU NEED TO ADD TO THE GUI
         // ImGui::ShowDemoWindow();
+
+        if (show_client_settings) DrawClientSettingsWindow();
+        if (show_configs) DrawConfigsWindow();
     }
 
     // Modules
@@ -673,6 +566,136 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
     g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr);
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
+
+void DrawClientSettingsWindow()
+{
+    ImGui::Begin("Client Settings", &show_client_settings);
+
+    if (ImGui::BeginCombo("Font", current_font.c_str()))
+    {
+        for (std::string::size_type i = 0; i < fonts.size(); i++)
+        {
+            const bool selected = current_font == fonts[i];
+                
+            if (ImGui::Selectable(fonts[i].c_str(), selected))
+            {
+                current_font = fonts[i];
+                ImGuiIO& io = ImGui::GetIO(); (void) io;
+                BKCImGuiHooker::gui_font = io.Fonts->AddFontFromFileTTF(current_font.c_str(), 20.0f * BKCImGuiHooker::scale_factor);
+                BKCImGuiHooker::watermark_font = io.Fonts->AddFontFromFileTTF(current_font.c_str(), 32.0f * BKCImGuiHooker::scale_factor);
+                BKCImGuiHooker::arraylist_font = io.Fonts->AddFontFromFileTTF(current_font.c_str(), 24.0f * BKCImGuiHooker::scale_factor);
+                io.Fonts->Build();
+                // force invalidation and new frames
+                ImGui_ImplDX11_InvalidateDeviceObjects();
+                ImGui_ImplDX11_NewFrame();
+                ImGui_ImplWin32_NewFrame();
+                ImGui::NewFrame();
+                Logger::log_info("Changed client font to " + current_font);
+                return;
+            }
+            if (selected) ImGui::SetItemDefaultFocus();
+        }
+
+        ImGui::EndCombo();
+    }
+
+    ImGui::Checkbox("Boundless Sliders", &boundless_value_setting);
+
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::SetTooltip("Allow setting values on sliders below or above minimum and maximum when manually changing them (CTRL Clicking)");
+    }
+
+    if (ImGui::CollapsingHeader("Item Giver (Dev)"))
+    {
+        ImGui::Indent();
+
+        if (ImGui::BeginCombo("Item Selector", current_weapon.c_str()))
+        {
+            ImGui::InputText("Weapon Name", weapon_search, sizeof(weapon_search));
+                
+            for (std::string::size_type i = 0; i < weapons_names.size(); i++)
+            {
+                if (weapons_names[i].find(weapon_search) != std::string::npos)
+                {
+                    const bool selected = current_weapon == weapons_names[i];
+
+                    if (ImGui::Selectable(weapons_names[i].c_str(), selected))
+                    {
+                        current_weapon = weapons_names[i];
+                    }
+                    if (selected) ImGui::SetItemDefaultFocus();
+                }
+            }
+
+            ImGui::EndCombo();
+        }
+            
+        ImGui::Unindent();
+    }
+        
+    if (ImGui::CollapsingHeader("Runtime Hooks (Dev)"))
+    {
+        ImGui::Indent();
+            
+        ImGui::InputText("Offset##rhd", offsets_rhd, sizeof(offsets_rhd));
+        ImGui::InputText("Return##rhd", return_rhd, sizeof(return_rhd));
+        if (ImGui::Button("Create##rhd"))
+        {
+            try_runtime_hook();
+        }
+            
+        ImGui::Unindent();
+    }
+    
+    ImGui::End();
+}
+
+void DrawConfigsWindow()
+{
+    ImGui::Begin("Config Manager##config", &show_configs);
+
+    ImGui::InputText("##config_text", input_file, sizeof(input_file));
+    ImGui::SameLine();
+    
+    if (ImGui::Button("Create New##config"))
+    {
+        save_config(input_file);
+        combo_file = input_file;
+    }
+
+    std::vector<std::string> files = get_config_names();
+
+    if (ImGui::BeginCombo("##config_combo", combo_file.c_str()))
+    {
+        for (std::string::size_type i = 0; i < files.size(); i++)
+        {
+            const bool selected = combo_file == files[i];
+
+            if (ImGui::Selectable(files[i].c_str(), selected))
+            {
+                combo_file = files[i];
+            }
+            if (selected) ImGui::SetItemDefaultFocus();
+        }
+
+        ImGui::EndCombo();
+    }
+        
+    ImGui::SameLine();
+    if (ImGui::Button("Load"))
+    {
+        load_config(combo_file.c_str());
+    }
+    
+    ImGui::SameLine();
+    if (ImGui::Button("Save"))
+    {
+        save_config(combo_file.c_str());
+    }
+
+    ImGui::End();
+} 
 
 void HandleModuleSettingRendering(BKCModule& module)
 {
