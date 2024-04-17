@@ -86,7 +86,7 @@ static inline std::vector<std::string> weapons_names = {
 "RailRevolverBuy",
 "Assault_Machine_GunBuy",
 "Impulse_Sniper_RifleBuy",
-// "Autoaim_RocketlauncherBuy",
+// "Autoaim_RocketlauncherBuy", - crash
 "PX-3000",
 "Sunrise",
 "Bastion",
@@ -247,7 +247,7 @@ static inline std::vector<std::string> weapons_names = {
 "Power_Fists",
 "VerticalShotgun",
 "astral_bow",
-//"zeus_chain_sword", - Crashing
+//"zeus_chain_sword", - crash
 "music_lover",
 "veteran",
 "mini_alien_spaceship",
@@ -273,7 +273,7 @@ static inline std::vector<std::string> weapons_names = {
 "magicbook_curse_spell",
 "airblade_spell",
 "magicbook_poison_spell",
-// "magicbook_earth_spikes_spell",
+// "magicbook_earth_spikes_spell", - crash
 "magicbook_shadow_spell",
 "Dragon_King",
 "angry_pumpkin",
@@ -808,7 +808,7 @@ static inline std::vector<std::string> weapons_names = {
 "solar_flare",
 "magnetic_storm",
 "MonsterHunterMechBody1",
-// "ectoplasmic_grenade_launcher",
+// "ectoplasmic_grenade_launcher", - crash
 "reversed_pistol",
 "activity_neutralizer",
 "pga_mirror_shovel",
@@ -1117,10 +1117,10 @@ static inline std::vector<std::string> weapons_names = {
 "Weapon1619_ancient_warrior",
 "Weapon447_aries_constellation",
 "Weapon706_pband_beat",
-//"Weapon893_deepwater_comet", - Crashing
+//"Weapon893_deepwater_comet", - crashes
 "abyssal_altar",  
 "accurate_investigator",
-//"achieve_hunter", - Bans you
+"achieve_hunter", // bans
 "additional_biting_limb",
 "armor_piercing_sniper_rifle",
 "armored_cuber_power",
@@ -1147,7 +1147,7 @@ static inline std::vector<std::string> weapons_names = {
 "flaming_reckoning_day",
 "forest_prot",
 "forester",
-//"fps_destroyer", - Bans you
+"fps_destroyer", // bans
 "friendliest_pistol",
 "gears_of_death",
 "ghost_epee",
@@ -1163,7 +1163,7 @@ static inline std::vector<std::string> weapons_names = {
 "monster_hand",
 "nachos_shotgun",
 "nets_thrower",
-//"new_well_pistol", - Bans you
+"new_well_pistol", // bans
 "ninja_ice_axe",
 "odm_special_gear",
 "paper_assist",
@@ -1176,7 +1176,7 @@ static inline std::vector<std::string> weapons_names = {
 "raven_staff",
 "reckoning_day_pistols",
 "reckoning_day_sniper_rifle",
-//"revenger", - Crashing you
+//"revenger", - crashes
 "rust_revol",
 "s_q_dominion",
 "sacrificial_altar",
@@ -1205,6 +1205,6 @@ static inline std::vector<std::string> weapons_names = {
 "wardens_trident",
 "win_las_beam",
 "wooden_rifle",
-"x_mas_spirits_defender"
-// "x_mas_vibes_setter",
+"x_mas_spirits_defender",
+// "x_mas_vibes_setter", - crashes
 };
