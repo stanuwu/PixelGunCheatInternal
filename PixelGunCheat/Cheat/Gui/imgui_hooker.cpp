@@ -40,9 +40,6 @@ static char input_file[32] = "default";
 static char offsets_rhd[32] = "";
 static char return_rhd[32] = "";
 
-static char weapon_search[64] = "";
-static std::string current_weapon = weapons_names[0];
-
 static LPVOID last_rhd = nullptr;
 static ImU32 color_title = ImGui::ColorConvertFloat4ToU32({0.91f, 0.64f, 0.13f, 1.00f});
 static ImU32 color_bg = ImGui::ColorConvertFloat4ToU32({0.00f, 0.00f, 0.00f, 0.85f});
@@ -606,34 +603,6 @@ void DrawClientSettingsWindow()
     {
         ImGui::SetTooltip("Allow setting values on sliders below or above minimum and maximum when manually changing them (CTRL Clicking)");
     }
-
-    if (ImGui::CollapsingHeader("Item Giver (Dev)"))
-    {
-        ImGui::Indent();
-
-        if (ImGui::BeginCombo("Item Selector", current_weapon.c_str()))
-        {
-            ImGui::InputText("Weapon Name", weapon_search, sizeof(weapon_search));
-                
-            for (std::string::size_type i = 0; i < weapons_names.size(); i++)
-            {
-                if (weapons_names[i].find(weapon_search) != std::string::npos)
-                {
-                    const bool selected = current_weapon == weapons_names[i];
-
-                    if (ImGui::Selectable(weapons_names[i].c_str(), selected))
-                    {
-                        current_weapon = weapons_names[i];
-                    }
-                    if (selected) ImGui::SetItemDefaultFocus();
-                }
-            }
-
-            ImGui::EndCombo();
-        }
-            
-        ImGui::Unindent();
-    }
         
     if (ImGui::CollapsingHeader("Runtime Hooks (Dev)"))
     {
@@ -731,20 +700,30 @@ void HandleModuleSettingRendering(BKCModule& module)
         }
         else if (setting->type == 4)
         {
+            std::stringstream search;
             auto* dropdown = (BKCDropdown*)setting;
+            search << "Search..." << "##" << setting->name << module.name << setting->type;
             per_module_name << setting->name << "##" << module.name << setting->type;
             if (ImGui::BeginCombo(per_module_name.str().c_str(), dropdown->current_value.c_str()))
             {
+                if (dropdown->search)
+                {
+                    ImGui::InputText(search.str().c_str(), dropdown->search_str, sizeof(dropdown->search_str));
+                }
+                
                 for (std::string::size_type i = 0; i < dropdown->values.size(); i++)
                 {
-                    const bool selected = dropdown->current_value == dropdown->values[i];
-                    
-                    if (ImGui::Selectable(dropdown->values[i].c_str(), selected))
+                    if (!dropdown->search || weapons_names[i].find(dropdown->search_str) != std::string::npos)
                     {
-                        dropdown->current_value = dropdown->values[i];
-                        dropdown->current_index = dropdown->indexof(dropdown->current_value);
+                        const bool selected = dropdown->current_value == dropdown->values[i];
+                    
+                        if (ImGui::Selectable(dropdown->values[i].c_str(), selected))
+                        {
+                            dropdown->current_value = dropdown->values[i];
+                            dropdown->current_index = dropdown->indexof(dropdown->current_value);
+                        }
+                        if (selected) ImGui::SetItemDefaultFocus();
                     }
-                    if (selected) ImGui::SetItemDefaultFocus();
                 }
 
                 ImGui::EndCombo();

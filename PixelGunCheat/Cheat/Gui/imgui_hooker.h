@@ -65,13 +65,14 @@ public:
 class BKCDropdown : public BKCSetting
 {
 public:
-    BKCDropdown(const std::string& setting_name, const std::string& def_val, const std::vector<std::string>& vals, const std::string& extra_info = "")
+    BKCDropdown(const std::string& setting_name, const std::string& def_val, const std::vector<std::string>& vals, const std::string& extra_info = "", const bool allow_search = false)
     {
         name = setting_name;
         values = vals;
         current_value = def_val;
         current_index = indexof(def_val);
         tooltip = extra_info;
+        search = allow_search;
         type = 4;
     }
     int indexof(std::string val)
@@ -82,6 +83,8 @@ public:
     int current_index;
     std::string current_value;
     std::vector<std::string> values;
+    bool search;
+    char search_str[64] = "";
 };
 
 enum BKCCategory
