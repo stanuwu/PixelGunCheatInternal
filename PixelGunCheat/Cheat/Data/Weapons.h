@@ -1175,7 +1175,7 @@ std::vector<std::string>weapons_names={
 "raven_staff",
 "reckoning_day_pistols",
 "reckoning_day_sniper_rifle",
-//"revenger", - Crashing
+//"revenger", - Crashing you
 "rust_revol",
 "s_q_dominion",
 "sacrificial_altar",
