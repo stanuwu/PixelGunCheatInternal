@@ -52,4 +52,6 @@ public:
     static void* FindObjectOfType(void* arg);
     static void* TypeGetType(void* arg);
     static bool BehaviourGetEnabled(void* arg);
+    static void AddWeapon(void* arg, void* string, int source, bool bool1, bool bool2, void* class1, void* struct1);
+    static void* PlayerGetWeaponManager(void* arg);
 };
