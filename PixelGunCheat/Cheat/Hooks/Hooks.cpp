@@ -392,34 +392,57 @@ inline bool __stdcall season_pass_premium(void* arg)
 inline void (__stdcall* add_weapon_original)(void* arg, void* string, int source, bool bool1, bool bool2, void* class1, void* struct1);
 inline void __stdcall add_weapon(void* arg, void* string, int source, bool bool1, bool bool2, void* class1, void* struct1)
 {
-    if (unlock_weapons_module->all())
+    if (((ModuleBase*)unlock_weapons_module))
     {
         Unity::System_String* sname = (Unity::System_String*)string;
-        Logger::log_info("Adding Weapon: " + sname->ToString());
-    
-        // for (int i = 0; i < weapons_names.size(); i++)
-        for (int i = 0; i < weapons_names.size(); i++)
+        Logger::log_info("Got Weapon: " + sname->ToString());
+        if (unlock_weapons_module->all())
         {
-            // clear string
-            sname->Clear();
+            Logger::log_info("Adding All");
+            // for (int i = 0; i < weapons_names.size(); i++)
+            for (int i = 0; i < weapons_names.size(); i++)
+            {
+                // clear string
+                sname->Clear();
 
-            // Write String
-            std::string nname = weapons_names[i];
-            sname->m_iLength = nname.length();
-            for (int l = 0; l < nname.length(); l++)
+                // Write String
+                std::string nname = weapons_names[i];
+                sname->m_iLength = (u_long)nname.length();
+                for (u_long l = 0; l < nname.length(); l++)
+                {
+                    sname->m_wString[l] = nname[l];
+                }
+
+                // Logger::log_info("Changed To: " + sname->ToString());
+                if (i % 50 == 0) Logger::log_info("Add Progress: " + std::to_string(i));
+                
+                // dev = 9999
+                add_weapon_original(arg, string, 9999, bool1, bool2, class1, struct1);
+            }
+            Logger::log_info("Done Adding");
+            unlock_weapons_module->lock();
+            return;
+        }
+        else
+        {
+            if (unlock_weapons_module->to_unlock() == "")
+            {
+                Logger::log_info("Invalid Weapon");
+                return;
+            }
+            std::string nname = unlock_weapons_module->to_unlock();
+            Logger::log_info("Changing To: " + nname);
+            sname->m_iLength = (u_long)nname.length();
+            for (u_long l = 0; l < nname.length(); l++)
             {
                 sname->m_wString[l] = nname[l];
             }
-
-            // Add Weapon
-            if (i % 50 == 0) Logger::log_info("Add Progress: " + std::to_string(i));
-            // Logger::log_info("Changed To: " + sname->ToString());
+            
             // dev = 9999
             add_weapon_original(arg, string, 9999, bool1, bool2, class1, struct1);
+            Logger::log_info("Weapon Obtained");
+            return;
         }
-        Logger::log_info("Done Adding");
-        unlock_weapons_module->lock();
-        return;
     }
     add_weapon_original(arg, string, source, bool1, bool2, class1, struct1);
 }

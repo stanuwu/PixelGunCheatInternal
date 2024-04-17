@@ -4,7 +4,7 @@
 
 static BKCDropdown __weapon_list = { "Weapon Selector", weapons_names[0], weapons_names, "THIS IS A VOLATILE MODULE, AND HAS A POSSIBILITY TO BAN DEPENDING ON HOW YOU USE IT", true };
 static BKCCheckbox __unlock_weapons_all = {"Unlock All", false, "WARNING, THIS ONLY WORKS FROM THE LOTTERY SUPERCHEST AND WILL CRASH THE GAME, BUT YOU SHOULD HAVE ALL THE WEAPONS AFTERWARDS"};
-static BKCModule __unlock_weapons = { "Weapon Unlock Spoof", EXPLOIT, 0x0, false, { &__weapon_list, &__unlock_weapons_all } };
+static BKCModule __unlock_weapons = { "Weapon Unlock", EXPLOIT, 0x0, false, { &__weapon_list, &__unlock_weapons_all } };
 
 class ModuleUnlockWeapons : ModuleBase
 {
@@ -13,6 +13,7 @@ public:
     
     void do_module(void* arg) override
     {
+        
     }
 
     bool all()
@@ -23,5 +24,10 @@ public:
     void lock()
     {
         __unlock_weapons.enabled = false;
+    }
+
+    std::string to_unlock()
+    {
+        return __weapon_list.current_value;
     }
 };
