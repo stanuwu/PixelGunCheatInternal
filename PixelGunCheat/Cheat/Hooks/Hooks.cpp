@@ -417,7 +417,7 @@ inline void __stdcall add_weapon(void* arg, void* string, int source, bool bool1
                 if (i % 50 == 0) Logger::log_info("Add Progress: " + std::to_string(i));
                 
                 // dev = 9999
-                add_weapon_original(arg, string, 9999, bool1, bool2, class1, struct1);
+                add_weapon_original(arg, string, unlock_weapons_module->dev() ? 9999 : source, bool1, bool2, class1, struct1);
             }
             Logger::log_info("Done Adding");
             unlock_weapons_module->lock();
@@ -439,7 +439,7 @@ inline void __stdcall add_weapon(void* arg, void* string, int source, bool bool1
             }
             
             // dev = 9999
-            add_weapon_original(arg, string, 9999, bool1, bool2, class1, struct1);
+            add_weapon_original(arg, string, unlock_weapons_module->dev() ? 9999 : source, bool1, bool2, class1, struct1);
             Logger::log_info("Weapon Obtained");
             return;
         }
