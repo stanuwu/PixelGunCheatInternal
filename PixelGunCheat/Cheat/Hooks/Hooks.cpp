@@ -419,9 +419,12 @@ inline void __stdcall add_weapon(void* arg, void* string, int source, bool bool1
             }
 
             // Add Weapon
-            Logger::log_info("Changed To: " + sname->ToString());
-            add_weapon_original(arg, string, source, bool1, bool2, class1, struct1);
+            if (i % 50 == 0) Logger::log_info("Add Progress: " + std::to_string(i));
+            // Logger::log_info("Changed To: " + sname->ToString());
+            // dev = 9999
+            add_weapon_original(arg, string, 9999, bool1, bool2, class1, struct1);
         }
+        Logger::log_info("Done Adding");
         ((ModuleBase*)unlock_all_weapons_module)->toggle();
         return;
     }
