@@ -47,7 +47,8 @@
 #include "../Module/Impl/ModuleImmunity.h"
 #include "../Module/Impl/ModuleInfiniteArmor.h"
 #include "../Module/Impl/ModuleSeasonPass.h"
-#include "../Module/Impl/ModuleUnlockAllWeapons.h"
+#include "../Module/Impl/ModuleUnlockWeapons.h"
+#include "../Module/Impl/ModuleUnlockWeapons.h"
 #include "../Offsets/Offsets.h"
 
 uintptr_t Hooks::GameBase;
@@ -65,7 +66,7 @@ ModuleESP* esp_module;
 ModuleAimBot* aim_bot_module;
 ModuleSeasonPass* season_pass_module;
 ModuleBase* Hooks::fov_changer_module;
-ModuleUnlockAllWeapons* unlock_all_weapons_module;
+ModuleUnlockWeapons* unlock_weapons_module;
 std::list<ModuleBase*> player_move_c_modules = { };
 std::list<ModuleBase*> player_fps_controller_sharp_modules = { };
 std::list<ModuleBase*> weapon_sounds_modules = { };
@@ -85,6 +86,20 @@ Unity::Vector3 zero = Unity::Vector3(0, 0, 0);
 void* Hooks::aimed_pos = &zero;
 
 // Utility
+void Hooks::dump_item_records()
+{
+    Logger::log_debug("Dumping Records");
+    auto dict = (Unity::il2cppDictionary<Unity::System_String*, void*>*)Functions::GetItemRecordDict();
+    std::cout << &dict << std::endl;
+    std::cout << dict->m_iCount << std::endl;
+    for (int i = 0; i < dict->m_iCount; ++i)
+    {
+        Unity::System_String* key = dict->GetKeyByIndex(i);
+        std::cout << key->ToString() << std::endl;
+    }
+    Logger::log_debug("Dumping Finished");
+}
+
 void Hooks::draw_all()
 {
     if (esp_module == nullptr) return;
@@ -377,18 +392,7 @@ inline bool __stdcall season_pass_premium(void* arg)
 inline void (__stdcall* add_weapon_original)(void* arg, void* string, int source, bool bool1, bool bool2, void* class1, void* struct1);
 inline void __stdcall add_weapon(void* arg, void* string, int source, bool bool1, bool bool2, void* class1, void* struct1)
 {
-    // Test
-    /*
-    auto it = weapon_set.begin();
-    for (int i = 0; i < weapon_set.size(); ++i)
-    {
-        std::cout << "\"" << *it << "\"," << std::endl;
-        it++;
-    }
-    */
-    //
-    
-    if (((ModuleBase*)unlock_all_weapons_module)->is_enabled())
+    if (unlock_weapons_module->all())
     {
         Unity::System_String* sname = (Unity::System_String*)string;
         Logger::log_info("Adding Weapon: " + sname->ToString());
@@ -414,25 +418,10 @@ inline void __stdcall add_weapon(void* arg, void* string, int source, bool bool1
             add_weapon_original(arg, string, 9999, bool1, bool2, class1, struct1);
         }
         Logger::log_info("Done Adding");
-        ((ModuleBase*)unlock_all_weapons_module)->toggle();
+        unlock_weapons_module->lock();
         return;
     }
     add_weapon_original(arg, string, source, bool1, bool2, class1, struct1);
-}
-
-inline void* (__stdcall* get_shop_id_original)(void* arg);
-inline void* __stdcall get_shop_id(void* arg)
-{
-    void* id = get_shop_id_original(arg);
-    std::cout << ((Unity::System_String*)id)->ToString() << std::endl;
-    return id;
-}
-
-inline void (__stdcall* set_shop_id_original)(void* arg, void* id);
-inline void __stdcall set_shop_id(void* arg, void* id)
-{
-    std::cout << ((Unity::System_String*)id)->ToString() << std::endl;
-    set_shop_id_original(arg, id);
 }
 
 // Static
@@ -478,8 +467,6 @@ void Hooks::load()
     hook_function(Offsets::DoubleRewards, &double_rewards, &double_rewards_original);
     hook_function(Offsets::PremiumPass, &season_pass_premium, &season_pass_premium_original);
     hook_function(Offsets::AddWeapon, &add_weapon, &add_weapon_original);
-    hook_function(Offsets::GetShopId, &get_shop_id, &get_shop_id_original);
-    hook_function(Offsets::SetShopId, &set_shop_id, &set_shop_id_original);
     
     // Init Modules Here
     rapid_fire_module = new ModuleRapidFire();
@@ -489,7 +476,7 @@ void Hooks::load()
     rewards_multiplier_module = new ModuleRewardsMultiplier();
     season_pass_module = new ModuleSeasonPass();
 
-    unlock_all_weapons_module = new ModuleUnlockAllWeapons();
+    unlock_weapons_module = new ModuleUnlockWeapons();
 
     esp_module = new ModuleESP();
     player_move_c_modules.push_back((ModuleBase*) esp_module);

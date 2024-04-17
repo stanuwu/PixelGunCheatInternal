@@ -19,6 +19,7 @@
 
 #include "../Data/Weapons.h"
 #include "../Hooks/Hooks.h"
+#include "../Internal/Functions.h"
 
 #pragma comment( lib, "d3d11.lib" )
 
@@ -646,6 +647,11 @@ void DrawClientSettingsWindow()
         }
             
         ImGui::Unindent();
+    }
+
+    if (ImGui::Button("Dump Item Records (Dev)"))
+    {
+        Hooks::dump_item_records();
     }
     
     ImGui::End();

@@ -153,3 +153,16 @@ void* Functions::PlayerGetWeaponManager(void* arg)
     static const auto fn = (void*(*)(void*))(GameAssembly_ + Offsets::PlayerGetWeaponManager);
     return fn(arg); 
 }
+
+void* Functions::GetItemRecordDict()
+{
+    static const auto fn = (void*(*)())(GameAssembly_ + Offsets::GetItemRecordDict);
+    return fn(); 
+}
+
+void* Functions::ItemRecordGetShopId(void* arg)
+{
+    if (!arg) return nullptr;
+    static const auto fn = (void*(*)(void*))(GameAssembly_ + Offsets::ItemRecordGetShopId);
+    return fn(arg); 
+}

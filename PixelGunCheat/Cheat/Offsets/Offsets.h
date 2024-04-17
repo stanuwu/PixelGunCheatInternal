@@ -40,8 +40,8 @@ public:
     static inline uint64_t BehaviourGetEnabled = 0x435C740;
     static inline uint64_t AddWeapon = 0x638AC0;
     static inline uint64_t PlayerGetWeaponManager = 0x1B10E60;
-    static inline uint64_t GetShopId = 0x573C40;
-    static inline uint64_t SetShopId = 0x5A99E0;
+    static inline uint64_t GetItemRecordDict = 0x79E380;
+    static inline uint64_t ItemRecordGetShopId = 0x573C40;
 
     // Fields
     static inline uint64_t scopeSpeed = 0xF8;

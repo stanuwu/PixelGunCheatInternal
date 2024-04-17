@@ -13,6 +13,7 @@ public:
     static void* our_player;
     static void* main_camera;
     static void* aimed_pos;
+    static void dump_item_records();
     static void draw_all();
     static std::string get_player_name(void* player_move_c);
     static void* get_player_transform(void* player);

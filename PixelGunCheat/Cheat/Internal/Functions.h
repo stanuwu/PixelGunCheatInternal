@@ -54,4 +54,6 @@ public:
     static bool BehaviourGetEnabled(void* arg);
     static void AddWeapon(void* arg, void* string, int source, bool bool1, bool bool2, void* class1, void* struct1);
     static void* PlayerGetWeaponManager(void* arg);
+    static void* GetItemRecordDict();
+    static void* ItemRecordGetShopId(void* arg);
 };
