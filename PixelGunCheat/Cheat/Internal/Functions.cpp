@@ -1,6 +1,8 @@
 ﻿#include "Functions.h"
 
 #include <cstdint>
+#include <stdbool.h>
+#include <stdbool.h>
 
 #include "../Offsets/Offsets.h"
 
@@ -108,4 +110,46 @@ int Functions::ObjectGetInstanceID(void* arg)
     if (!arg) return -1;
     static const auto fn = (int(*)(void*))(GameAssembly_ + Offsets::ObjectGetInstanceID);
     return fn(arg);
+}
+
+void* Functions::FindObjectsOfType(void* arg)
+{
+    if (!arg) return nullptr;
+    static const auto fn = (void*(*)(void*))(GameAssembly_ + Offsets::FindObjectsOfType);
+    return fn(arg);
+}
+
+void* Functions::FindObjectOfType(void* arg)
+{
+    if (!arg) return nullptr;
+    static const auto fn = (void*(*)(void*))(GameAssembly_ + Offsets::FindObjectOfType);
+    return fn(arg);
+}
+
+void* Functions::TypeGetType(void* arg)
+{
+    if (!arg) return nullptr;
+    static const auto fn = (void*(*)(void*))(GameAssembly_ + Offsets::TypeGetType);
+    return fn(arg);
+}
+
+bool Functions::BehaviourGetEnabled(void* arg)
+{
+    if (!arg) return false;
+    static const auto fn = (bool(*)(void*))(GameAssembly_ + Offsets::BehaviourGetEnabled);
+    return fn(arg);
+}
+
+void Functions::AddWeapon(void* arg, void* string, int source, bool bool1 = true, bool bool2 = false, void* class1 = nullptr, void* struct1 = nullptr)
+{
+    if (!arg) return;
+    static const auto fn = (void(*)(void*))(GameAssembly_ + Offsets::AddWeapon);
+    fn(arg);
+}
+
+void* Functions::PlayerGetWeaponManager(void* arg)
+{
+    if (!arg) return nullptr;
+    static const auto fn = (void*(*)(void*))(GameAssembly_ + Offsets::PlayerGetWeaponManager);
+    return fn(arg); 
 }

@@ -2,9 +2,12 @@
 
 #include <codecvt>
 #include <list>
+#include <set>
 #include <sstream>
+#include <stdbool.h>
 
 #include "MinHook.h"
+#include "../Data/Weapons.h"
 #include "../Internal/Functions.h"
 #include "../Module/ModuleBase.h"
 #include "../Module/Impl/ModuleAOEBullets.h"
@@ -44,6 +47,7 @@
 #include "../Module/Impl/ModuleImmunity.h"
 #include "../Module/Impl/ModuleInfiniteArmor.h"
 #include "../Module/Impl/ModuleSeasonPass.h"
+#include "../Module/Impl/ModuleUnlockAllWeapons.h"
 #include "../Offsets/Offsets.h"
 
 uintptr_t Hooks::GameBase;
@@ -61,6 +65,7 @@ ModuleESP* esp_module;
 ModuleAimBot* aim_bot_module;
 ModuleSeasonPass* season_pass_module;
 ModuleBase* Hooks::fov_changer_module;
+ModuleUnlockAllWeapons* unlock_all_weapons_module;
 std::list<ModuleBase*> player_move_c_modules = { };
 std::list<ModuleBase*> player_fps_controller_sharp_modules = { };
 std::list<ModuleBase*> weapon_sounds_modules = { };
@@ -68,6 +73,8 @@ std::list<ModuleBase*> weapon_sound_others_modules = { };
 std::list<ModuleBase*> player_damageable_modules = { };
 std::list<ModuleBase*> on_pre_render_modules = { };
 std::list<ModuleBase*> Hooks::on_imgui_draw_modules = { };
+
+std::set<std::string> weapon_set;
 
 uint64_t Hooks::tick = 0;
 std::list<void*> working_player_list;
@@ -152,14 +159,31 @@ std::string get_player_name_from_weapon_sounds(void* weapon_sounds)
 
 Unity::CCamera* find_main_camera()
 {
-    Unity::CCamera* camera = Unity::Camera::GetMain();
-    return camera;
+    Unity::il2cppClass* camera_class = IL2CPP::Class::Find("UnityEngine.Camera");
+    Unity::il2cppObject* camera_type = IL2CPP::Class::GetSystemType(camera_class);
+    Unity::il2cppArray<Unity::CCamera*>* cameras = Unity::Object::FindObjectsOfType<Unity::CCamera>(camera_type);
+    for (int i = 0; i < cameras->m_uMaxLength; i++)
+    {
+        Unity::CCamera* camera = cameras->At(i);
+        std::string name = clean_string((*camera->GetName()).ToString());
+        if (name == "ThirdPersonCamera(Clone)") return camera;
+    }
+    
+    return Unity::Camera::GetMain();
 }
 
 // Hook Functions
 inline void(__stdcall* weapon_sounds_original)(void* arg);
 inline void __stdcall weapon_sounds_call(void* arg)
 {
+    // Test
+    /*
+    void* name = (void*)*(uint64_t*)((uint64_t)arg + 0x560);
+    Unity::System_String* sstring = (Unity::System_String*)name;
+    weapon_set.insert(sstring->ToString());
+    */
+    //
+    
     if (is_my_player_weapon_sounds(arg))
     {
         if (Hooks::our_player != nullptr) ((ModuleBase*)aim_bot_module)->run(Hooks::our_player);
@@ -350,17 +374,66 @@ inline bool __stdcall season_pass_premium(void* arg)
     return season_pass_premium_original(arg);
 }
 
-inline void (__stdcall* anti_disconnect_original)(void* arg);
-inline void __stdcall anti_disconnect(void* arg)
+inline void (__stdcall* add_weapon_original)(void* arg, void* string, int source, bool bool1, bool bool2, void* class1, void* struct1);
+inline void __stdcall add_weapon(void* arg, void* string, int source, bool bool1, bool bool2, void* class1, void* struct1)
 {
-}
-
-/*
-    if (!((ModuleBase*)anti_kick)->is_enabled())
+    // Test
+    /*
+    auto it = weapon_set.begin();
+    for (int i = 0; i < weapon_set.size(); ++i)
     {
-        return anti_disconnect_original(arg);
+        std::cout << "\"" << *it << "\"," << std::endl;
+        it++;
     }
     */
+    //
+    
+    if (((ModuleBase*)unlock_all_weapons_module)->is_enabled())
+    {
+        Unity::System_String* sname = (Unity::System_String*)string;
+        Logger::log_info("Adding Weapon: " + sname->ToString());
+    
+        // for (int i = 0; i < weapons_names.size(); i++)
+        for (int i = 0; i < weapons_names.size(); i++)
+        {
+            // clear string
+            sname->Clear();
+
+            // Write String
+            std::string nname = weapons_names[i];
+            sname->m_iLength = nname.length();
+            for (int l = 0; l < nname.length(); l++)
+            {
+                sname->m_wString[l] = nname[l];
+            }
+
+            // Add Weapon
+            if (i % 50 == 0) Logger::log_info("Add Progress: " + std::to_string(i));
+            // Logger::log_info("Changed To: " + sname->ToString());
+            // dev = 9999
+            add_weapon_original(arg, string, 9999, bool1, bool2, class1, struct1);
+        }
+        Logger::log_info("Done Adding");
+        ((ModuleBase*)unlock_all_weapons_module)->toggle();
+        return;
+    }
+    add_weapon_original(arg, string, source, bool1, bool2, class1, struct1);
+}
+
+inline void* (__stdcall* get_shop_id_original)(void* arg);
+inline void* __stdcall get_shop_id(void* arg)
+{
+    void* id = get_shop_id_original(arg);
+    std::cout << ((Unity::System_String*)id)->ToString() << std::endl;
+    return id;
+}
+
+inline void (__stdcall* set_shop_id_original)(void* arg, void* id);
+inline void __stdcall set_shop_id(void* arg, void* id)
+{
+    std::cout << ((Unity::System_String*)id)->ToString() << std::endl;
+    set_shop_id_original(arg, id);
+}
 
 // Static
 void hook_function(uint64_t offset, LPVOID detour, void* original)
@@ -404,7 +477,9 @@ void Hooks::load()
     hook_function(Offsets::RewardMultiplier, &reward_multiplier, &reward_multiplier_original);
     hook_function(Offsets::DoubleRewards, &double_rewards, &double_rewards_original);
     hook_function(Offsets::PremiumPass, &season_pass_premium, &season_pass_premium_original);
-    hook_function(Offsets::CancelKickReason, &anti_disconnect, &anti_disconnect_original);
+    hook_function(Offsets::AddWeapon, &add_weapon, &add_weapon_original);
+    hook_function(Offsets::GetShopId, &get_shop_id, &get_shop_id_original);
+    hook_function(Offsets::SetShopId, &set_shop_id, &set_shop_id_original);
     
     // Init Modules Here
     rapid_fire_module = new ModuleRapidFire();
@@ -413,7 +488,8 @@ void Hooks::load()
     lottery_price_module = new ModulePriceModifier;
     rewards_multiplier_module = new ModuleRewardsMultiplier();
     season_pass_module = new ModuleSeasonPass();
-    // anti_kick = new ModuleAntiKick();
+
+    unlock_all_weapons_module = new ModuleUnlockAllWeapons();
 
     esp_module = new ModuleESP();
     player_move_c_modules.push_back((ModuleBase*) esp_module);
