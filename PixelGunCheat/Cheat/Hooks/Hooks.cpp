@@ -392,7 +392,7 @@ inline bool __stdcall season_pass_premium(void* arg)
 inline void (__stdcall* add_weapon_original)(void* arg, void* string, int source, bool bool1, bool bool2, void* class1, void* struct1);
 inline void __stdcall add_weapon(void* arg, void* string, int source, bool bool1, bool bool2, void* class1, void* struct1)
 {
-    if (((ModuleBase*)unlock_weapons_module))
+    if (((ModuleBase*)unlock_weapons_module)->is_enabled())
     {
         Unity::System_String* sname = (Unity::System_String*)string;
         Logger::log_info("Got Weapon: " + sname->ToString());
