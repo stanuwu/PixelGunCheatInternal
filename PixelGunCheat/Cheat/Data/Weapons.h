@@ -1,10 +1,11 @@
 ﻿#pragma once
-#include<string>
-#include<vector>
+
+#include <string>
+#include <vector>
 
 // commented names can not be obtained for some reason (crash)
 
-std::vector<std::string>weapons_names={
+static inline std::vector<std::string> weapons_names = {
 "MinerWeapon",
 "combatrifle",
 "goldeneagle",
