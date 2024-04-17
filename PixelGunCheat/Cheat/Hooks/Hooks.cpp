@@ -432,6 +432,7 @@ inline void __stdcall add_weapon(void* arg, void* string, int source, bool bool1
             }
             std::string nname = unlock_weapons_module->to_unlock();
             Logger::log_info("Changing To: " + nname);
+            sname->Clear();
             sname->m_iLength = (u_long)nname.length();
             for (u_long l = 0; l < nname.length(); l++)
             {
