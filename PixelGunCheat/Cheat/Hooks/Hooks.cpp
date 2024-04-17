@@ -319,7 +319,7 @@ inline void __stdcall on_scene_unload(void* arg)
 {
     Hooks::main_camera = nullptr;
     nuke_player_list();
-    return on_scene_unload_original(arg);
+    // return on_scene_unload_original(arg);
     // Get Old Scene Name
     /*
     void* name_ptr = (void*)*(uint64_t*)((uint64_t)arg + 0x10);
@@ -374,17 +374,6 @@ inline bool __stdcall season_pass_premium(void* arg)
     return season_pass_premium_original(arg);
 }
 
-inline void (__stdcall* anti_disconnect_original)(void* arg);
-inline void __stdcall anti_disconnect(void* arg)
-{
-    /*
-    if (!((ModuleBase*)anti_kick)->is_enabled())
-    {
-        return anti_disconnect_original(arg);
-    }
-    */
-}
-
 inline void (__stdcall* add_weapon_original)(void* arg, void* string, int source, bool bool1, bool bool2, void* class1, void* struct1);
 inline void __stdcall add_weapon(void* arg, void* string, int source, bool bool1, bool bool2, void* class1, void* struct1)
 {
@@ -419,9 +408,12 @@ inline void __stdcall add_weapon(void* arg, void* string, int source, bool bool1
             }
 
             // Add Weapon
-            Logger::log_info("Changed To: " + sname->ToString());
-            add_weapon_original(arg, string, source, bool1, bool2, class1, struct1);
+            if (i % 50 == 0) Logger::log_info("Add Progress: " + std::to_string(i));
+            // Logger::log_info("Changed To: " + sname->ToString());
+            // dev = 9999
+            add_weapon_original(arg, string, 9999, bool1, bool2, class1, struct1);
         }
+        Logger::log_info("Done Adding");
         ((ModuleBase*)unlock_all_weapons_module)->toggle();
         return;
     }
@@ -485,7 +477,6 @@ void Hooks::load()
     hook_function(Offsets::RewardMultiplier, &reward_multiplier, &reward_multiplier_original);
     hook_function(Offsets::DoubleRewards, &double_rewards, &double_rewards_original);
     hook_function(Offsets::PremiumPass, &season_pass_premium, &season_pass_premium_original);
-    hook_function(Offsets::CancelKickReason, &anti_disconnect, &anti_disconnect_original);
     hook_function(Offsets::AddWeapon, &add_weapon, &add_weapon_original);
     hook_function(Offsets::GetShopId, &get_shop_id, &get_shop_id_original);
     hook_function(Offsets::SetShopId, &set_shop_id, &set_shop_id_original);
@@ -497,7 +488,7 @@ void Hooks::load()
     lottery_price_module = new ModulePriceModifier;
     rewards_multiplier_module = new ModuleRewardsMultiplier();
     season_pass_module = new ModuleSeasonPass();
-    // anti_kick = new ModuleAntiKick();
+
     unlock_all_weapons_module = new ModuleUnlockAllWeapons();
 
     esp_module = new ModuleESP();

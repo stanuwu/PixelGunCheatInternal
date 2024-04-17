@@ -14,7 +14,7 @@ public:
     {
         if (__infinite_ammo__fast.enabled || Hooks::tick % 10 == 0)
         {
-            Functions::AddAmmoFromWeaponOnline(arg, 10);
+            Functions::AddAmmoFromWeaponOnline(arg, 50);
         }
     }
 };
