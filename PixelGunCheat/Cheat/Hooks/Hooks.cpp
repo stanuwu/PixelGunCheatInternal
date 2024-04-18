@@ -201,13 +201,13 @@ inline void __stdcall weapon_sounds_call(void* arg)
     
     if (is_my_player_weapon_sounds(arg))
     {
-        if (Hooks::our_player != nullptr) ((ModuleBase*)aim_bot_module)->run(Hooks::our_player);
+        if (Hooks::our_player != nullptr) ((ModuleBase*)aim_bot_module)->run(arg);
         
         for (ModuleBase* weapon_sounds_module : weapon_sounds_modules)
         {
             weapon_sounds_module->run(arg);
         }
-
+        
         /*
         void* fps_controller_sharp = (void*)*(uint64_t*)((uint64_t)arg + 0x508);
         for (ModuleBase* player_fps_controller_sharp_module : player_fps_controller_sharp_modules)

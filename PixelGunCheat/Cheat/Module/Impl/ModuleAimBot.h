@@ -89,11 +89,15 @@ public:
         }
 
         const int height = window_size_aim.bottom - window_size_aim.top;
+
+        if (arg == nullptr) return;
+        set_float(arg, Offsets::bulletDelay, 0.000001f); // bulletDelay
         
         Unity::Vector3 prediction;
         void* target = nullptr;
         float distance = 9999999;
         Unity::CCamera* camera = (Unity::CCamera*)Hooks::main_camera;
+        if (camera == nullptr) return;
         for (void* player : Hooks::player_list)
         {
             if (player == nullptr || Hooks::our_player == nullptr) continue;
