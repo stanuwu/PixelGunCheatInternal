@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "../ModuleBase.h"
 
-static BKCModule __better_scope = { "Better Scoping", VISUAL, 0x0, false, { } };
+static BKCModule __better_scope = { "Better Scoping", VISUAL, 0x0, ImGuiKey_B, false, { } };
 
 class ModuleBetterScope : ModuleBase
 {

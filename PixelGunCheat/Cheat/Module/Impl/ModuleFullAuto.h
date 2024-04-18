@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "../ModuleBase.h"
 
-static BKCModule __full_auto = { "Full Auto", COMBAT, 0x0, true, {} };
+static BKCModule __full_auto = { "Full Auto", COMBAT, 0x0, ImGuiKey_2, true, {} };
 
 class ModuleFullAuto : ModuleBase
 {

@@ -2,7 +2,7 @@
 #include "../ModuleBase.h"
 
 static BKCSlider __score_amount = BKCSlider("Amount",  10, 0, 9999, "Use large multiplier values with caution!");
-static BKCModule __score_multiplier = { "Score Multiplier", GENERAL, 0x0, false, {&__score_amount} };
+static BKCModule __score_multiplier = { "Score Multiplier", GENERAL, 0x0, ImGuiKey_None, false, {&__score_amount} };
 
 class ModuleScoreMultiplier : ModuleBase
 {

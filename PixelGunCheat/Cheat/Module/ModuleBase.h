@@ -1,6 +1,19 @@
 ﻿#pragma once
 #include <string>
 #include "../Gui/imgui_hooker.h"
+#include "../Logger/Logger.h"
+
+/**
+    Modified On: 4/17/2024 at 10:43 PM
+    Modified by: I adore stan <3 (Mezo)
+
+    Changes:
+    - Implemented Activation keybinds for Modules, to enable/disable them. Which uses the 'toggle()' function.
+
+    Affected Files:
+    > imgui_hooker.cpp - Line 513
+    > Every file in the 'Impl' folder
+**/
 
 class ModuleBase
 {
@@ -8,12 +21,14 @@ public:
     ModuleBase(BKCModule* m)
     {
         key = m->key;
+        activationKey = m->activationKey; // The Keybind that enable/disable the module. It serves as a default Keybind, which can be changed during runtime. 
         name = m->name;
         module = m;
         BKCImGuiHooker::modules.push_back(m);
     }
     
     WPARAM key = 0x00;
+    ImGuiKey activationKey;
     std::string name;
     BKCModule* module;
     

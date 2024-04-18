@@ -87,7 +87,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <ExternalIncludePath>$(ExternalIncludePath);$(_ZVcpkgCurrentInstalledDir)include</ExternalIncludePath>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64); C:\vcpkg\packages\imgui_x64-windows-static\lib; C:\vcpkg\packages\minhook_x64-windows-static\lib</LibraryPath>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDirectory)Il2CppResolver</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -154,13 +154,15 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>C:\vcpkg\packages\imgui_x64-windows-static\include; C:\vcpkg\packages\minhook_x64-windows-static\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>%(AdditionalDependencies);$(_ZVcpkgCurrentInstalledDir)$(_ZVcpkgConfigSubdir)lib\*.lib;minhook.x64.lib</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies);$(_ZVcpkgCurrentInstalledDir)$(_ZVcpkgConfigSubdir)lib\*.lib;minhook.x64.lib;imgui.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\vcpkg\packages\minhook_x64-windows-static\lib; C:\vcpkg\packages\imgui_x64-windows-static\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

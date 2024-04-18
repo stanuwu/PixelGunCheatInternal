@@ -26,7 +26,7 @@ static BKCSlider __stun_duration = BKCSlider("Stun Duration", 9999, 0, 9999);
 static BKCSlider __stun_factor = BKCSlider("Stun Factor", 10, 0.001f, 10);
 static BKCSlider __stun_radius = BKCSlider("Stun Radius", 9999, 0, 9999);
 
-static BKCModule __debuffer = { "Debuffer", COMBAT, 0x0, true, {&__blind, &__blind_duration, &__charm, &__curse, &__curse_duration, &__curse_damage, &__lightning, &__poison, &__poison_amount, &__slow, &__slow_duration, &__slow_factor, &__stun, &__stun_duration, &__stun_factor, &__stun_radius} };
+static BKCModule __debuffer = { "Debuffer", COMBAT, 0x0, ImGuiKey_M, true, {&__blind, &__blind_duration, &__charm, &__curse, &__curse_duration, &__curse_damage, &__lightning, &__poison, &__poison_amount, &__slow, &__slow_duration, &__slow_factor, &__stun, &__stun_duration, &__stun_factor, &__stun_radius} };
 
 class ModuleDebuffer : ModuleBase
 {

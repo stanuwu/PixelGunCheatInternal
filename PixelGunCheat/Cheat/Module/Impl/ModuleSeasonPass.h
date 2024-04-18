@@ -2,7 +2,7 @@
 #include "../ModuleBase.h"
 
 static BKCCheckbox __season_pass_premium = {"Spoof Premium", true, "Only lasts while enabled."};
-static BKCModule __season_pass = { "Season Pass", EXPLOIT, 0x0, true, { &__season_pass_premium } };
+static BKCModule __season_pass = { "Season Pass", EXPLOIT, 0x0, ImGuiKey_None, true, { &__season_pass_premium } };
 
 class ModuleSeasonPass : ModuleBase
 {

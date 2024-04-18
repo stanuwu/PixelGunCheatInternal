@@ -16,6 +16,7 @@
 #include <fstream>
 #include <MinHook.h>
 #include <thread>
+#include <unordered_map>
 
 #include "../Data/Weapons.h"
 #include "../Hooks/Hooks.h"
@@ -509,6 +510,16 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
     
     ImGui::PushFont(gui_font);
     
+    // Activation Key Check ////////////////////////////////
+    for (BKCModule* module : BKCImGuiHooker::modules)
+    {
+        if (ImGui::IsKeyPressed(module->activationKey))
+        {
+            module->toggle();
+        }
+    }
+    ///////////////////////////////////////////////////////
+    
     if (c_GuiEnabled)
     {
         ImGui::Begin(full_title.str().c_str(), nullptr, ImGuiWindowFlags_MenuBar);
@@ -752,11 +763,11 @@ void HandleModuleRendering(BKCModule& module)
         ImGui::Checkbox(module_enabled_id.str().c_str(), &module.enabled);
         ImGui::SeparatorText("Settings");
         HandleModuleSettingRendering(module);
+        GenerateActivationKeyComboBox(module);
         ImGui::Unindent();
     }
     ImGui::Unindent();
 }
-
 
 void HandleCategoryRendering(const std::string& name, const BKCCategory cat)
 {

@@ -2,7 +2,7 @@
 #include "../ModuleBase.h"
 #include "../../Offsets/Offsets.h"
 
-static BKCModule __anti_barrier = { "Anti Barrier", COMBAT, 0x0, true, {} };
+static BKCModule __anti_barrier = { "Anti Barrier", COMBAT, 0x0, ImGuiKey_Z, true, {} };
 
 class ModuleAntiBarrier : ModuleBase
 {

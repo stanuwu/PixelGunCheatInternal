@@ -4,7 +4,7 @@
 
 class ModuleBase;
 static BKCSliderInt __rewards_multiplier_amount = BKCSliderInt("Amount",  10, 1, 250);
-static BKCModule __rewards_multiplier = { "Rewards Multiplier", EXPLOIT, 0x0, false, {&__rewards_multiplier_amount} };
+static BKCModule __rewards_multiplier = { "Rewards Multiplier", EXPLOIT, 0x0, ImGuiKey_None, false, {&__rewards_multiplier_amount} };
 
 class ModuleRewardsMultiplier : ModuleBase
 {

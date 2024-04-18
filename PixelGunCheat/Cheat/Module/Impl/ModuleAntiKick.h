@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "../ModuleBase.h"
 
-static BKCModule __anti_kick = { "Anti Kick", EXPLOIT, 0x0, false, {} };
+static BKCModule __anti_kick = { "Anti Kick", EXPLOIT, 0x0, ImGuiKey_C, false, {} };
 
 class ModuleAntiKick : ModuleBase
 {

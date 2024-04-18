@@ -104,6 +104,7 @@ public:
     std::string name;
     BKCCategory category = NONE;
     WPARAM key = 0x0;
+    ImGuiKey activationKey;
     bool enabled = false;
     std::vector<BKCSetting*> settings = {};
     void toggle()

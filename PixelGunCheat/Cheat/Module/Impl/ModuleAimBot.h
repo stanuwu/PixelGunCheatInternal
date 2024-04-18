@@ -11,7 +11,7 @@ static BKCSliderInt __aim_bot_target_size = BKCSliderInt("Target Marker Size", 5
 static BKCCheckbox __aim_bot_target_marker = BKCCheckbox("Target Marker", true);
 static BKCCheckbox __aim_bot_through_walls = BKCCheckbox("Through Walls", false);
 static BKCCheckbox __aim_bot_body_shot = BKCCheckbox("Body Shot", false);
-static BKCModule __aim_bot = { "Aim Bot", COMBAT, 0x0, true, {&__aim_bot_target_marker, &__aim_bot_target_size, &__aim_bot_through_walls, &__aim_bot_body_shot} };
+static BKCModule __aim_bot = { "Aim Bot", COMBAT, 0x0, ImGuiKey_Insert, true, {&__aim_bot_target_marker, &__aim_bot_target_size, &__aim_bot_through_walls, &__aim_bot_body_shot} };
 
 static ImU32 color_marker = ImGui::ColorConvertFloat4ToU32({1.00f, 0.00f, 1.00f, 1.00f});
 static ImU32 color_border = ImGui::ColorConvertFloat4ToU32({0.00f, 0.00f, 0.00f, 1.00f});

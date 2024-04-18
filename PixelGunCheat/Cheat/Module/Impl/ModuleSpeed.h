@@ -2,7 +2,7 @@
 #include "../ModuleBase.h"
 
 static BKCSlider __speed_amount = BKCSlider("Amount",  1, 0.1f, 5);
-static BKCModule __speed = { "Speed", MOVEMENT, 0x0, false, {&__speed_amount} };
+static BKCModule __speed = { "Speed", MOVEMENT, 0x0, ImGuiKey_None, false, {&__speed_amount} };
 
 class ModuleSpeed : ModuleBase
 {
