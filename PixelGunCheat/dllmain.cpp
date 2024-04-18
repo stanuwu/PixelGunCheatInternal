@@ -8,6 +8,8 @@
 #include <windows.h>
 
 #include <dxgi.h>
+#include <d3d10_1.h>
+#include <d3d10.h>
 #include <d3d11.h>
 #include <filesystem>
 #include <imgui.h>
@@ -341,23 +343,22 @@ int64_t WINAPI MainThread(LPVOID param)
     while (!init_hook)
     {
         Logger::log_info("Looking for matching D3D process to hook kiero...");
-        
-        if (kiero::init(kiero::RenderType::Auto) == kiero::Status::Success)
+        if (kiero::init(kiero::RenderType::D3D11) == kiero::Status::Success)
         {
-            Logger::log_info("Found matching process, binding kiero to found process...");
-            if (kiero::getRenderType() == kiero::RenderType::D3D10)
-            {
-                kiero::bind(8, (void**)&oPresent, hkPresent10);
-            } else if (kiero::getRenderType() == kiero::RenderType::D3D11)
-            {
-                dx11 = true;
-                kiero::bind(8, (void**)&oPresent, hkPresent11);
-            }
-            else
-            {
-                Logger::log_err("No valid DirectX version found!");
-            }
+            dx11 = true;
+            kiero::bind(8, (void**)&oPresent, hkPresent11);
+            Logger::log_info("Found matching dx11 process, binding kiero to found process...");
             init_hook = true;
+        }
+        else if (kiero::init(kiero::RenderType::D3D10) == kiero::Status::Success)
+        {
+            kiero::bind(8, (void**)&oPresent, hkPresent10);
+            Logger::log_info("Found matching dx10 process, binding kiero to found process...");
+            init_hook = true;
+        } 
+        else
+        {
+            Logger::log_err("No valid DirectX version found!");
         }
     }
     
