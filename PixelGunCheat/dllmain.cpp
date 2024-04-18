@@ -11,6 +11,7 @@
 #include <d3d11.h>
 #include <filesystem>
 #include <imgui.h>
+#include <stdbool.h>
 
 #include "Cheat/Gui/imgui_hooker.h"
 #include "Cheat/Logger/Logger.h"
@@ -18,9 +19,12 @@
 
 HWND window = NULL;
 WNDPROC oWndProc;
-ID3D11Device* pDevice = NULL;
-ID3D11DeviceContext* pContext = NULL;
-ID3D11RenderTargetView* mainRenderTargetView;
+bool dx11 = false;
+ID3D11Device* pDevice11 = NULL;
+ID3D11DeviceContext* pContext11 = NULL;
+ID3D11RenderTargetView* mainRenderTargetView11;
+ID3D10Device* pDevice10 = NULL;
+ID3D10RenderTargetView* mainRenderTargetView10;
 
 std::vector<std::string> watermark = {
     "       +=                                                           ..     ",
@@ -203,7 +207,7 @@ void native_font_list(bool ttf_only)
 }
 
 long (__stdcall* oPresent)(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
-long __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags) 
+long __stdcall hkPresent11(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags) 
 {
     // Do the Things
     static bool is_init = true;
@@ -211,22 +215,22 @@ long __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Fla
     {
         Logger::log_info("Kiero D3D11 hkPresent injector hook running...");
         
-        if (SUCCEEDED(pSwapChain->GetDevice(__uuidof(ID3D11Device), (void**)& pDevice)))
+        if (SUCCEEDED(pSwapChain->GetDevice(__uuidof(ID3D11Device), (void**)& pDevice11)))
         {
-            pDevice->GetImmediateContext(&pContext);
+            pDevice11->GetImmediateContext(&pContext11);
             DXGI_SWAP_CHAIN_DESC sd;
             pSwapChain->GetDesc(&sd);
             window = sd.OutputWindow;
             ID3D11Texture2D* pBackBuffer;
             pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
-            pDevice->CreateRenderTargetView(pBackBuffer, NULL, &mainRenderTargetView);
+            pDevice11->CreateRenderTargetView(pBackBuffer, NULL, &mainRenderTargetView11);
             pBackBuffer->Release();
             oWndProc = (WNDPROC)SetWindowLongPtr(window, GWLP_WNDPROC, (LONG_PTR)WndProc);
 
             Logger::log_info("Kiero D3D11 hkPresent hooked successfully!");
             // Init Imgui
 
-            BKCImGuiHooker::setup_imgui_hwnd(window, pDevice, pContext);
+            BKCImGuiHooker::setup_imgui_hwnd(window, pDevice11, pContext11, dx11);
             
             is_init = false;
 
@@ -234,7 +238,42 @@ long __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Fla
         }
     }
 
-    BKCImGuiHooker::start(mainRenderTargetView, pContext);
+    BKCImGuiHooker::start(mainRenderTargetView11, pDevice11, pContext11, dx11);
+    
+    return oPresent(pSwapChain, SyncInterval, Flags);
+}
+
+long __stdcall hkPresent10(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags) 
+{
+    // Do the Things
+    static bool is_init = true;
+    if (is_init)
+    {
+        Logger::log_info("Kiero D3D10 hkPresent injector hook running...");
+        
+        if (SUCCEEDED(pSwapChain->GetDevice(__uuidof(ID3D10Device), (void**)& pDevice10)))
+        {
+            DXGI_SWAP_CHAIN_DESC sd;
+            pSwapChain->GetDesc(&sd);
+            window = sd.OutputWindow;
+            ID3D10Texture2D* pBackBuffer;
+            pSwapChain->GetBuffer(0, __uuidof(ID3D10Texture2D), (LPVOID*)&pBackBuffer);
+            pDevice10->CreateRenderTargetView(pBackBuffer, NULL, &mainRenderTargetView10);
+            pBackBuffer->Release();
+            oWndProc = (WNDPROC)SetWindowLongPtr(window, GWLP_WNDPROC, (LONG_PTR)WndProc);
+
+            Logger::log_info("Kiero D3D10 hkPresent hooked successfully!");
+            // Init Imgui
+
+            BKCImGuiHooker::setup_imgui_hwnd(window, pDevice10, nullptr, dx11);
+            
+            is_init = false;
+
+            Logger::log_info("Kiero fully bound and hooked!");
+        }
+    }
+    
+    BKCImGuiHooker::start(mainRenderTargetView10, pDevice10, nullptr, dx11);
     
     return oPresent(pSwapChain, SyncInterval, Flags);
 }
@@ -301,12 +340,23 @@ int64_t WINAPI MainThread(LPVOID param)
     bool init_hook = false;
     while (!init_hook)
     {
-        Logger::log_info("Looking for matching D3D11 process to hook kiero...");
+        Logger::log_info("Looking for matching D3D process to hook kiero...");
         
-        if (kiero::init(kiero::RenderType::D3D11) == kiero::Status::Success)
+        if (kiero::init(kiero::RenderType::Auto) == kiero::Status::Success)
         {
             Logger::log_info("Found matching process, binding kiero to found process...");
-            kiero::bind(8, (void**)&oPresent, hkPresent);
+            if (kiero::getRenderType() == kiero::RenderType::D3D10)
+            {
+                kiero::bind(8, (void**)&oPresent, hkPresent10);
+            } else if (kiero::getRenderType() == kiero::RenderType::D3D11)
+            {
+                dx11 = true;
+                kiero::bind(8, (void**)&oPresent, hkPresent11);
+            }
+            else
+            {
+                Logger::log_err("No valid DirectX version found!");
+            }
             init_hook = true;
         }
     }
@@ -325,25 +375,29 @@ int64_t WINAPI MainThread(LPVOID param)
     }
 
     Logger::log_info("Injected successfully!");
-    // Logger::log_info("(Insert to Close)");
+    Logger::log_info("(Insert to Eject)");
 
     while(true)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         // Removed for now...
         // TODO: Fix crash on eject
-        /*
+        
         if (GetAsyncKeyState(VK_INSERT) & 1)
         {
+            Logger::log_info("Ejecting...");
             break;
         }
-        */
+        
     }
     
     // Unload
+    kiero::unbind(8);
+    kiero::shutdown();
     hooks->unload();
+    BKCImGuiHooker::unload(dx11);
 
-    shutdown(fp, "Shutting Down...");
+    shutdown(fp, "Shut Down");
     return 0;
 }
 

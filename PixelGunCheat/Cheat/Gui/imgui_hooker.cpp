@@ -1,5 +1,6 @@
 #include <imgui.h>
 #include <imgui_impl_win32.h>
+#include <imgui_impl_dx10.h>
 #include <imgui_impl_dx11.h>
 #include <iostream>
 #include <sstream>
@@ -21,6 +22,7 @@
 #include "../Hooks/Hooks.h"
 #include "../Internal/Functions.h"
 
+#pragma comment( lib, "d3d10.lib" )
 #pragma comment( lib, "d3d11.lib" )
 
 // Forward declarations of helper functions
@@ -427,13 +429,14 @@ bool BKCImGuiHooker::c_GuiEnabled = false;
 float BKCImGuiHooker::scale_factor = 1;
 std::vector<std::string> fonts = native_font_list(true);
 
-void DrawClientSettingsWindow();
-void DrawConfigsWindow();
+void DrawClientSettingsWindow(bool is_dx_11);
+void DrawConfigsWindow(bool is_dx_11);
 
 static bool show_client_settings = false;
 static bool show_configs = false;
 
-void BKCImGuiHooker::setup_imgui_hwnd(HWND handle, ID3D11Device* device, ID3D11DeviceContext* device_context)
+// void BKCImGuiHooker::setup_imgui_hwnd(HWND handle, ID3D11Device* device, ID3D11DeviceContext* device_context)
+void BKCImGuiHooker::setup_imgui_hwnd(HWND handle, void* device, void* device_context, bool is_dx_11)
 {
     imgui_hwnd = handle;
     Logger::log_info("Setting up ImGui instance...");
@@ -451,7 +454,15 @@ void BKCImGuiHooker::setup_imgui_hwnd(HWND handle, ID3D11Device* device, ID3D11D
     embraceTheDarkness();
     
     ImGui_ImplWin32_Init(imgui_hwnd);
-    ImGui_ImplDX11_Init(device, device_context);
+    if (is_dx_11)
+    {
+        ImGui_ImplDX11_Init((ID3D11Device*)device, (ID3D11DeviceContext*)device_context);
+    }
+    else
+    {
+        ImGui_ImplDX10_Init((ID3D10Device*)device);
+    }
+    
 
     int horizontal = 0;
     int vertical = 0;
@@ -469,7 +480,23 @@ void BKCImGuiHooker::setup_imgui_hwnd(HWND handle, ID3D11Device* device, ID3D11D
     arraylist_font = io.Fonts->AddFontFromFileTTF(current_font.c_str(), 24.0f * scale_factor);
 }
 
-void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D11DeviceContext* g_pd3dDeviceContext)
+void BKCImGuiHooker::unload(bool is_dx_11)
+{
+    if (is_dx_11)
+    {
+        ImGui_ImplDX11_InvalidateDeviceObjects();
+        ImGui_ImplDX11_Shutdown();
+    }
+    else
+    {
+        ImGui_ImplDX10_InvalidateDeviceObjects();
+        ImGui_ImplDX10_Shutdown();
+    }
+    ImGui_ImplWin32_Shutdown();
+    ImGui::DestroyContext();
+}
+
+void BKCImGuiHooker::start(void* g_mainRenderTargetView, void* g_pd3dDevice, void* g_pd3dDeviceContext, bool is_dx_11)
 {
     while (gui_font == nullptr || watermark_font == nullptr || arraylist_font == nullptr)
     {
@@ -494,8 +521,16 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
         arraylist_font = io2.Fonts->AddFontFromFileTTF(current_font.c_str(), 24.0f * scale_factor);
         io2.Fonts->Build();
         // force invalidation and new frames
-        ImGui_ImplDX11_InvalidateDeviceObjects();
-        ImGui_ImplDX11_NewFrame();
+        if (is_dx_11)
+        {
+            ImGui_ImplDX11_InvalidateDeviceObjects();
+            ImGui_ImplDX11_NewFrame();
+        }
+        else
+        {
+            ImGui_ImplDX10_InvalidateDeviceObjects();
+            ImGui_ImplDX10_NewFrame();
+        }
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
         Logger::log_info("Changed client font to " + current_font);
@@ -503,7 +538,13 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
     }
     
     // Start the Dear ImGui frame
-    ImGui_ImplDX11_NewFrame();
+    if (is_dx_11)
+    {
+        ImGui_ImplDX11_NewFrame();
+    } else
+    {
+        ImGui_ImplDX10_NewFrame();
+    }
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
     
@@ -537,8 +578,8 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
         // ENABLE THIS FOR EASILY FINDING WHAT YOU NEED TO ADD TO THE GUI
         // ImGui::ShowDemoWindow();
 
-        if (show_client_settings) DrawClientSettingsWindow();
-        if (show_configs) DrawConfigsWindow();
+        if (show_client_settings) DrawClientSettingsWindow(is_dx_11);
+        if (show_configs) DrawConfigsWindow(is_dx_11);
     }
 
     // Modules
@@ -560,12 +601,22 @@ void BKCImGuiHooker::start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D1
     ImGui::PopFont();
     
     ImGui::Render();
-    
-    g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr);
-    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+    if (is_dx_11)
+    {
+        auto view = (ID3D11RenderTargetView*)g_mainRenderTargetView;
+        ((ID3D11DeviceContext*)g_pd3dDeviceContext)->OMSetRenderTargets(1, &view, nullptr);
+        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+    }
+    else
+    {
+        auto view = (ID3D10RenderTargetView*)g_mainRenderTargetView;
+        ((ID3D10Device*)g_pd3dDevice)->OMSetRenderTargets(1, &view, nullptr);
+        ImGui_ImplDX10_RenderDrawData(ImGui::GetDrawData());
+    }
 }
 
-void DrawClientSettingsWindow()
+void DrawClientSettingsWindow(bool is_dx_11)
 {
     ImGui::Begin("Client Settings", &show_client_settings);
 
@@ -584,8 +635,16 @@ void DrawClientSettingsWindow()
                 BKCImGuiHooker::arraylist_font = io.Fonts->AddFontFromFileTTF(current_font.c_str(), 24.0f * BKCImGuiHooker::scale_factor);
                 io.Fonts->Build();
                 // force invalidation and new frames
-                ImGui_ImplDX11_InvalidateDeviceObjects();
-                ImGui_ImplDX11_NewFrame();
+                if (is_dx_11)
+                {
+                    ImGui_ImplDX11_InvalidateDeviceObjects();
+                    ImGui_ImplDX11_NewFrame(); 
+                }
+                else
+                {
+                    ImGui_ImplDX10_InvalidateDeviceObjects();
+                    ImGui_ImplDX10_NewFrame();
+                }
                 ImGui_ImplWin32_NewFrame();
                 ImGui::NewFrame();
                 Logger::log_info("Changed client font to " + current_font);
@@ -626,7 +685,7 @@ void DrawClientSettingsWindow()
     ImGui::End();
 }
 
-void DrawConfigsWindow()
+void DrawConfigsWindow(bool is_dx_11)
 {
     ImGui::Begin("Config Manager##config", &show_configs);
 

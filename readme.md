@@ -66,6 +66,8 @@ Dependencies from vcpkg:
 
 `imgui:x64-windows-static`
 
+`imgui[dx10-binding]:x64-windows-static`
+
 `imgui[dx11-binding]:x64-windows-static`
 
 `imgui[win32-binding]:x64-windows-static`

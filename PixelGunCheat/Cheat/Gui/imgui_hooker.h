@@ -125,6 +125,7 @@ public:
     static bool modules_loaded;
     static bool config_loaded;
     static bool c_GuiEnabled;
-    static void setup_imgui_hwnd(HWND handle, ID3D11Device* device, ID3D11DeviceContext* device_context);
-    static void start(ID3D11RenderTargetView* g_mainRenderTargetView, ID3D11DeviceContext* g_pd3dDeviceContext);
+    static void setup_imgui_hwnd(HWND handle, void* device, void* device_context, bool is_dx_11);
+    static void unload(bool is_dx_11);
+    static void start(void* g_mainRenderTargetView, void* g_pd3dDevice, void* g_pd3dDeviceContext, bool is_dx_11);
 };
