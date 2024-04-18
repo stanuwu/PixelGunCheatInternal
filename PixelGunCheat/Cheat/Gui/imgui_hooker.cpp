@@ -763,7 +763,6 @@ void HandleModuleRendering(BKCModule& module)
         ImGui::Checkbox(module_enabled_id.str().c_str(), &module.enabled);
         ImGui::SeparatorText("Settings");
         HandleModuleSettingRendering(module);
-        GenerateActivationKeyComboBox(module);
         ImGui::Unindent();
     }
     ImGui::Unindent();
