@@ -1,4 +1,5 @@
 ﻿#pragma once
+
 #include "../ModuleBase.h"
 #include "../../Offsets/Offsets.h"
 
