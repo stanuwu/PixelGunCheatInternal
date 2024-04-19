@@ -12,9 +12,11 @@ public:
     
     void do_module(void* arg) override
     {
+        /*
         if (__infinite_ammo__fast.enabled || Hooks::tick % 10 == 0)
         {
             Functions::AddAmmoFromWeaponOnline(arg, 50);
         }
+        */
     }
 };

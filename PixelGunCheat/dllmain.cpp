@@ -397,6 +397,7 @@ int64_t WINAPI MainThread(LPVOID param)
     kiero::shutdown();
     hooks->unload();
     BKCImGuiHooker::unload(dx11);
+    SetWindowLongPtr(window, GWLP_WNDPROC, (LONG_PTR)oWndProc);
 
     shutdown(fp, "Shut Down");
     return 0;

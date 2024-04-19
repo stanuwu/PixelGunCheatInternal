@@ -38,6 +38,7 @@
 #include "../Module/Impl/ModuleAntiHeadshot.h"
 #include "../Module/Impl/ModuleAntiKick.h"
 #include "../Module/Impl/ModuleArrayList.h"
+#include "../Module/Impl/ModuleDamageMultiplier.h"
 #include "../Module/Impl/ModuleDoubleJump.h"
 #include "../Module/Impl/ModuleESP.h"
 #include "../Module/Impl/ModuleHeadshotMultiplier.h"
@@ -67,6 +68,8 @@ ModuleAimBot* aim_bot_module;
 ModuleSeasonPass* season_pass_module;
 ModuleBase* Hooks::fov_changer_module;
 ModuleUnlockWeapons* unlock_weapons_module;
+ModuleInfiniteAmmo* infinite_ammo_module;
+ModuleDamageMultiplier* damage_multiplier_module;
 std::list<ModuleBase*> player_move_c_modules = { };
 std::list<ModuleBase*> player_fps_controller_sharp_modules = { };
 std::list<ModuleBase*> weapon_sounds_modules = { };
@@ -306,12 +309,12 @@ inline float __stdcall rapid_fire(void* arg)
     return rapid_fire_original(arg);
 }
 
-inline float(__stdcall* speed_original)(void* arg);
-inline float __stdcall speed(void* arg)
+inline float(__stdcall* speed_original)();
+inline float __stdcall speed()
 {
     if (((ModuleBase*)speed_module)->is_enabled()) return speed_module->get_amount();
 
-    return speed_original(arg);
+    return speed_original();
 }
 
 inline float(__stdcall* on_pre_render_original)(void* arg);
@@ -448,6 +451,30 @@ inline void __stdcall add_weapon(void* arg, void* string, int source, bool bool1
     add_weapon_original(arg, string, source, bool1, bool2, class1, struct1);
 }
 
+inline int(__stdcall* ammo_in_clip_original)();
+inline int __stdcall ammo_in_clip()
+{
+    if (((ModuleBase*)infinite_ammo_module)->is_enabled()) return 9999;
+
+    return ammo_in_clip_original();
+}
+
+inline int(__stdcall* ammo_original)();
+inline int __stdcall ammo()
+{
+    if (((ModuleBase*)infinite_ammo_module)->is_enabled()) return 9999;
+
+    return ammo_original();
+}
+
+inline int(__stdcall* damage_multiplier_original)();
+inline int __stdcall damage_multiplier()
+{
+    if (((ModuleBase*)damage_multiplier_module)->is_enabled()) return damage_multiplier_module->amount();
+
+    return damage_multiplier_original();
+}
+
 // Static
 void hook_function(uint64_t offset, LPVOID detour, void* original)
 {
@@ -482,7 +509,7 @@ void Hooks::load()
     hook_function(Offsets::PlayerMoveCUpdate, &player_move_c, &player_move_c_original);
     hook_function(Offsets::InfiniteGemClaim, &infinite_gem_claim, &infinite_gem_claim_original);
     hook_function(Offsets::RapidFire, &rapid_fire, &rapid_fire_original);
-    hook_function(Offsets::Speed, &speed, &speed_original);
+    hook_function(Offsets::GetPlayerSpeed, &speed, &speed_original);
     hook_function(Offsets::OnPreRender, &on_pre_render, &on_pre_render_original);
     hook_function(Offsets::OnSceneUnload, &on_scene_unload, &on_scene_unload_original);
     hook_function(Offsets::PriceModifier, &free_lottery, &free_lottery_original);
@@ -491,6 +518,9 @@ void Hooks::load()
     hook_function(Offsets::DoubleRewards, &double_rewards, &double_rewards_original);
     hook_function(Offsets::PremiumPass, &season_pass_premium, &season_pass_premium_original);
     hook_function(Offsets::AddWeapon, &add_weapon, &add_weapon_original);
+    hook_function(Offsets::GetAmmoInClip, &ammo_in_clip, &ammo_in_clip_original);
+    hook_function(Offsets::GetAmmo, &ammo, &ammo_original);
+    hook_function(Offsets::GetDamageMultiplier, &damage_multiplier, &damage_multiplier_original);
     
     // Init Modules Here
     rapid_fire_module = new ModuleRapidFire();
@@ -499,6 +529,7 @@ void Hooks::load()
     lottery_price_module = new ModulePriceModifier;
     rewards_multiplier_module = new ModuleRewardsMultiplier();
     season_pass_module = new ModuleSeasonPass();
+    damage_multiplier_module = new ModuleDamageMultiplier();
 
     unlock_weapons_module = new ModuleUnlockWeapons();
 
@@ -534,8 +565,9 @@ void Hooks::load()
 
     // Will wreak havoc on literally everyone, even other cheaters :D
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleAntiHeadshot());
-    
-    player_damageable_modules.push_back((ModuleBase*) new ModuleInfiniteAmmo());
+
+    infinite_ammo_module = new ModuleInfiniteAmmo();
+    // player_damageable_modules.push_back((ModuleBase*) new ModuleInfiniteAmmo());
     // player_move_c_modules.push_back((ModuleBase*) new ModuleHeal());
 
     fov_changer_module = (ModuleBase*) new ModuleFOVChanger();

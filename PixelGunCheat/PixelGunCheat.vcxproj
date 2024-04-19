@@ -259,6 +259,7 @@
     <ClInclude Include="Cheat\Module\Impl\ModuleArrayList.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleBetterScope.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleCriticals.h" />
+    <ClInclude Include="Cheat\Module\Impl\ModuleDamageMultiplier.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleDebuffer.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleDoubleJump.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleESP.h" />

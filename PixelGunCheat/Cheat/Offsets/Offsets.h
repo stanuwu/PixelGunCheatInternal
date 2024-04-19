@@ -42,6 +42,10 @@ public:
     static inline uint64_t PlayerGetWeaponManager = 0x1B10E60;
     static inline uint64_t GetItemRecordDict = 0x79E380;
     static inline uint64_t ItemRecordGetShopId = 0x573C40;
+    static inline uint64_t GetDamageMultiplier = 0x11296D0;
+    static inline uint64_t GetPlayerSpeed = 0x112DE50;
+    static inline uint64_t GetAmmoInClip = 0x1136670;
+    static inline uint64_t GetAmmo = 0x111B120;
 
     // Fields
     static inline uint64_t scopeSpeed = 0xF8;
