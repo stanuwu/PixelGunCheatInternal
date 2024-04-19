@@ -41,6 +41,9 @@ std::string combo_file = "default";
 static char input_file[32] = "default";
 static char offsets_rhd[32] = "";
 static char return_rhd[32] = "";
+static int return_rhd_int = 0;
+static float return_rhd_float = 0;
+static bool rhd_is_float = false;
 
 static LPVOID last_rhd = nullptr;
 static ImU32 color_title = ImGui::ColorConvertFloat4ToU32({0.91f, 0.64f, 0.13f, 1.00f});
@@ -167,13 +170,20 @@ void GetDesktopResolution(int& horizontal, int& vertical)
 inline int(__stdcall* rhd_original)(void* arg);
 inline int __stdcall rhd(void* arg)
 {
-    Logger::log_debug("Dev Hook Called!");
-    return std::stoi(return_rhd);
+    Logger::log_debug("Int/Bool Dev Hook Called!");
+    return return_rhd_int;
+}
+
+inline float(__stdcall* rhd_float_original)(void* arg);
+inline float __stdcall rhd_float(void* arg)
+{
+    Logger::log_debug("Float Dev Hook Called!");
+    return return_rhd_float;
 }
 
 void try_runtime_hook()
 {
-    if (!last_rhd == 0)
+    if (last_rhd != nullptr)
     {
         Logger::log_debug("Clearing Last Hook");
         MH_DisableHook(last_rhd);
@@ -191,10 +201,21 @@ void try_runtime_hook()
     }
     s2 << "Creating Hook | Offset: " << offset << " | Return: " << return_rhd;
     Logger::log_debug(s2.str());
-    last_rhd = (LPVOID*)offset;
-    if (MH_CreateHook((LPVOID*)(Hooks::GameAssembly + offset), &rhd, (LPVOID*)&rhd_original) == MH_OK)
+    last_rhd = (LPVOID*)(Hooks::GameAssembly + offset);
+    int res;
+    if (!rhd_is_float)
+    {
+        res = MH_CreateHook(last_rhd, &rhd, (LPVOID*)&rhd_original);
+    }
+    else
+    {
+        res = MH_CreateHook(last_rhd, &rhd_float, (LPVOID*)&rhd_float_original);
+    }
+    if (res == MH_OK)
     {
         Logger::log_debug("Hook Created");
+        return_rhd_float = std::stof(return_rhd);
+        return_rhd_int = std::stoi(return_rhd);
         MH_EnableHook((LPVOID*)(Hooks::GameAssembly + offset));
     }
 }
@@ -669,6 +690,7 @@ void DrawClientSettingsWindow(bool is_dx_11)
             
         ImGui::InputText("Offset##rhd", offsets_rhd, sizeof(offsets_rhd));
         ImGui::InputText("Return##rhd", return_rhd, sizeof(return_rhd));
+        ImGui::Checkbox("Float##rhd", &rhd_is_float);
         if (ImGui::Button("Create##rhd"))
         {
             try_runtime_hook();

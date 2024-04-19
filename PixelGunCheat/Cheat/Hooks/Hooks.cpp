@@ -536,7 +536,7 @@ void Hooks::load()
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleAntiHeadshot());
     
     player_damageable_modules.push_back((ModuleBase*) new ModuleInfiniteAmmo());
-    // player_damageable_modules.push_back((ModuleBase*) new ModuleHeal());
+    // player_move_c_modules.push_back((ModuleBase*) new ModuleHeal());
 
     fov_changer_module = (ModuleBase*) new ModuleFOVChanger();
     on_pre_render_modules.push_back(fov_changer_module);

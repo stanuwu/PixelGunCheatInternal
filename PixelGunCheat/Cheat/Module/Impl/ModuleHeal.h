@@ -10,9 +10,13 @@ public:
     
     void do_module(void* arg) override
     {
+        /*
         if (Hooks::tick % 30 == 0)
         {
             Functions::AddHealthFromWeaponOnline(arg, 100);
         }
+        */
+
+        // 0 = medkit
     }
 };
