@@ -8,7 +8,7 @@
 static BKCDropdown __weapon_list = { "Weapon Select", weapons_names[0], weapons_names, "", true };
 // static BKCCheckbox __unlock_weapons_dev = {"Spoof Developer", true, "Tries to add the weapon through developer mode, less consistent but safer."};
 static BKCCheckbox __unlock_weapons_upgrade = {"Auto Upgrade", true};
-static BKCCheckbox __unlock_weapons_all = {"Add All", false, "WARNING, THIS ONLY WORKS FROM THE LOTTERY SUPERCHEST AND WILL CRASH THE GAME, BUT YOU SHOULD HAVE ALL THE WEAPONS AFTERWARDS"};
+static BKCCheckbox __unlock_weapons_all = {"Add All", false, "WARNING, THIS MAY TAKE A WHILE"};
 static BKCModule __unlock_weapons = { "Add Weapons", EXPLOIT, 0x0, false, { &__weapon_list, &__unlock_weapons_upgrade, &__unlock_weapons_all } };
 
 static bool adding_all = false;

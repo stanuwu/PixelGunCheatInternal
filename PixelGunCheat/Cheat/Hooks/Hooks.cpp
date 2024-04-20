@@ -525,19 +525,6 @@ inline bool __stdcall get_immortality(void* arg)
     return get_immortality_original(arg);
 }
 
-inline void(__stdcall* add_gems_original)(int amount, bool arg1, bool arg2, int enum1, int enum2, int enum3);
-inline void __stdcall add_gems(int amount, bool arg1, bool arg2, int enum1, int enum2, int enum3)
-{
-    Logger::log_debug(std::to_string(amount));
-    Logger::log_debug(std::to_string(arg1));
-    Logger::log_debug(std::to_string(arg2));
-    Logger::log_debug(std::to_string(enum1));
-    Logger::log_debug(std::to_string(enum2));
-    Logger::log_debug(std::to_string(enum3));
-
-    return add_gems_original(amount, arg1, arg2, enum1, enum2, enum3);
-}
-
 // Static
 void hook_function(uint64_t offset, LPVOID detour, void* original)
 {
@@ -585,7 +572,6 @@ void Hooks::load()
     hook_function(Offsets::GetAmmo, &ammo, &ammo_original);
     hook_function(Offsets::GetDamageMultiplier, &damage_multiplier, &damage_multiplier_original);
     hook_function(Offsets::PlayerGetImmortality, &get_immortality, &get_immortality_original);
-    hook_function(Offsets::AddGems, &add_gems, &add_gems_original);
     
     // Init Modules Here
     rapid_fire_module = new ModuleRapidFire();
