@@ -346,12 +346,12 @@ inline float __stdcall rapid_fire(void* arg)
     return rapid_fire_original(arg);
 }
 
-inline float(__stdcall* speed_original)();
-inline float __stdcall speed()
+inline float(__stdcall* speed_original)(void* arg);
+inline float __stdcall speed(void* arg)
 {
     if (((ModuleBase*)speed_module)->is_enabled()) return speed_module->get_amount();
 
-    return speed_original();
+    return speed_original(arg);
 }
 
 inline float(__stdcall* on_pre_render_original)(void* arg);
@@ -492,28 +492,28 @@ inline void __stdcall add_weapon(void* arg, void* string, int source, bool bool1
     */
 }
 
-inline int(__stdcall* ammo_in_clip_original)(void*);
-inline int __stdcall ammo_in_clip(void* instance)
+inline int(__stdcall* ammo_in_clip_original)(void* arg);
+inline int __stdcall ammo_in_clip(void* arg)
 {
     if (((ModuleBase*)infinite_ammo_module)->is_enabled()) return 9999;
 
-    return ammo_in_clip_original(instance);
+    return ammo_in_clip_original(arg);
 }
 
-inline int(__stdcall* ammo_original)(void*);
-inline int __stdcall ammo(void* instance)
+inline int(__stdcall* ammo_original)(void* arg);
+inline int __stdcall ammo(void* arg)
 {
     if (((ModuleBase*)infinite_ammo_module)->is_enabled()) return 9999;
 
-    return ammo_original(instance);
+    return ammo_original(arg);
 }
 
-inline int(__stdcall* damage_multiplier_original)();
-inline int __stdcall damage_multiplier()
+inline int(__stdcall* damage_multiplier_original)(void* arg);
+inline int __stdcall damage_multiplier(void* arg)
 {
     if (((ModuleBase*)damage_multiplier_module)->is_enabled()) return damage_multiplier_module->amount();
 
-    return damage_multiplier_original();
+    return damage_multiplier_original(arg);
 }
 
 inline bool(__stdcall* get_immortality_original)(void* arg);
