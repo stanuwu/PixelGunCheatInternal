@@ -1,13 +1,18 @@
 ﻿#pragma once
 #include <stdbool.h>
+#include <stdbool.h>
 
 #include "../ModuleBase.h"
 #include "../../Gui/imgui_hooker.h"
 
-static BKCDropdown __weapon_list = { "Weapon Selector", weapons_names[0], weapons_names, "THIS IS A VOLATILE MODULE, AND HAS A POSSIBILITY TO BAN DEPENDING ON HOW YOU USE IT", true };
-static BKCCheckbox __unlock_weapons_dev = {"Spoof Developer", true, "Tries to add the weapon through developer mode, less consistent but safer."};
-static BKCCheckbox __unlock_weapons_all = {"Unlock All", false, "WARNING, THIS ONLY WORKS FROM THE LOTTERY SUPERCHEST AND WILL CRASH THE GAME, BUT YOU SHOULD HAVE ALL THE WEAPONS AFTERWARDS"};
-static BKCModule __unlock_weapons = { "Weapon Unlock", EXPLOIT, 0x0, false, { &__weapon_list, &__unlock_weapons_dev, &__unlock_weapons_all } };
+static BKCDropdown __weapon_list = { "Weapon Select", weapons_names[0], weapons_names, "", true };
+// static BKCCheckbox __unlock_weapons_dev = {"Spoof Developer", true, "Tries to add the weapon through developer mode, less consistent but safer."};
+static BKCCheckbox __unlock_weapons_upgrade = {"Auto Upgrade", true};
+static BKCCheckbox __unlock_weapons_all = {"Add All", false, "WARNING, THIS ONLY WORKS FROM THE LOTTERY SUPERCHEST AND WILL CRASH THE GAME, BUT YOU SHOULD HAVE ALL THE WEAPONS AFTERWARDS"};
+static BKCModule __unlock_weapons = { "Add Weapons", EXPLOIT, 0x0, false, { &__weapon_list, &__unlock_weapons_upgrade, &__unlock_weapons_all } };
+
+static bool adding_all = false;
+static int add_all_progress = 0;
 
 class ModuleUnlockWeapons : ModuleBase
 {
@@ -16,9 +21,43 @@ public:
     
     void do_module(void* arg) override
     {
-        
+        if (Hooks::tick % 240 != 0) return;
+        if (__unlock_weapons_all.enabled)
+        {
+            if (!adding_all)
+            {
+                Logger::log_info("Adding All Weapons");
+            }
+            adding_all = true;
+            int count = -1;
+            Logger::log_info("Adding Progress: " + std::to_string(add_all_progress));
+            for (auto weapon_name : weapons_names)
+            {
+                count++;
+                if (count < add_all_progress) continue;
+                if (count > add_all_progress + 25)
+                {
+                    add_all_progress = add_all_progress + 25;
+                    break;
+                }
+                Functions::GiveWeapon(Hooks::create_system_string(weapon_name), true, __unlock_weapons_upgrade.enabled);
+            }
+            if (count >= weapons_names.size() - 1)
+            {
+                Logger::log_info("Done Adding");
+                adding_all = false;
+                add_all_progress = 0;
+            }
+        }
+        else
+        {
+            Functions::GiveWeapon(Hooks::create_system_string(__weapon_list.current_value), true, __unlock_weapons_upgrade.enabled);
+        }
+
+        if (!adding_all) this->toggle();
     }
 
+    /*
     bool all()
     {
         return __unlock_weapons_all.enabled;
@@ -38,4 +77,5 @@ public:
     {
         return __unlock_weapons_dev.enabled;
     }
+    */
 };

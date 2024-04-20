@@ -247,13 +247,19 @@
     <ClCompile Include="dllmain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Cheat\Data\Armor.h" />
+    <ClInclude Include="Cheat\Data\Pets.h" />
     <ClInclude Include="Cheat\Data\Weapons.h" />
     <ClInclude Include="Cheat\Gui\imgui_hooker.h" />
     <ClInclude Include="Cheat\Hooks\Hooks.h" />
     <ClInclude Include="Cheat\Internal\Functions.h" />
     <ClInclude Include="Cheat\Logger\Logger.h" />
+    <ClInclude Include="Cheat\Module\Impl\ModuleAddArmor.h" />
+    <ClInclude Include="Cheat\Module\Impl\ModuleAddCurrency.h" />
+    <ClInclude Include="Cheat\Module\Impl\ModuleAddPets.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleAimBot.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleAntiBarrier.h" />
+    <ClInclude Include="Cheat\Module\Impl\ModuleAntiImmortal.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleAntiKick.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleAOEBullets.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleArrayList.h" />
@@ -267,6 +273,7 @@
     <ClInclude Include="Cheat\Module\Impl\ModuleFrostAura.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleFullAuto.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleAntiHeadshot.h" />
+    <ClInclude Include="Cheat\Module\Impl\ModuleImmortality.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleImmunity.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleInfiniteArmor.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleHeal.h" />
@@ -285,6 +292,7 @@
     <ClInclude Include="Cheat\Module\Impl\ModuleSpeed.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleSpread.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleExtraDisplay.h" />
+    <ClInclude Include="Cheat\Module\Impl\ModuleTest.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleUnlockWeapons.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleXRay.h" />
     <ClInclude Include="Cheat\Module\ModuleBase.h" />

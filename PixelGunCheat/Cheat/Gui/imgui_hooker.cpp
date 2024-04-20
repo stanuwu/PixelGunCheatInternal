@@ -34,7 +34,7 @@ WPARAM MapLeftRightKeys(const MSG& msg);
 
 // Boykisser Central Vars
 std::string BKCImGuiHooker::c_Title = "Boykisser Central";
-std::string BKCImGuiHooker::c_RealBuild = "v1.6";
+std::string BKCImGuiHooker::c_RealBuild = "v1.7";
 static std::string c_Build = ":3";
 std::stringstream full_title;
 std::string combo_file = "default";
@@ -794,7 +794,7 @@ void HandleModuleSettingRendering(BKCModule& module)
                 
                 for (std::string::size_type i = 0; i < dropdown->values.size(); i++)
                 {
-                    if (!dropdown->search || weapons_names[i].find(dropdown->search_str) != std::string::npos)
+                    if (!dropdown->search || dropdown->values[i].find(dropdown->search_str) != std::string::npos)
                     {
                         const bool selected = dropdown->current_value == dropdown->values[i];
                     

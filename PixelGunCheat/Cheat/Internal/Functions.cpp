@@ -166,3 +166,45 @@ void* Functions::ItemRecordGetShopId(void* arg)
     static const auto fn = (void*(*)(void*))(GameAssembly_ + Offsets::ItemRecordGetShopId);
     return fn(arg); 
 }
+
+void Functions::AddWearItem(int category, void* id)
+{
+    static const auto fn = (void(*)(int, void*))(GameAssembly_ + Offsets::AddWearItem);
+    return fn(category, id); 
+}
+
+void Functions::GiveWear(void* id)
+{
+    static const auto fn = (void(*)(void*))(GameAssembly_ + Offsets::GiveWear);
+    return fn(id); 
+}
+
+void Functions::GiveWeapon(void* id, bool event, bool auto_upgrade)
+{
+    static const auto fn = (void(*)(void*))(GameAssembly_ + Offsets::GiveWeapon);
+    return fn(id); 
+}
+
+void Functions::GivePets(void* id, int count)
+{
+    static const auto fn = (void(*)(void*, int))(GameAssembly_ + Offsets::GivePets);
+    return fn(id, count); 
+}
+
+void Functions::AddGems(int amount, bool arg1, bool arg2, int enum1, int enum2, int enum3)
+{
+    static const auto fn = (void(*)(int, bool, bool, int, int, int))(GameAssembly_ + Offsets::AddGems);
+    return fn(amount, arg1, arg2, enum1, enum2, enum3); 
+}
+
+void Functions::AddCoins(int amount, bool arg1, bool arg2, int enum1, int enum2, int enum3)
+{
+    static const auto fn = (void(*)(int, bool, bool, int, int, int))(GameAssembly_ + Offsets::AddCoins);
+    return fn(amount, arg1, arg2, enum1, enum2, enum3); 
+}
+
+void Functions::AddCoupons(int amount, int source, bool arg1, int arg2)
+{
+    static const auto fn = (void(*)(int, int, bool, int))(GameAssembly_ + Offsets::AddCoupons);
+    return fn(amount, source, arg1, arg2); 
+}

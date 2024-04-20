@@ -80,6 +80,10 @@ public:
         auto indexer = std::ranges::find(values, val);
         return indexer != values.end() ? (int)(indexer - values.begin()) : -1;
     }
+    void add_value(std::string value)
+    {
+        values.push_back(value);
+    }
     int current_index;
     std::string current_value;
     std::vector<std::string> values;

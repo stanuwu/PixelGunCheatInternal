@@ -190,10 +190,15 @@ LRESULT __stdcall WndProc(const HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
         GetClientRect(hWnd, &rect);
         POINT center = { (rect.right - rect.left) / 2, (rect.bottom - rect.top) / 2 };
         ClientToScreen(hWnd, &center);
-        if (center.x >= 0 && center.y >= 0) SetCursorPos(center.x, center.y); 
+        RECT confineRect;
+        confineRect.left = center.x - 10;
+        confineRect.right = center.x + 10;
+        confineRect.top = center.y - 10;
+        confineRect.bottom = center.y + 10;
+        if (center.x >= 0 && center.y >= 0) ClipCursor(&confineRect);
         return CallWindowProcW(oWndProc, GetActiveWindow(), msg, wParam, lParam);
     }
-    
+    ClipCursor(NULL);
     return DefWindowProcW(GetActiveWindow(), msg, wParam, lParam);
 }
 

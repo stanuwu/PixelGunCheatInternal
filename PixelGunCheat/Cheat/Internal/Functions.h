@@ -56,4 +56,11 @@ public:
     static void* PlayerGetWeaponManager(void* arg);
     static void* GetItemRecordDict();
     static void* ItemRecordGetShopId(void* arg);
+    static void AddWearItem(int category, void* id);
+    static void GiveWear(void* id);
+    static void GiveWeapon(void* id, bool event, bool auto_upgrade);
+    static void GivePets(void* id, int count);
+    static void AddGems(int amount, bool arg1, bool arg2, int enum1, int enum2, int enum3);
+    static void AddCoins(int amount, bool arg1, bool arg2, int enum1, int enum2, int enum3);
+    static void AddCoupons(int amount, int source, bool arg1, int arg2);
 };

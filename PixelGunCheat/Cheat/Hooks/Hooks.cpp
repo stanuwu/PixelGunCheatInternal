@@ -33,9 +33,13 @@
 #include "../Module/Impl/ModuleSpeed.h"
 
 #include "../IL2CPPResolver/IL2CPP_Resolver.hpp"
+#include "../Module/Impl/ModuleAddArmor.h"
+#include "../Module/Impl/ModuleAddCurrency.h"
+#include "../Module/Impl/ModuleAddPets.h"
 #include "../Module/Impl/ModuleAimBot.h"
 #include "../Module/Impl/ModuleAntiBarrier.h"
 #include "../Module/Impl/ModuleAntiHeadshot.h"
+#include "../Module/Impl/ModuleAntiImmortal.h"
 #include "../Module/Impl/ModuleAntiKick.h"
 #include "../Module/Impl/ModuleArrayList.h"
 #include "../Module/Impl/ModuleDamageMultiplier.h"
@@ -45,9 +49,11 @@
 #include "../Module/Impl/ModulePriceModifier.h"
 #include "../Module/Impl/ModuleRewardsMultiplier.h"
 #include "../Module/Impl/ModuleExtraDisplay.h"
+#include "../Module/Impl/ModuleImmortality.h"
 #include "../Module/Impl/ModuleImmunity.h"
 #include "../Module/Impl/ModuleInfiniteArmor.h"
 #include "../Module/Impl/ModuleSeasonPass.h"
+#include "../Module/Impl/ModuleTest.h"
 #include "../Module/Impl/ModuleUnlockWeapons.h"
 #include "../Module/Impl/ModuleUnlockWeapons.h"
 #include "../Offsets/Offsets.h"
@@ -70,7 +76,13 @@ ModuleBase* Hooks::fov_changer_module;
 ModuleUnlockWeapons* unlock_weapons_module;
 ModuleInfiniteAmmo* infinite_ammo_module;
 ModuleDamageMultiplier* damage_multiplier_module;
+ModuleAntiImmortal* anti_immortal_module;
+ModuleImmortality* immortality_module;
+ModuleAddArmor* add_armor_module;
+ModuleAddPets* add_pets_module;
+ModuleAddCurrency* add_currency_module;
 std::list<ModuleBase*> player_move_c_modules = { };
+std::list<ModuleBase*> player_move_c_others_modules = { };
 std::list<ModuleBase*> player_fps_controller_sharp_modules = { };
 std::list<ModuleBase*> weapon_sounds_modules = { };
 std::list<ModuleBase*> weapon_sound_others_modules = { };
@@ -89,6 +101,12 @@ Unity::Vector3 zero = Unity::Vector3(0, 0, 0);
 void* Hooks::aimed_pos = &zero;
 
 // Utility
+void* Hooks::create_system_string(std::string string)
+{
+    Unity::System_String* ns = IL2CPP::String::New(string);
+    return ns;
+}
+
 void Hooks::dump_item_records()
 {
     Logger::log_debug("Dumping Records");
@@ -201,6 +219,23 @@ inline void __stdcall weapon_sounds_call(void* arg)
     weapon_set.insert(sstring->ToString());
     */
     //
+
+    if (unlock_weapons_module != nullptr)
+    {
+        ((ModuleBase*)unlock_weapons_module)->run(arg);
+    }
+    if (add_armor_module != nullptr)
+    {
+        ((ModuleBase*)add_armor_module)->run(arg);
+    }
+    if (add_pets_module != nullptr)
+    {
+        ((ModuleBase*)add_pets_module)->run(arg);
+    }
+    if (add_currency_module != nullptr)
+    {
+        ((ModuleBase*)add_currency_module)->run(arg);
+    }
     
     if (is_my_player_weapon_sounds(arg))
     {
@@ -238,9 +273,6 @@ inline void __stdcall player_move_c(void* arg)
 
     if (my_player)
     {
-        // My Player
-        Hooks::tick++;
-
         if (Hooks::tick % 5 == 0)
         {
             Hooks::main_camera = find_main_camera();
@@ -264,7 +296,12 @@ inline void __stdcall player_move_c(void* arg)
         if (Hooks::main_camera == nullptr) return player_move_c_original(arg);
         Hooks::fov_changer_module->run(nullptr);
         esp_module->add_esp(arg);
-        working_player_list.push_back(arg);  
+        working_player_list.push_back(arg);
+
+        for (auto player_move_c_others_module : player_move_c_others_modules)
+        {
+            player_move_c_others_module->run(arg);
+        }
     }
     
     
@@ -320,6 +357,8 @@ inline float __stdcall speed()
 inline float(__stdcall* on_pre_render_original)(void* arg);
 inline float __stdcall on_pre_render(void* arg)
 {
+    Hooks::tick++;
+    
     Hooks::player_list = working_player_list;
     const std::list<void*> tl;
     working_player_list = tl;
@@ -395,6 +434,7 @@ inline bool __stdcall season_pass_premium(void* arg)
 inline void (__stdcall* add_weapon_original)(void* arg, void* string, int source, bool bool1, bool bool2, void* class1, void* struct1);
 inline void __stdcall add_weapon(void* arg, void* string, int source, bool bool1, bool bool2, void* class1, void* struct1)
 {
+    /*
     if (((ModuleBase*)unlock_weapons_module)->is_enabled())
     {
         Unity::System_String* sname = (Unity::System_String*)string;
@@ -449,6 +489,7 @@ inline void __stdcall add_weapon(void* arg, void* string, int source, bool bool1
         }
     }
     add_weapon_original(arg, string, source, bool1, bool2, class1, struct1);
+    */
 }
 
 inline int(__stdcall* ammo_in_clip_original)();
@@ -473,6 +514,28 @@ inline int __stdcall damage_multiplier()
     if (((ModuleBase*)damage_multiplier_module)->is_enabled()) return damage_multiplier_module->amount();
 
     return damage_multiplier_original();
+}
+
+inline bool(__stdcall* get_immortality_original)(void* arg);
+inline bool __stdcall get_immortality(void* arg)
+{
+    if (((ModuleBase*)immortality_module)->is_enabled() && arg == Hooks::our_player) return true;
+    if (((ModuleBase*)anti_immortal_module)->is_enabled() && arg != Hooks::our_player) return false;
+
+    return get_immortality_original(arg);
+}
+
+inline void(__stdcall* add_gems_original)(int amount, bool arg1, bool arg2, int enum1, int enum2, int enum3);
+inline void __stdcall add_gems(int amount, bool arg1, bool arg2, int enum1, int enum2, int enum3)
+{
+    Logger::log_debug(std::to_string(amount));
+    Logger::log_debug(std::to_string(arg1));
+    Logger::log_debug(std::to_string(arg2));
+    Logger::log_debug(std::to_string(enum1));
+    Logger::log_debug(std::to_string(enum2));
+    Logger::log_debug(std::to_string(enum3));
+
+    return add_gems_original(amount, arg1, arg2, enum1, enum2, enum3);
 }
 
 // Static
@@ -517,10 +580,12 @@ void Hooks::load()
     hook_function(Offsets::RewardMultiplier, &reward_multiplier, &reward_multiplier_original);
     hook_function(Offsets::DoubleRewards, &double_rewards, &double_rewards_original);
     hook_function(Offsets::PremiumPass, &season_pass_premium, &season_pass_premium_original);
-    hook_function(Offsets::AddWeapon, &add_weapon, &add_weapon_original);
+    // hook_function(Offsets::AddWeapon, &add_weapon, &add_weapon_original);
     hook_function(Offsets::GetAmmoInClip, &ammo_in_clip, &ammo_in_clip_original);
     hook_function(Offsets::GetAmmo, &ammo, &ammo_original);
     hook_function(Offsets::GetDamageMultiplier, &damage_multiplier, &damage_multiplier_original);
+    hook_function(Offsets::PlayerGetImmortality, &get_immortality, &get_immortality_original);
+    hook_function(Offsets::AddGems, &add_gems, &add_gems_original);
     
     // Init Modules Here
     rapid_fire_module = new ModuleRapidFire();
@@ -530,14 +595,22 @@ void Hooks::load()
     rewards_multiplier_module = new ModuleRewardsMultiplier();
     season_pass_module = new ModuleSeasonPass();
     damage_multiplier_module = new ModuleDamageMultiplier();
-
+    anti_immortal_module = new ModuleAntiImmortal();
+    immortality_module = new ModuleImmortality();
+    
     unlock_weapons_module = new ModuleUnlockWeapons();
+    add_armor_module = new ModuleAddArmor();
+    add_pets_module = new ModuleAddPets();
+    add_currency_module = new ModuleAddCurrency();
 
     esp_module = new ModuleESP();
     player_move_c_modules.push_back((ModuleBase*) esp_module);
     aim_bot_module = new ModuleAimBot();
     player_move_c_modules.push_back((ModuleBase*) new ModuleInvisibility());
 
+    player_move_c_modules.push_back((ModuleBase*) new ModuleTest());
+
+    
     /*
      does fucking nothing with these vals xddddd
     player_move_c_modules.push_back((ModuleBase*) new ModuleExtraDisplay());

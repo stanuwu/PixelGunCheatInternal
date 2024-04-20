@@ -46,6 +46,14 @@ public:
     static inline uint64_t GetPlayerSpeed = 0x112DE50;
     static inline uint64_t GetAmmoInClip = 0x1136670;
     static inline uint64_t GetAmmo = 0x111B120;
+    static inline uint64_t PlayerGetImmortality = 0x1B44C80;
+    static inline uint64_t AddWearItem = 0x6599B0;
+    static inline uint64_t GiveWear = 0x1FF5810;
+    static inline uint64_t GiveWeapon = 0x1FF63C0;
+    static inline uint64_t GivePets = 0x1FF9740;
+    static inline uint64_t AddGems = 0x1FEE5B0;
+    static inline uint64_t AddCoins = 0x1FEF760;
+    static inline uint64_t AddCoupons = 0x1FF1AC0;
 
     // Fields
     static inline uint64_t scopeSpeed = 0xF8;
