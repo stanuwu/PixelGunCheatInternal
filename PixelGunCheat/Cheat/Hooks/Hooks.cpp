@@ -508,9 +508,9 @@ inline int __stdcall ammo()
     return ammo_original();
 }
 
-inline int(__stdcall* damage_multiplier_original)();
-inline int __stdcall damage_multiplier()
-{
+inline float(__stdcall* damage_multiplier_original)();
+inline float __stdcall damage_multiplier()
+{   
     if (((ModuleBase*)damage_multiplier_module)->is_enabled()) return damage_multiplier_module->amount();
 
     return damage_multiplier_original();
