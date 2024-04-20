@@ -492,20 +492,20 @@ inline void __stdcall add_weapon(void* arg, void* string, int source, bool bool1
     */
 }
 
-inline int(__stdcall* ammo_in_clip_original)();
-inline int __stdcall ammo_in_clip()
+inline int(__stdcall* ammo_in_clip_original)(void*);
+inline int __stdcall ammo_in_clip(void* instance)
 {
     if (((ModuleBase*)infinite_ammo_module)->is_enabled()) return 9999;
 
-    return ammo_in_clip_original();
+    return ammo_in_clip_original(instance);
 }
 
-inline int(__stdcall* ammo_original)();
-inline int __stdcall ammo()
+inline int(__stdcall* ammo_original)(void*);
+inline int __stdcall ammo(void* instance)
 {
     if (((ModuleBase*)infinite_ammo_module)->is_enabled()) return 9999;
 
-    return ammo_original();
+    return ammo_original(instance);
 }
 
 inline int(__stdcall* damage_multiplier_original)();
