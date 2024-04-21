@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <string>
 
@@ -22,6 +22,11 @@ static inline std::vector<ArmorData> armor_names = {
     { 7, L"armor_inflatable" },
     { 7, L"armor_stardust" },
     { 7, L"armor_ultimate_defense" },
+    { 7, L"armor_superhero" },
+    { 7, L"armor_cash_fix" },
+    { 7, L"armor_space_delivery" },
+    { 7, L"armor_natural" },
+    { 7, L"armor_magic_gift" }, // champion armor is not real sadly...
     { 7, L"developer_armor" },
     { 7, L"starter_pack_armor" },
     { 9, L"cape_BloodyDemon" },
