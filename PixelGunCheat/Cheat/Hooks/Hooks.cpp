@@ -498,8 +498,8 @@ inline int __stdcall ammo(void* arg)
     return ammo_original(arg);
 }
 
-inline float(__stdcall* damage_multiplier_original)();
-inline float __stdcall damage_multiplier()
+inline float(__stdcall* damage_multiplier_original)(void* arg);
+inline float __stdcall damage_multiplier(void* arg)
 {   
     if (((ModuleBase*)damage_multiplier_module)->is_enabled()) return damage_multiplier_module->amount();
 
