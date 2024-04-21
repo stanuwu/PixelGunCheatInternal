@@ -65,7 +65,7 @@ public:
 class BKCDropdown : public BKCSetting
 {
 public:
-    BKCDropdown(const std::string& setting_name, const std::string& def_val, const std::vector<std::string>& vals, const std::string& extra_info = "", const bool allow_search = false)
+    BKCDropdown(const std::string& setting_name, const std::wstring& def_val, const std::vector<std::wstring>& vals, const std::string& extra_info = "", const bool allow_search = false)
     {
         name = setting_name;
         values = vals;
@@ -75,18 +75,18 @@ public:
         search = allow_search;
         type = 4;
     }
-    int indexof(std::string val)
+    int indexof(std::wstring val)
     {
         auto indexer = std::ranges::find(values, val);
         return indexer != values.end() ? (int)(indexer - values.begin()) : -1;
     }
-    void add_value(std::string value)
+    void add_value(std::wstring value)
     {
         values.push_back(value);
     }
     int current_index;
-    std::string current_value;
-    std::vector<std::string> values;
+    std::wstring current_value;
+    std::vector<std::wstring> values;
     bool search;
     char search_str[64] = "";
 };

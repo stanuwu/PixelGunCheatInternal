@@ -40,7 +40,7 @@ public:
                     add_all_progress = add_all_progress + 25;
                     break;
                 }
-                Functions::GiveWeapon(Hooks::create_system_string(weapon_name), true, __unlock_weapons_upgrade.enabled);
+                Functions::GiveWeapon(Hooks::create_system_string_w(weapon_name), true, __unlock_weapons_upgrade.enabled);
             }
             if (count >= weapons_names.size() - 1)
             {
@@ -51,7 +51,7 @@ public:
         }
         else
         {
-            Functions::GiveWeapon(Hooks::create_system_string(__weapon_list.current_value), true, __unlock_weapons_upgrade.enabled);
+            Functions::GiveWeapon(Hooks::create_system_string_w(__weapon_list.current_value), true, __unlock_weapons_upgrade.enabled);
         }
 
         if (!adding_all) this->toggle();

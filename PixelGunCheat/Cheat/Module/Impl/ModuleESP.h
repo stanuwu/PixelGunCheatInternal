@@ -7,7 +7,7 @@
 
 #include "../IL2CPPResolver/IL2CPP_Resolver.hpp"
 
-static BKCDropdown __esp_style = BKCDropdown("ESP Style", "Simple", { "Simple", "CS-like" });
+static BKCDropdown __esp_style = BKCDropdown("ESP Style", L"Simple", { L"Simple", L"CS-like" });
 static BKCSliderInt __esp_thickness = BKCSliderInt("Border Thickness", 2, 1, 5);
 static BKCSliderInt __esp_corner_rounding = BKCSliderInt("Corner Rounding", 0, -10, 10);
 static BKCCheckbox __esp_teammates = BKCCheckbox("Teammates",  true);
@@ -153,12 +153,12 @@ public:
             final_color = get_rainbow_color((float)ImGui::GetTime(), 1.0f, 1.0f, __esp_rgb_speed.value); 
         }
         
-        if (__esp_style.current_value == "Simple")
+        if (__esp_style.current_value == L"Simple")
         {
             ImGui::GetBackgroundDrawList()->AddText({screen_pos.x - size.x / 2, screen_pos.y - height2}, final_color, player_name.c_str());
             ImGui::GetBackgroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, final_color, (float)__esp_corner_rounding.value, 0, (float)__esp_thickness.value);
         }
-        else if (__esp_style.current_value == "CS-like")
+        else if (__esp_style.current_value == L"CS-like")
         {
             ImGui::GetBackgroundDrawList()->AddText({screen_pos.x + 1 - size.x / 2, screen_pos.y + 1 - height2}, color_black, player_name.c_str());
             ImGui::GetBackgroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, color_black, (float)__esp_corner_rounding.value, 0, (float)__esp_thickness.value * 2);

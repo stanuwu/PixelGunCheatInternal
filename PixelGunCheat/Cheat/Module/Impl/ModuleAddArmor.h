@@ -8,7 +8,7 @@
 #include "../../Hooks/Hooks.h"
 #include "../../Internal/Functions.h"
 
-static inline std::vector<std::string> armors = {""};
+static inline std::vector<std::wstring> armors = {L""};
 static BKCDropdown __add_armor_dropdown = {"Armor Select", armor_names[0].id, armors, "", true};
 static BKCCheckbox __add_armor_all = { "Add All", false };
 static BKCModule __add_armor = { "Add Armor", EXPLOIT, 0x0, false, {&__add_armor_dropdown, &__add_armor_all} };
@@ -39,12 +39,12 @@ public:
         {
             for (auto armor_name : armor_names)
             {
-                Functions::GiveWear(Hooks::create_system_string(armor_name.id));
+                Functions::GiveWear(Hooks::create_system_string_w(armor_name.id));
             }
         }
         else
         {
-            Functions::GiveWear(Hooks::create_system_string(__add_armor_dropdown.current_value));
+            Functions::GiveWear(Hooks::create_system_string_w(__add_armor_dropdown.current_value));
         }
         this->toggle();
     }

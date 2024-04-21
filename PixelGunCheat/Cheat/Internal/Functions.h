@@ -63,4 +63,6 @@ public:
     static void AddGems(int amount, bool arg1, bool arg2, int enum1, int enum2, int enum3);
     static void AddCoins(int amount, bool arg1, bool arg2, int enum1, int enum2, int enum3);
     static void AddCoupons(int amount, int source, bool arg1, int arg2);
+    static void AddClanLootboxPoints(int amount, int source, bool arg1, bool arg2, int arg3);
+    static void AddSomeCurrency(void* currency, int amount, bool arg1, int enum1, int enum2, int enum3, int enum4);
 };
