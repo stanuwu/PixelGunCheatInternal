@@ -22,6 +22,7 @@
 HWND window = NULL;
 WNDPROC oWndProc;
 bool dx11 = false;
+bool fg = false;
 ID3D11Device* pDevice11 = NULL;
 ID3D11DeviceContext* pContext11 = NULL;
 ID3D11RenderTargetView* mainRenderTargetView11;
@@ -134,6 +135,17 @@ LRESULT __stdcall WndProc(const HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
     
     switch (msg)
     {
+    case WM_ACTIVATE: {
+        if (LOWORD(wParam) == 0) {
+            ClipCursor(NULL);
+            fg = false;
+            return CallWindowProcW(oWndProc, GetActiveWindow(), msg, wParam, lParam);
+        }
+        else {
+            fg = true;
+        }
+        break;
+    }
     case WM_MOUSEMOVE:
         HandleMouseInputs(hWnd, io);
         break;
@@ -195,7 +207,7 @@ LRESULT __stdcall WndProc(const HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
         confineRect.right = center.x + 10;
         confineRect.top = center.y - 10;
         confineRect.bottom = center.y + 10;
-        if (center.x >= 0 && center.y >= 0) ClipCursor(&confineRect);
+        if (center.x >= 0 && center.y >= 0 && fg) ClipCursor(&confineRect);
         return CallWindowProcW(oWndProc, GetActiveWindow(), msg, wParam, lParam);
     }
     ClipCursor(NULL);

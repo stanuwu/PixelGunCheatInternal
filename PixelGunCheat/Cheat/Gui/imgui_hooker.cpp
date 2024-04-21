@@ -501,6 +501,15 @@ void BKCImGuiHooker::setup_imgui_hwnd(HWND handle, void* device, void* device_co
     multi_out << "Using " << scale_factor << "x scale factor for ImGui fonts";
     Logger::log_info(multi_out.str());
 
+    if (!std::filesystem::exists(current_font)){
+        for (const auto &entry : std::filesystem::directory_iterator("C:/Windows/Fonts/")){
+            if (entry.path().extension() == ".ttf"){
+                current_font = entry.path().string();
+                break;
+            }
+        }
+    }
+
     // create font from file (thank god doesn't need to be only loaded from memory, but still can be)
     gui_font = io.Fonts->AddFontFromFileTTF(current_font.c_str(), 20.0f * scale_factor);
     watermark_font = io.Fonts->AddFontFromFileTTF(current_font.c_str(), 32.0f * scale_factor);
@@ -543,6 +552,14 @@ void BKCImGuiHooker::start(void* g_mainRenderTargetView, void* g_pd3dDevice, voi
     {
         font_changed = false;
         ImGuiIO& io2 = ImGui::GetIO(); (void) io2;
+        if (!std::filesystem::exists(current_font)){
+            for (const auto &entry : std::filesystem::directory_iterator("C:/Windows/Fonts/")){
+                if (entry.path().extension() == ".ttf"){
+                    current_font = entry.path().string();
+                    break;
+                }
+            }
+        }
         gui_font = io2.Fonts->AddFontFromFileTTF(current_font.c_str(), 20.0f * scale_factor);
         watermark_font = io2.Fonts->AddFontFromFileTTF(current_font.c_str(), 32.0f * scale_factor);
         arraylist_font = io2.Fonts->AddFontFromFileTTF(current_font.c_str(), 24.0f * scale_factor);
