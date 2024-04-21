@@ -294,6 +294,7 @@
     <ClInclude Include="Cheat\Module\Impl\ModuleExtraDisplay.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleTest.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleUnlockWeapons.h" />
+    <ClInclude Include="Cheat\Module\Impl\ModuleWeaponSpoofer.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleXRay.h" />
     <ClInclude Include="Cheat\Module\ModuleBase.h" />
     <ClCompile Include="kiero\kiero.h" />

@@ -14,6 +14,7 @@ public:
     static void* main_camera;
     static void* aimed_pos;
     static void* create_system_string(std::string string);
+    static void* create_system_string_w(std::wstring string);
     static void dump_item_records();
     static void draw_all();
     static std::string get_player_name(void* player_move_c);

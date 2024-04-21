@@ -56,6 +56,7 @@
 #include "../Module/Impl/ModuleTest.h"
 #include "../Module/Impl/ModuleUnlockWeapons.h"
 #include "../Module/Impl/ModuleUnlockWeapons.h"
+#include "../Module/Impl/ModuleWeaponSpoofer.h"
 #include "../Offsets/Offsets.h"
 
 uintptr_t Hooks::GameBase;
@@ -81,6 +82,7 @@ ModuleImmortality* immortality_module;
 ModuleAddArmor* add_armor_module;
 ModuleAddPets* add_pets_module;
 ModuleAddCurrency* add_currency_module;
+ModuleWeaponSpoofer* weapon_spoofer_module;
 std::list<ModuleBase*> player_move_c_modules = { };
 std::list<ModuleBase*> player_move_c_others_modules = { };
 std::list<ModuleBase*> player_fps_controller_sharp_modules = { };
@@ -89,8 +91,6 @@ std::list<ModuleBase*> weapon_sound_others_modules = { };
 std::list<ModuleBase*> player_damageable_modules = { };
 std::list<ModuleBase*> on_pre_render_modules = { };
 std::list<ModuleBase*> Hooks::on_imgui_draw_modules = { };
-
-std::set<std::string> weapon_set;
 
 uint64_t Hooks::tick = 0;
 std::list<void*> working_player_list;
@@ -107,6 +107,13 @@ void* Hooks::create_system_string(std::string string)
     return ns;
 }
 
+void* Hooks::create_system_string_w(std::wstring string)
+{
+    std::string s(string.begin(), string.end());
+    Unity::System_String* ns = IL2CPP::String::New(s);
+    return ns;
+}
+
 void Hooks::dump_item_records()
 {
     Logger::log_debug("Dumping Records");
@@ -116,6 +123,8 @@ void Hooks::dump_item_records()
     for (int i = 0; i < dict->m_iCount; ++i)
     {
         Unity::System_String* key = dict->GetKeyByIndex(i);
+        // wprintf(key->m_wString);
+        // wprintf(L"\n");
         std::cout << key->ToString() << std::endl;
     }
     Logger::log_debug("Dumping Finished");
@@ -212,14 +221,6 @@ Unity::CCamera* find_main_camera()
 inline void(__stdcall* weapon_sounds_original)(void* arg);
 inline void __stdcall weapon_sounds_call(void* arg)
 {
-    // Test
-    /*
-    void* name = (void*)*(uint64_t*)((uint64_t)arg + 0x560);
-    Unity::System_String* sstring = (Unity::System_String*)name;
-    weapon_set.insert(sstring->ToString());
-    */
-    //
-
     if (unlock_weapons_module != nullptr)
     {
         ((ModuleBase*)unlock_weapons_module)->run(arg);
@@ -245,15 +246,6 @@ inline void __stdcall weapon_sounds_call(void* arg)
         {
             weapon_sounds_module->run(arg);
         }
-        
-        /*
-        void* fps_controller_sharp = (void*)*(uint64_t*)((uint64_t)arg + 0x508);
-        for (ModuleBase* player_fps_controller_sharp_module : player_fps_controller_sharp_modules)
-        {
-            std::cout << fps_controller_sharp << std::endl;
-            player_fps_controller_sharp_module->run(fps_controller_sharp);
-        }
-        */
     }
     else
     {
@@ -434,22 +426,20 @@ inline bool __stdcall season_pass_premium(void* arg)
 inline void (__stdcall* add_weapon_original)(void* arg, void* string, int source, bool bool1, bool bool2, void* class1, void* struct1);
 inline void __stdcall add_weapon(void* arg, void* string, int source, bool bool1, bool bool2, void* class1, void* struct1)
 {
-    /*
-    if (((ModuleBase*)unlock_weapons_module)->is_enabled())
+    if (((ModuleBase*)weapon_spoofer_module)->is_enabled())
     {
         Unity::System_String* sname = (Unity::System_String*)string;
         Logger::log_info("Got Weapon: " + sname->ToString());
-        if (unlock_weapons_module->all())
+        if (weapon_spoofer_module->all())
         {
             Logger::log_info("Adding All");
-            // for (int i = 0; i < weapons_names.size(); i++)
-            for (int i = 0; i < weapons_names.size(); i++)
+            for (int i = 0; i < weapon_spoofer_module->get_spoof_list().size(); i++)
             {
                 // clear string
                 sname->Clear();
 
                 // Write String
-                std::string nname = weapons_names[i];
+                std::wstring nname = weapon_spoofer_module->get_spoof_list()[i];
                 sname->m_iLength = (u_long)nname.length();
                 for (u_long l = 0; l < nname.length(); l++)
                 {
@@ -460,21 +450,22 @@ inline void __stdcall add_weapon(void* arg, void* string, int source, bool bool1
                 if (i % 50 == 0) Logger::log_info("Add Progress: " + std::to_string(i));
                 
                 // dev = 9999
-                add_weapon_original(arg, string, unlock_weapons_module->dev() ? 9999 : source, bool1, bool2, class1, struct1);
+                add_weapon_original(arg, string, weapon_spoofer_module->dev() ? 9999 : source, bool1, bool2, class1, struct1);
             }
             Logger::log_info("Done Adding");
-            unlock_weapons_module->lock();
+            weapon_spoofer_module->lock();
             return;
         }
         else
         {
-            if (unlock_weapons_module->to_unlock() == "")
+            if (weapon_spoofer_module->to_unlock().empty())
             {
                 Logger::log_info("Invalid Weapon");
                 return;
             }
-            std::string nname = unlock_weapons_module->to_unlock();
-            Logger::log_info("Changing To: " + nname);
+            std::wstring nname = weapon_spoofer_module->to_unlock();
+            std::string nnname(nname.begin(), nname.end());
+            Logger::log_info("Changing To: " + nnname);
             sname->Clear();
             sname->m_iLength = (u_long)nname.length();
             for (u_long l = 0; l < nname.length(); l++)
@@ -483,13 +474,12 @@ inline void __stdcall add_weapon(void* arg, void* string, int source, bool bool1
             }
             
             // dev = 9999
-            add_weapon_original(arg, string, unlock_weapons_module->dev() ? 9999 : source, bool1, bool2, class1, struct1);
+            add_weapon_original(arg, string, weapon_spoofer_module->dev() ? 9999 : source, bool1, bool2, class1, struct1);
             Logger::log_info("Weapon Obtained");
             return;
         }
     }
     add_weapon_original(arg, string, source, bool1, bool2, class1, struct1);
-    */
 }
 
 inline int(__stdcall* ammo_in_clip_original)(void* arg);
@@ -508,9 +498,9 @@ inline int __stdcall ammo(void* arg)
     return ammo_original(arg);
 }
 
-inline int(__stdcall* damage_multiplier_original)(void* arg);
-inline int __stdcall damage_multiplier(void* arg)
-{
+inline float(__stdcall* damage_multiplier_original)();
+inline float __stdcall damage_multiplier()
+{   
     if (((ModuleBase*)damage_multiplier_module)->is_enabled()) return damage_multiplier_module->amount();
 
     return damage_multiplier_original(arg);
@@ -567,7 +557,7 @@ void Hooks::load()
     hook_function(Offsets::RewardMultiplier, &reward_multiplier, &reward_multiplier_original);
     hook_function(Offsets::DoubleRewards, &double_rewards, &double_rewards_original);
     hook_function(Offsets::PremiumPass, &season_pass_premium, &season_pass_premium_original);
-    // hook_function(Offsets::AddWeapon, &add_weapon, &add_weapon_original);
+    hook_function(Offsets::AddWeapon, &add_weapon, &add_weapon_original);
     hook_function(Offsets::GetAmmoInClip, &ammo_in_clip, &ammo_in_clip_original);
     hook_function(Offsets::GetAmmo, &ammo, &ammo_original);
     hook_function(Offsets::GetDamageMultiplier, &damage_multiplier, &damage_multiplier_original);
@@ -588,6 +578,7 @@ void Hooks::load()
     add_armor_module = new ModuleAddArmor();
     add_pets_module = new ModuleAddPets();
     add_currency_module = new ModuleAddCurrency();
+    weapon_spoofer_module = new ModuleWeaponSpoofer();
 
     esp_module = new ModuleESP();
     player_move_c_modules.push_back((ModuleBase*) esp_module);

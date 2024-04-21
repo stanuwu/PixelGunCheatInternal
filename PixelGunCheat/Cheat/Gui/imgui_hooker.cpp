@@ -34,7 +34,7 @@ WPARAM MapLeftRightKeys(const MSG& msg);
 
 // Boykisser Central Vars
 std::string BKCImGuiHooker::c_Title = "Boykisser Central";
-std::string BKCImGuiHooker::c_RealBuild = "v1.7";
+std::string BKCImGuiHooker::c_RealBuild = "v1.8";
 static std::string c_Build = ":3";
 std::stringstream full_title;
 std::string combo_file = "default";
@@ -218,6 +218,12 @@ void try_runtime_hook()
         return_rhd_int = std::stoi(return_rhd);
         MH_EnableHook((LPVOID*)(Hooks::GameAssembly + offset));
     }
+}
+
+std::string w_to_string_(std::wstring wstring)
+{
+    std::string string(wstring.begin(), wstring.end());
+    return string;
 }
 
 std::wstring get_executing_directory()
@@ -495,6 +501,15 @@ void BKCImGuiHooker::setup_imgui_hwnd(HWND handle, void* device, void* device_co
     multi_out << "Using " << scale_factor << "x scale factor for ImGui fonts";
     Logger::log_info(multi_out.str());
 
+    if (!std::filesystem::exists(current_font)){
+        for (const auto &entry : std::filesystem::directory_iterator("C:/Windows/Fonts/")){
+            if (entry.path().extension() == ".ttf"){
+                current_font = entry.path().string();
+                break;
+            }
+        }
+    }
+
     // create font from file (thank god doesn't need to be only loaded from memory, but still can be)
     gui_font = io.Fonts->AddFontFromFileTTF(current_font.c_str(), 20.0f * scale_factor);
     watermark_font = io.Fonts->AddFontFromFileTTF(current_font.c_str(), 32.0f * scale_factor);
@@ -537,6 +552,14 @@ void BKCImGuiHooker::start(void* g_mainRenderTargetView, void* g_pd3dDevice, voi
     {
         font_changed = false;
         ImGuiIO& io2 = ImGui::GetIO(); (void) io2;
+        if (!std::filesystem::exists(current_font)){
+            for (const auto &entry : std::filesystem::directory_iterator("C:/Windows/Fonts/")){
+                if (entry.path().extension() == ".ttf"){
+                    current_font = entry.path().string();
+                    break;
+                }
+            }
+        }
         gui_font = io2.Fonts->AddFontFromFileTTF(current_font.c_str(), 20.0f * scale_factor);
         watermark_font = io2.Fonts->AddFontFromFileTTF(current_font.c_str(), 32.0f * scale_factor);
         arraylist_font = io2.Fonts->AddFontFromFileTTF(current_font.c_str(), 24.0f * scale_factor);
@@ -785,7 +808,7 @@ void HandleModuleSettingRendering(BKCModule& module)
             auto* dropdown = (BKCDropdown*)setting;
             search << "Search..." << "##" << setting->name << module.name << setting->type;
             per_module_name << setting->name << "##" << module.name << setting->type;
-            if (ImGui::BeginCombo(per_module_name.str().c_str(), dropdown->current_value.c_str()))
+            if (ImGui::BeginCombo(per_module_name.str().c_str(), w_to_string_(dropdown->current_value).c_str()))
             {
                 if (dropdown->search)
                 {
@@ -794,11 +817,11 @@ void HandleModuleSettingRendering(BKCModule& module)
                 
                 for (std::string::size_type i = 0; i < dropdown->values.size(); i++)
                 {
-                    if (!dropdown->search || dropdown->values[i].find(dropdown->search_str) != std::string::npos)
+                    if (!dropdown->search || w_to_string_(dropdown->values[i]).find(dropdown->search_str) != std::string::npos)
                     {
                         const bool selected = dropdown->current_value == dropdown->values[i];
                     
-                        if (ImGui::Selectable(dropdown->values[i].c_str(), selected))
+                        if (ImGui::Selectable(w_to_string_(dropdown->values[i]).c_str(), selected))
                         {
                             dropdown->current_value = dropdown->values[i];
                             dropdown->current_index = dropdown->indexof(dropdown->current_value);

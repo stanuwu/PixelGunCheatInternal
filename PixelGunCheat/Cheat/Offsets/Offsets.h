@@ -54,7 +54,9 @@ public:
     static inline uint64_t AddGems = 0x1FEE5B0;
     static inline uint64_t AddCoins = 0x1FEF760;
     static inline uint64_t AddCoupons = 0x1FF1AC0;
-
+    static inline uint64_t AddClanChestPoints = 0x1FF0E70;
+    static inline uint64_t AddSomeCurrency = 0x1FEEFA0;
+    
     // Fields
     static inline uint64_t scopeSpeed = 0xF8;
     static inline uint64_t zoomXray = 0xC6;

@@ -22,12 +22,12 @@ public:
         {
             for (auto pet_name : pets_names)
             {
-                Functions::GivePets(Hooks::create_system_string(pet_name), 9999);
+                Functions::GivePets(Hooks::create_system_string_w(pet_name), 9999);
             }
         }
         else
         {
-            Functions::GivePets(Hooks::create_system_string(__add_pets_dropdown.current_value), 9999);
+            Functions::GivePets(Hooks::create_system_string_w(__add_pets_dropdown.current_value), 9999);
         }
         this->toggle();
     }

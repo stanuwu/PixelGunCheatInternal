@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <stdbool.h>
 #include <stdbool.h>
+#include <stdbool.h>
 
 #include "../Offsets/Offsets.h"
 
@@ -207,4 +208,16 @@ void Functions::AddCoupons(int amount, int source, bool arg1, int arg2)
 {
     static const auto fn = (void(*)(int, int, bool, int))(GameAssembly_ + Offsets::AddCoupons);
     return fn(amount, source, arg1, arg2); 
+}
+
+void Functions::AddClanLootboxPoints(int amount, int source, bool arg1, bool arg2, int arg3)
+{
+    static const auto fn = (void(*)(int, int, bool, bool, int))(GameAssembly_ + Offsets::AddClanChestPoints);
+    return fn(amount, source, arg1, arg2, arg3); 
+}
+
+void Functions::AddSomeCurrency(void* currency, int amount, bool arg1, int enum1, int enum2, int enum3, int enum4)
+{
+    static const auto fn = (void(*)(void*, int, bool, int, int, int, int))(GameAssembly_ + Offsets::AddSomeCurrency);
+    return fn(currency, amount, arg1, enum1, enum2, enum3, enum4); 
 }
