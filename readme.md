@@ -1,5 +1,7 @@
 ﻿# PixelGun3D Internal Utility Modification
 
+`by hiderikzki and stanuwu`
+
 ## Warning!
 - This Program is FREE SOFTWARE.
 - It will always be available for free, with the source code included.
