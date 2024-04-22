@@ -633,7 +633,10 @@ void BKCImGuiHooker::start(void* g_mainRenderTargetView, void* g_pd3dDevice, voi
     {
         module->run(nullptr);
     }
-
+    for (auto module : BKCImGuiHooker::modules)
+    {
+        module->CheckHotkeyToggle();
+    }
     ImGui::PopFont();
 
     // Watermark
@@ -776,6 +779,9 @@ void DrawConfigsWindow(bool is_dx_11)
     ImGui::End();
 } 
 
+static bool listeningForKey = false;
+static BKCModule* currentModule = nullptr;
+
 void HandleModuleSettingRendering(BKCModule& module)
 {
     for (auto& setting : module.settings)
@@ -841,6 +847,47 @@ void HandleModuleSettingRendering(BKCModule& module)
                 ImGui::SetTooltip(setting->tooltip.c_str());
             }
         }
+    }
+    ImGui::Separator();
+    ImGuiKey imguiKey = static_cast<ImGuiKey>(module.key);
+    ImGui::Text("Keybind: %s", module.key == 0 ? "None" : ImGui::GetKeyName(imguiKey));
+    if (listeningForKey && currentModule == &module)
+    {
+        if (ImGui::Button("Cancel"))
+        {
+            listeningForKey = false;
+            currentModule = nullptr;
+        }
+        else
+        {
+            for (int key = 0; key < IM_ARRAYSIZE(ImGui::GetIO().KeysDown); key++)
+            {
+                if (ImGui::IsKeyPressed((ImGuiKey)key))
+                {
+                    if (key != ImGuiKey::ImGuiKey_MouseLeft && key != ImGuiKey::ImGuiKey_MouseRight)
+                    {
+                        module.SetHotkey(key);
+                        listeningForKey = false;
+                        currentModule = nullptr;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        if (ImGui::Button("Set Keybind"))
+        {
+            listeningForKey = true;
+            currentModule = &module;
+        }
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Clear Keybind"))
+    {
+        module.key = 0x00;
+        Logger::log_debug("Module Keybind Cleared");
     }
 }
 
