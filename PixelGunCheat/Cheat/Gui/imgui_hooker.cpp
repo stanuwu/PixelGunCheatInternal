@@ -776,6 +776,12 @@ void DrawConfigsWindow(bool is_dx_11)
     ImGui::End();
 } 
 
+std::string strlow(std::string str)
+{
+    std::ranges::transform(str, str.begin(), [](const unsigned char c){ return std::tolower(c); });
+    return str;
+}
+
 void HandleModuleSettingRendering(BKCModule& module)
 {
     for (auto& setting : module.settings)
@@ -817,7 +823,7 @@ void HandleModuleSettingRendering(BKCModule& module)
                 
                 for (std::string::size_type i = 0; i < dropdown->values.size(); i++)
                 {
-                    if (!dropdown->search || w_to_string_(dropdown->values[i]).find(dropdown->search_str) != std::string::npos)
+                    if (!dropdown->search || strlow(w_to_string_(dropdown->values[i])).find(strlow(dropdown->search_str)) != std::string::npos)
                     {
                         const bool selected = dropdown->current_value == dropdown->values[i];
                     
