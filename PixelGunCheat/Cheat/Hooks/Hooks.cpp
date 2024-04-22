@@ -162,6 +162,7 @@ std::string clean_string(std::string string)
 
 std::string Hooks::get_player_name(void* player_move_c)
 {
+    if (player_move_c == nullptr) return "";
     void* nick_label = (void*)*(uint64_t*)((uint64_t)player_move_c + Offsets::nickLabel);
     void* name_ptr = Functions::TextMeshGetText(nick_label);
     if (name_ptr == nullptr) return "";
@@ -176,6 +177,7 @@ void* Hooks::get_player_transform(void* player)
 
 bool Hooks::is_player_enemy(void* player)
 {
+    if (player == nullptr) return false;
     void* nick_label = (void*)*(uint64_t*)((uint64_t)player + Offsets::nickLabel);
     Unity::Color color = {0, 0,  0, 0};
     Functions::TextMeshGetColor(nick_label, &color);
