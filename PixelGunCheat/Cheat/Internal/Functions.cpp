@@ -116,6 +116,8 @@ int Functions::ObjectGetInstanceID(void* arg)
     return fn(arg);
 }
 
+// Unused
+/*
 void* Functions::FindObjectsOfType(void* arg)
 {
     if (!arg) return nullptr;
@@ -129,6 +131,7 @@ void* Functions::FindObjectOfType(void* arg)
     static const auto fn = (void*(*)(void*))(GameAssembly_ + Offsets::FindObjectOfType);
     return fn(arg);
 }
+*/
 
 void* Functions::TypeGetType(void* arg)
 {
@@ -151,12 +154,15 @@ void Functions::AddWeapon(void* arg, void* string, int source, bool bool1 = true
     fn(arg);
 }
 
+// Unused
+/*
 void* Functions::PlayerGetWeaponManager(void* arg)
 {
     if (!arg) return nullptr;
     static const auto fn = (void*(*)(void*))(GameAssembly_ + Offsets::PlayerGetWeaponManager);
     return fn(arg); 
 }
+*/
 
 void* Functions::GetItemRecordDict()
 {
@@ -171,11 +177,14 @@ void* Functions::ItemRecordGetShopId(void* arg)
     return fn(arg); 
 }
 
+// Unused
+/*
 void Functions::AddWearItem(int category, void* id)
 {
     static const auto fn = (void(*)(int, void*))(GameAssembly_ + Offsets::AddWearItem);
     return fn(category, id); 
 }
+*/
 
 void Functions::GiveWear(void* id)
 {

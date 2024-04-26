@@ -34,12 +34,12 @@ public:
     static inline uint64_t DoubleRewards = 0xC33660;
     static inline uint64_t PremiumPass = 0x18881E0;
     // static inline uint64_t CancelKickReason = 0x45D440;
-    static inline uint64_t FindObjectsOfType = 0x4364C10;
-    static inline uint64_t FindObjectOfType = 0x4364AD0;
+    // static inline uint64_t FindObjectsOfType = 0x4364C10;
+    // static inline uint64_t FindObjectOfType = 0x4364AD0;
     static inline uint64_t TypeGetType = 0x38E6890;
     static inline uint64_t BehaviourGetEnabled = 0x435C740;
     static inline uint64_t AddWeapon = 0x638AC0;
-    static inline uint64_t PlayerGetWeaponManager = 0x1B10E60;
+    // static inline uint64_t PlayerGetWeaponManager = 0x1B10E60;
     static inline uint64_t GetItemRecordDict = 0x79E380;
     static inline uint64_t ItemRecordGetShopId = 0x573C40;
     static inline uint64_t GetDamageMultiplier = 0x11296D0;
@@ -47,7 +47,7 @@ public:
     static inline uint64_t GetAmmoInClip = 0x1136670;
     static inline uint64_t GetAmmo = 0x111B120;
     static inline uint64_t PlayerGetImmortality = 0x1B44C80;
-    static inline uint64_t AddWearItem = 0x6599B0;
+    // static inline uint64_t AddWearItem = 0x6599B0;
     static inline uint64_t GiveWear = 0x1FF5810;
     static inline uint64_t GiveWeapon = 0x1FF63C0;
     static inline uint64_t GivePets = 0x1FF9740;
