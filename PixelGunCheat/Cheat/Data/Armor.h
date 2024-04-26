@@ -206,7 +206,7 @@ static inline std::vector<ArmorData> armor_names = {
     { 6, L"hat_stardust" },
 
     { 8, L"super_socialman" },
-    { 8, L"chiefBoughtSett" },
+   // { 8, L"chiefBoughtSett" },
   //  { 8, L"spaceengineerBoughtSett" },
    // { 8, L"nanosoldierBoughtSett" },
   //  { 8, L"steelmanBoughtSett" },
