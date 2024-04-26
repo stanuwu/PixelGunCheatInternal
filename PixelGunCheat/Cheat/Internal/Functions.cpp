@@ -37,6 +37,8 @@ void Functions::MakeInvisibleForSeconds(void* arg, float duration)
 }
 
 // PlayerDamageable
+// Unused
+/*
 void Functions::AddHealthFromWeaponOnline(void* arg, float amount)
 {
     if (!arg) return;
@@ -50,6 +52,7 @@ void Functions::AddAmmoFromWeaponOnline(void* arg, float amount)
     static const auto fn = (void(*)(void*, float, char*)) (GameAssembly_ + Offsets::AddAmmoFromWeaponOnline);
     return fn(arg, amount, nullptr);
 }
+*/
 
 void* Functions::TextMeshGetText(void* arg)
 {
