@@ -534,7 +534,6 @@ void hook_function(uint64_t offset, LPVOID detour, void* original)
 // Load
 void Hooks::load()
 {
-    // TODO: Make MinHook use Static Library so we don't have to inject 2 dlls.
     Logger::log_info("Creating hooks...");
     
     // Get Cool Base Offsets

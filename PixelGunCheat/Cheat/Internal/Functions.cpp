@@ -11,8 +11,6 @@ static uintptr_t GameBase_;
 static uintptr_t GameAssembly_;
 static uintptr_t UnityPlayer_;
 
-// TODO: Fix
-
 void Functions::init(uintptr_t game_base, uintptr_t game_assembly, uintptr_t unity_player)
 {
     GameBase_ = game_base;
@@ -20,7 +18,6 @@ void Functions::init(uintptr_t game_base, uintptr_t game_assembly, uintptr_t uni
     UnityPlayer_ = unity_player;
 }
 
-// WeaponSounds
 void Functions::SetNextHitCritical(void* arg, bool arg1)
 {
     if (!arg) return;
@@ -28,31 +25,12 @@ void Functions::SetNextHitCritical(void* arg, bool arg1)
     return fn(arg, arg1);
 }
 
-// Player_move_c
 void Functions::MakeInvisibleForSeconds(void* arg, float duration)
 {
     if (!arg) return;
     static const auto fn = (void(*)(void*, float)) (GameAssembly_ + Offsets::MakeInvisibleForSeconds);
     return fn(arg, duration);
 }
-
-// PlayerDamageable
-// Unused
-/*
-void Functions::AddHealthFromWeaponOnline(void* arg, float amount)
-{
-    if (!arg) return;
-    static const auto fn = (void(*)(void*, float, char*)) (GameAssembly_ + Offsets::AddHealthFromWeaponOnline);
-    return fn(arg, amount, nullptr);
-}
-
-void Functions::AddAmmoFromWeaponOnline(void* arg, float amount)
-{
-    if (!arg) return;
-    static const auto fn = (void(*)(void*, float, char*)) (GameAssembly_ + Offsets::AddAmmoFromWeaponOnline);
-    return fn(arg, amount, nullptr);
-}
-*/
 
 void* Functions::TextMeshGetText(void* arg)
 {
@@ -116,30 +94,6 @@ int Functions::ObjectGetInstanceID(void* arg)
     return fn(arg);
 }
 
-// Unused
-/*
-void* Functions::FindObjectsOfType(void* arg)
-{
-    if (!arg) return nullptr;
-    static const auto fn = (void*(*)(void*))(GameAssembly_ + Offsets::FindObjectsOfType);
-    return fn(arg);
-}
-
-void* Functions::FindObjectOfType(void* arg)
-{
-    if (!arg) return nullptr;
-    static const auto fn = (void*(*)(void*))(GameAssembly_ + Offsets::FindObjectOfType);
-    return fn(arg);
-}
-
-void* Functions::TypeGetType(void* arg)
-{
-    if (!arg) return nullptr;
-    static const auto fn = (void*(*)(void*))(GameAssembly_ + Offsets::TypeGetType);
-    return fn(arg);
-}
-*/
-
 bool Functions::BehaviourGetEnabled(void* arg)
 {
     if (!arg) return false;
@@ -154,16 +108,6 @@ void Functions::AddWeapon(void* arg, void* string, int source, bool bool1 = true
     fn(arg);
 }
 
-// Unused
-/*
-void* Functions::PlayerGetWeaponManager(void* arg)
-{
-    if (!arg) return nullptr;
-    static const auto fn = (void*(*)(void*))(GameAssembly_ + Offsets::PlayerGetWeaponManager);
-    return fn(arg); 
-}
-*/
-
 void* Functions::GetItemRecordDict()
 {
     static const auto fn = (void*(*)())(GameAssembly_ + Offsets::GetItemRecordDict);
@@ -176,15 +120,6 @@ void* Functions::ItemRecordGetShopId(void* arg)
     static const auto fn = (void*(*)(void*))(GameAssembly_ + Offsets::ItemRecordGetShopId);
     return fn(arg); 
 }
-
-// Unused
-/*
-void Functions::AddWearItem(int category, void* id)
-{
-    static const auto fn = (void(*)(int, void*))(GameAssembly_ + Offsets::AddWearItem);
-    return fn(category, id); 
-}
-*/
 
 void Functions::GiveWear(void* id)
 {

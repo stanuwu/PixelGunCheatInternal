@@ -291,7 +291,6 @@
     <ClInclude Include="Cheat\Module\Impl\ModuleSeasonPass.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleSpeed.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleSpread.h" />
-    <ClInclude Include="Cheat\Module\Impl\ModuleExtraDisplay.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleTest.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleUnlockWeapons.h" />
     <ClInclude Include="Cheat\Module\Impl\ModuleWeaponSpoofer.h" />

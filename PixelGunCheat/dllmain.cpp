@@ -398,8 +398,6 @@ int64_t WINAPI MainThread(LPVOID param)
     while(true)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
-        // Removed for now...
-        // TODO: Fix crash on eject
         
         if (GetAsyncKeyState(VK_INSERT) & 1)
         {
