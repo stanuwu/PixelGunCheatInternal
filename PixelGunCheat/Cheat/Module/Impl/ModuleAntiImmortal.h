@@ -2,7 +2,7 @@
 #include "../ModuleBase.h"
 #include "../../Offsets/Offsets.h"
 
-static BKCModule __anti_immortal = { "Anti Immortal", EXPLOIT, 0x0, true, {} };
+static BKCModule __anti_immortal = { "Anti Immortal", COMBAT, 0x0, true, {} };
 
 class ModuleAntiImmortal : ModuleBase
 {
