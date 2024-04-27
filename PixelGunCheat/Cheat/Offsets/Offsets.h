@@ -44,6 +44,8 @@ public:
     static inline uint64_t AddSomeCurrency = 0x20655D0;
     static inline uint64_t AddCoupons = 0x2065F80;
     static inline uint64_t AddClanChestPoints = 0x2062B40;
+    static inline uint64_t ProgressUpdaterGetInstance = 0xA2A7D0;
+    static inline uint64_t ProgressAddCurrency = 0xA29F30;
     
     // Fields
     static inline uint64_t scopeSpeed = 0x100;

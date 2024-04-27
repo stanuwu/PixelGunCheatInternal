@@ -169,6 +169,18 @@ void Functions::AddSomeCurrency(void* currency, int amount, bool arg1, int enum1
     return fn(currency, amount, arg1, enum1, enum2, enum3, enum4); 
 }
 
+void* Functions::ProgressUpdaterGetInstance()
+{
+    static const auto fn = (void*(*)())(GameAssembly_ + Offsets::ProgressUpdaterGetInstance);
+    return fn(); 
+}
+
+void Functions::ProgressAddCurrency(void* instance, void* currency, int amount, int enum1, bool bool1, bool bool2, itemObtainParams* obtainParams)
+{
+    static const auto fn = (void(*)(void*, void*, int, int, bool, bool, void*))(GameAssembly_ + Offsets::ProgressAddCurrency);
+    return fn(instance, currency, amount, enum1, bool1, bool2, obtainParams); 
+}
+
 ImVec4 Functions::ImVec4i(const int r, const int g, const int b, const int a)
 {
     return { (float) r / 255.0f, (float) g / 255.0f, (float) b / 255.0f, (float) a / 255.0f };

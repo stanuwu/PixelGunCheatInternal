@@ -31,6 +31,35 @@ struct RaycastHit
     
 };
 
+struct itemObtainParams
+{
+    int field1;
+    int field2;
+    int field3;
+    int field4;
+    int field5;
+    int field6;
+    int field7;
+    bool field8;
+    int field9;
+    int field10;
+    bool field11;
+    int field12;
+    int field13;
+    bool field14;
+    int field15;
+    int field16;
+    int field17;
+    bool field18;
+    int64_t field19;
+    int field20;
+    bool field21;
+    bool field22;
+    bool field23;
+    bool field24;
+    int field25;
+};
+
 class Functions
 {
 public:
@@ -58,5 +87,7 @@ public:
     static void AddCoupons(int amount, int source, bool arg1, int arg2);
     static void AddClanLootboxPoints(int amount, int source, bool arg1, bool arg2, int arg3);
     static void AddSomeCurrency(void* currency, int amount, bool arg1, int enum1, int enum2, int enum3, int enum4);
+    static void* ProgressUpdaterGetInstance();
+    static void ProgressAddCurrency(void* instance, void* currency, int amount, int enum1, bool bool1, bool bool2, itemObtainParams* obtainParams);
     static ImVec4 ImVec4i(int r, int g, int b, int a = 255);
 };
