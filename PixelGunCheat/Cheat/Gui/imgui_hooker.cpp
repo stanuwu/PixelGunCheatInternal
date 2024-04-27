@@ -46,7 +46,7 @@ static float return_rhd_float = 0;
 static bool rhd_is_float = false;
 
 static LPVOID last_rhd = nullptr;
-static ImU32 color_title = ImGui::ColorConvertFloat4ToU32({0.91f, 0.64f, 0.13f, 1.00f});
+static ImU32 color_title = ImGui::ColorConvertFloat4ToU32(Functions::ImVec4i(255, 180, 230));
 static ImU32 color_bg = ImGui::ColorConvertFloat4ToU32({0.00f, 0.00f, 0.00f, 0.85f});
 std::string current_font = "C:/Windows/Fonts/comic.ttf";
 static bool boundless_value_setting = false;
@@ -57,11 +57,6 @@ void HandleModuleSettingRendering(BKCModule& module);
 void HandleModuleRendering(BKCModule& module);
 void HandleCategoryRendering(const std::string& name, BKCCategory cat);
 
-ImVec4 ImVec4i(const int r, const int g, const int b, const int a = 255)
-{
-    return { (float) r / 255.0f, (float) g / 255.0f, (float) b / 255.0f, (float) a / 255.0f };
-}
-
 // https://github.com/ocornut/imgui/issues/707
 void embraceTheDarkness()
 {
@@ -70,42 +65,42 @@ void embraceTheDarkness()
 
     colors[ImGuiCol_Text]                   = ImVec4(0.92f, 0.92f, 0.92f, 1.00f);
     colors[ImGuiCol_TextDisabled]           = ImVec4(0.44f, 0.44f, 0.44f, 1.00f);
-    colors[ImGuiCol_WindowBg]               = ImVec4i(20, 20, 20);
+    colors[ImGuiCol_WindowBg]               = Functions::ImVec4i(20, 20, 20);
     colors[ImGuiCol_ChildBg]                = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
     colors[ImGuiCol_PopupBg]                = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-    colors[ImGuiCol_Border]                 = ImVec4i(255, 180, 230);
+    colors[ImGuiCol_Border]                 = Functions::ImVec4i(255, 180, 230);
     colors[ImGuiCol_BorderShadow]           = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-    colors[ImGuiCol_FrameBg]                = ImVec4i(255, 180, 230, 140);
-    colors[ImGuiCol_FrameBgHovered]         = ImVec4i(255, 180, 230, 100);
-    colors[ImGuiCol_FrameBgActive]          = ImVec4i(255, 180, 230, 170);
-    colors[ImGuiCol_TitleBg]                = ImVec4i(15, 15, 15);
-    colors[ImGuiCol_TitleBgActive]          = ImVec4i(255, 180, 230);
-    colors[ImGuiCol_TitleBgCollapsed]       = ImVec4i(15, 15, 15);
+    colors[ImGuiCol_FrameBg]                = Functions::ImVec4i(255, 180, 230, 140);
+    colors[ImGuiCol_FrameBgHovered]         = Functions::ImVec4i(255, 180, 230, 100);
+    colors[ImGuiCol_FrameBgActive]          = Functions::ImVec4i(255, 180, 230, 170);
+    colors[ImGuiCol_TitleBg]                = Functions::ImVec4i(15, 15, 15);
+    colors[ImGuiCol_TitleBgActive]          = Functions::ImVec4i(255, 180, 230);
+    colors[ImGuiCol_TitleBgCollapsed]       = Functions::ImVec4i(15, 15, 15);
     colors[ImGuiCol_MenuBarBg]              = ImVec4(0.11f, 0.11f, 0.11f, 1.00f);
     colors[ImGuiCol_ScrollbarBg]            = ImVec4(0.06f, 0.06f, 0.06f, 0.53f);
     colors[ImGuiCol_ScrollbarGrab]          = ImVec4(0.21f, 0.21f, 0.21f, 1.00f);
     colors[ImGuiCol_ScrollbarGrabHovered]   = ImVec4(0.47f, 0.47f, 0.47f, 1.00f);
     colors[ImGuiCol_ScrollbarGrabActive]    = ImVec4(0.81f, 0.83f, 0.81f, 1.00f);
-    colors[ImGuiCol_CheckMark]              = ImVec4i(255, 180, 230);
-    colors[ImGuiCol_SliderGrab]             = ImVec4i(255, 180, 230);
-    colors[ImGuiCol_SliderGrabActive]       = ImVec4i(255, 180, 230);
-    colors[ImGuiCol_Button]                 = ImVec4i(255, 180, 230, 100);
-    colors[ImGuiCol_ButtonHovered]          = ImVec4i(255, 180, 230, 170);
-    colors[ImGuiCol_ButtonActive]           = ImVec4i(255, 180, 230);
-    colors[ImGuiCol_Header]                 = ImVec4i(255, 180, 230, 80);
-    colors[ImGuiCol_HeaderHovered]          = ImVec4i(255, 180, 230, 205);
-    colors[ImGuiCol_HeaderActive]           = ImVec4i(255, 180, 230);
+    colors[ImGuiCol_CheckMark]              = Functions::ImVec4i(255, 180, 230);
+    colors[ImGuiCol_SliderGrab]             = Functions::ImVec4i(255, 180, 230);
+    colors[ImGuiCol_SliderGrabActive]       = Functions::ImVec4i(255, 180, 230);
+    colors[ImGuiCol_Button]                 = Functions::ImVec4i(255, 180, 230, 100);
+    colors[ImGuiCol_ButtonHovered]          = Functions::ImVec4i(255, 180, 230, 170);
+    colors[ImGuiCol_ButtonActive]           = Functions::ImVec4i(255, 180, 230);
+    colors[ImGuiCol_Header]                 = Functions::ImVec4i(255, 180, 230, 80);
+    colors[ImGuiCol_HeaderHovered]          = Functions::ImVec4i(255, 180, 230, 205);
+    colors[ImGuiCol_HeaderActive]           = Functions::ImVec4i(255, 180, 230);
     colors[ImGuiCol_Separator]              = ImVec4(0.21f, 0.21f, 0.21f, 1.00f);
-    colors[ImGuiCol_SeparatorHovered]       = ImVec4i(255, 255, 175);
-    colors[ImGuiCol_SeparatorActive]        = ImVec4i(255, 255, 255);
-    colors[ImGuiCol_ResizeGrip]             = ImVec4i(255, 180, 230, 50);
-    colors[ImGuiCol_ResizeGripHovered]      = ImVec4i(255, 180, 230, 170);
-    colors[ImGuiCol_ResizeGripActive]       = ImVec4i(255, 180, 230, 240);
-    colors[ImGuiCol_Tab]                    = ImVec4i(255, 180, 230, 220);
-    colors[ImGuiCol_TabHovered]             = ImVec4i(255, 180, 230, 205);
-    colors[ImGuiCol_TabActive]              = ImVec4i(255, 180, 230);
-    colors[ImGuiCol_TabUnfocused]           = ImVec4i(100, 50, 80);
-    colors[ImGuiCol_TabUnfocusedActive]     = ImVec4i(175, 75, 140, 255);
+    colors[ImGuiCol_SeparatorHovered]       = Functions::ImVec4i(255, 255, 175);
+    colors[ImGuiCol_SeparatorActive]        = Functions::ImVec4i(255, 255, 255);
+    colors[ImGuiCol_ResizeGrip]             = Functions::ImVec4i(255, 180, 230, 50);
+    colors[ImGuiCol_ResizeGripHovered]      = Functions::ImVec4i(255, 180, 230, 170);
+    colors[ImGuiCol_ResizeGripActive]       = Functions::ImVec4i(255, 180, 230, 240);
+    colors[ImGuiCol_Tab]                    = Functions::ImVec4i(255, 180, 230, 220);
+    colors[ImGuiCol_TabHovered]             = Functions::ImVec4i(255, 180, 230, 205);
+    colors[ImGuiCol_TabActive]              = Functions::ImVec4i(255, 180, 230);
+    colors[ImGuiCol_TabUnfocused]           = Functions::ImVec4i(100, 50, 80);
+    colors[ImGuiCol_TabUnfocusedActive]     = Functions::ImVec4i(175, 75, 140, 255);
     colors[ImGuiCol_PlotLines]              = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
     colors[ImGuiCol_PlotLinesHovered]       = ImVec4(1.00f, 0.43f, 0.35f, 1.00f);
     colors[ImGuiCol_PlotHistogram]          = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
@@ -639,6 +634,7 @@ void BKCImGuiHooker::start(void* g_mainRenderTargetView, void* g_pd3dDevice, voi
     float size = ImGui::GetFontSize();
     ImVec2 true_size = ImGui::CalcTextSize(full_title.str().c_str());
     ImGui::GetBackgroundDrawList()->AddRectFilled({5, 5}, {15 + true_size.x, 10 + true_size.y}, color_bg, 10);
+    ImGui::GetBackgroundDrawList()->AddText(nullptr, size, {11, 6}, ImGui::ColorConvertFloat4ToU32({ 0.0f, 0.0f, 0.0f, 1.0f }), full_title.str().c_str());
     ImGui::GetBackgroundDrawList()->AddText(nullptr, size, {10, 5}, color_title, full_title.str().c_str());
     ImGui::PopFont();
     

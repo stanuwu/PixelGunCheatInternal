@@ -58,4 +58,5 @@ public:
     static void AddCoupons(int amount, int source, bool arg1, int arg2);
     static void AddClanLootboxPoints(int amount, int source, bool arg1, bool arg2, int arg3);
     static void AddSomeCurrency(void* currency, int amount, bool arg1, int enum1, int enum2, int enum3, int enum4);
+    static ImVec4 ImVec4i(int r, int g, int b, int a = 255);
 };

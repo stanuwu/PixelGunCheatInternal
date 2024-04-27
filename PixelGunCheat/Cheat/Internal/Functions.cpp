@@ -168,3 +168,8 @@ void Functions::AddSomeCurrency(void* currency, int amount, bool arg1, int enum1
     static const auto fn = (void(*)(void*, int, bool, int, int, int, int))(GameAssembly_ + Offsets::AddSomeCurrency);
     return fn(currency, amount, arg1, enum1, enum2, enum3, enum4); 
 }
+
+ImVec4 Functions::ImVec4i(const int r, const int g, const int b, const int a)
+{
+    return { (float) r / 255.0f, (float) g / 255.0f, (float) b / 255.0f, (float) a / 255.0f };
+}
