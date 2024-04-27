@@ -117,12 +117,10 @@ void embraceTheDarkness()
     colors[ImGuiCol_NavWindowingDimBg]      = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
     colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 
-    style->WindowTitleAlign = ImVec2(1.0f, 0.5f);
+    style->WindowTitleAlign         = ImVec2(1.0f, 0.5f);
     style->WindowMenuButtonPosition = ImGuiDir_Right;
-
-    style->SeparatorTextAlign = ImVec2(0.5f, 0.5f);
-
-    style->DisplaySafeAreaPadding = ImVec2(4, 4);
+    style->SeparatorTextAlign       = ImVec2(0.5f, 0.5f);
+    style->DisplaySafeAreaPadding   = ImVec2(4, 4);
     
     style->WindowPadding     = ImVec2(4.00f, 4.00f);
     style->FramePadding      = ImVec2(4.00f, 1.00f);
@@ -144,12 +142,12 @@ void embraceTheDarkness()
     style->LogSliderDeadzone = 2;
     style->TabRounding       = 2;
 
-    style->ChildBorderSize = 0;
-    style->FrameBorderSize = 0;
-    style->PopupBorderSize = 0;
-    style->TabBorderSize = 0;
-    style->WindowBorderSize = 1;
-    style->TabBarBorderSize = 0;
+    style->ChildBorderSize         = 0;
+    style->FrameBorderSize         = 0;
+    style->PopupBorderSize         = 0;
+    style->TabBorderSize           = 0;
+    style->WindowBorderSize        = 1;
+    style->TabBarBorderSize        = 0;
     style->SeparatorTextBorderSize = 1;
 }
 
@@ -620,7 +618,7 @@ void BKCImGuiHooker::start(void* g_mainRenderTargetView, void* g_pd3dDevice, voi
         ImGui::End();
 
         // ENABLE THIS FOR EASILY FINDING WHAT YOU NEED TO ADD TO THE GUI
-        ImGui::ShowDemoWindow();
+        // ImGui::ShowDemoWindow();
 
         if (show_client_settings) DrawClientSettingsWindow(is_dx_11);
         if (show_configs) DrawConfigsWindow(is_dx_11);
