@@ -25,7 +25,7 @@ public:
     static inline uint64_t OnSceneUnload = 0x419C6E0;
     static inline uint64_t PriceModifier = 0x7A63D0;
     static inline uint64_t PlayerMoveCFixedUpdate = 0x1B10EC0;
-    static inline uint64_t RewardMultiplier = 0xC81C30;
+    static inline uint64_t RewardMultiplier = 0xC81BC0;
     static inline uint64_t DoubleRewards = 0xC81670;
     static inline uint64_t PremiumPass = 0x1906480;
     static inline uint64_t GetItemRecordDict = 0x7B7620;
