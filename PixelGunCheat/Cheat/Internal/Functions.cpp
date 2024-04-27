@@ -131,7 +131,6 @@ void* Functions::FindObjectOfType(void* arg)
     static const auto fn = (void*(*)(void*))(GameAssembly_ + Offsets::FindObjectOfType);
     return fn(arg);
 }
-*/
 
 void* Functions::TypeGetType(void* arg)
 {
@@ -139,6 +138,7 @@ void* Functions::TypeGetType(void* arg)
     static const auto fn = (void*(*)(void*))(GameAssembly_ + Offsets::TypeGetType);
     return fn(arg);
 }
+*/
 
 bool Functions::BehaviourGetEnabled(void* arg)
 {

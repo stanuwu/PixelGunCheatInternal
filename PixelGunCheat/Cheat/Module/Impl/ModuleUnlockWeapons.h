@@ -13,6 +13,7 @@ static BKCModule __unlock_weapons = { "Add Weapons", EXPLOIT, 0x0, false, { &__w
 
 static bool adding_all = false;
 static int add_all_progress = 0;
+std::wstring current = L"";
 
 class ModuleUnlockWeapons : ModuleBase
 {
@@ -21,7 +22,7 @@ public:
     
     void do_module(void* arg) override
     {
-        if (Hooks::tick % 240 != 0) return;
+        if (Hooks::tick % 480 != 0) return;
         if (__unlock_weapons_all.enabled)
         {
             if (!adding_all)
@@ -40,6 +41,7 @@ public:
                     add_all_progress = add_all_progress + 25;
                     break;
                 }
+                current = weapon_name;
                 Functions::GiveWeapon(Hooks::create_system_string_w(weapon_name), true, __unlock_weapons_upgrade.enabled);
             }
             if (count >= weapons_names.size() - 1)
@@ -51,12 +53,18 @@ public:
         }
         else
         {
+            current = __weapon_list.current_value;
             Functions::GiveWeapon(Hooks::create_system_string_w(__weapon_list.current_value), true, __unlock_weapons_upgrade.enabled);
         }
 
         if (!adding_all) this->toggle();
     }
 
+    std::wstring get_current()
+    {
+        return current;
+    }
+    
     /*
     bool all()
     {

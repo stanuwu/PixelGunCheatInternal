@@ -101,7 +101,7 @@ public:
             if (screen_pos.z < 0) return;
             if (!is_on_screen_esp(screen_pos)) return;
             float scaled_dist = screen_pos.y - screen_top.y;
-
+            
             float width2 = scaled_dist / 2;
             float height2 = scaled_dist * 1.5f / 2;
         
@@ -114,7 +114,7 @@ public:
             }
             
             std::string player_name = Hooks::get_player_name(player);
-
+            
             if (player == nullptr)
             {
                 // Logger::log_warn("Player ptr was nullptr during player_list loop! (2nd-phase)");
@@ -125,6 +125,7 @@ public:
             {
                 to_draw.push_back({screen_pos, width2, height2, color_enemy, player_name, false});
             }
+            
             else if (__esp_teammates.enabled)
             {
                 to_draw.push_back({screen_pos, width2, height2, color_ally, player_name, true});
