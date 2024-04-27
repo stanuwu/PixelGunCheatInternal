@@ -48,7 +48,6 @@
 #include "../Module/Impl/ModuleHeadshotMultiplier.h"
 #include "../Module/Impl/ModulePriceModifier.h"
 #include "../Module/Impl/ModuleRewardsMultiplier.h"
-#include "../Module/Impl/ModuleExtraDisplay.h"
 #include "../Module/Impl/ModuleImmortality.h"
 #include "../Module/Impl/ModuleImmunity.h"
 #include "../Module/Impl/ModuleInfiniteArmor.h"
@@ -99,6 +98,8 @@ void* Hooks::our_player;
 void* Hooks::main_camera;
 Unity::Vector3 zero = Unity::Vector3(0, 0, 0);
 void* Hooks::aimed_pos = &zero;
+
+// TODO: clean unused imports in all files
 
 // Utility
 void* Hooks::create_system_string(std::string string)
