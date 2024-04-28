@@ -15,5 +15,4 @@ static inline std::vector<std::wstring> currency_names = {
     L"BattlePassCurrency",
     L"CurrencyCompetitionTier1",
     L"CurrencyCompetitionTier2",
-    L"PixelBucks",
 };
