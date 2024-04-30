@@ -9,7 +9,7 @@ public:
     static inline uint64_t WeaponSoundsUpdate = 0x812ed0;
     static inline uint64_t SetNextCriticalHit = 0x80bf60;
     static inline uint64_t MakeInvisibleForSeconds = 0x1b12dc0;
-    static inline uint64_t InfiniteGemClaim = 0x4ba3d0;
+    static inline uint64_t InfiniteGemClaim = 0x4bc210;
     static inline uint64_t RapidFire = 0x114fc00;
     static inline uint64_t TextMeshGetText = 0x4498b70;
     static inline uint64_t BehaviourGetEnabled = 0x43ae960;
