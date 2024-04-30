@@ -182,6 +182,7 @@ bool Hooks::is_player_enemy(void* player)
     void* nick_label = (void*)*(uint64_t*)((uint64_t)player + Offsets::nickLabel);
     Unity::Color color = {0, 0,  0, 0};
     Functions::TextMeshGetColor(nick_label, &color);
+    std::cout << std::to_string(color.r) << " | " << std::to_string(color.g) << " | " << std::to_string(color.b) << std::endl;
     return color.r == 1 && color.g == 0 && color.b == 0;
 }
 
