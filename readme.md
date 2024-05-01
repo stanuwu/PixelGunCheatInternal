@@ -2,6 +2,8 @@
 
 `by hiderikzki and stanuwu`
 
+> Issues on GitHub are only for bugs! If you need support or want to give suggestions please join the discord! Issues not related to the code will be closed!
+
 ## Warning!
 - This Program is FREE SOFTWARE.
 - It will always be available for free, with the source code included.
