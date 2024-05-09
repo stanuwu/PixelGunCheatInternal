@@ -864,7 +864,9 @@ void HandleModuleSettingRendering(BKCModule& module)
 
 void HandleModuleRendering(BKCModule& module)
 {
-    if (ImGui::CollapsingHeader(module.name.c_str()))
+    const bool collapsing = ImGui::CollapsingHeader(module.name.c_str());
+    if (ImGui::IsItemHovered()) ImGui::SetTooltip(module.description.c_str());
+    if (collapsing)
     {
         std::stringstream module_enabled_id;
         module_enabled_id << "Enabled##" << module.name;
@@ -874,11 +876,6 @@ void HandleModuleRendering(BKCModule& module)
         ImGui::SeparatorText("Settings");
         HandleModuleSettingRendering(module);
         ImGui::Unindent();
-    }
-    
-    if (ImGui::IsItemHovered())
-    {
-        ImGui::SetTooltip(module.description.c_str());
     }
 }
 
