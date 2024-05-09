@@ -10,52 +10,50 @@
 #include "../Data/Weapons.h"
 #include "../Internal/Functions.h"
 #include "../Module/ModuleBase.h"
-#include "../Module/Impl/ModuleAOEBullets.h"
-#include "../Module/Impl/ModuleBetterScope.h"
-#include "../Module/Impl/ModuleCriticals.h"
-#include "../Module/Impl/ModuleDebuffer.h"
-#include "../Module/Impl/ModuleFrostAura.h"
-#include "../Module/Impl/ModuleFullAuto.h"
-#include "../Module/Impl/ModuleHeal.h"
-#include "../Module/Impl/ModuleInfiniteAmmo.h"
-#include "../Module/Impl/ModuleInfiniteGemClaim.h"
-#include "../Module/Impl/ModuleInstantCharge.h"
-#include "../Module/Impl/ModuleInvisibility.h"
-#include "../Module/Impl/ModuleRapidFire.h"
-#include "../Module/Impl/ModuleReach.h"
-#include "../Module/Impl/ModuleRecoil.h"
-#include "../Module/Impl/ModuleScoreMultiplier.h"
-#include "../Module/Impl/ModuleSpread.h"
-#include "../Module/Impl/ModuleXRay.h"
-
 #include "../Logger/Logger.h"
-#include "../Module/Impl/ModuleFOVChanger.h"
-#include "../Module/Impl/ModuleSpeed.h"
-
 #include "../IL2CPPResolver/IL2CPP_Resolver.hpp"
-#include "../Module/Impl/ModuleAddArmor.h"
-#include "../Module/Impl/ModuleAddCurrency.h"
-#include "../Module/Impl/ModuleAddPets.h"
-#include "../Module/Impl/ModuleAimBot.h"
-#include "../Module/Impl/ModuleAntiBarrier.h"
-#include "../Module/Impl/ModuleAntiHeadshot.h"
-#include "../Module/Impl/ModuleAntiImmortal.h"
-#include "../Module/Impl/ModuleAntiKick.h"
-#include "../Module/Impl/ModuleArrayList.h"
-#include "../Module/Impl/ModuleDamageMultiplier.h"
-#include "../Module/Impl/ModuleDoubleJump.h"
-#include "../Module/Impl/ModuleESP.h"
-#include "../Module/Impl/ModuleHeadshotMultiplier.h"
-#include "../Module/Impl/ModulePriceModifier.h"
-#include "../Module/Impl/ModuleRewardsMultiplier.h"
-#include "../Module/Impl/ModuleImmortality.h"
-#include "../Module/Impl/ModuleImmunity.h"
-#include "../Module/Impl/ModuleInfiniteArmor.h"
-#include "../Module/Impl/ModuleSeasonPass.h"
-#include "../Module/Impl/ModuleTest.h"
-#include "../Module/Impl/ModuleUnlockWeapons.h"
-#include "../Module/Impl/ModuleUnlockWeapons.h"
-#include "../Module/Impl/ModuleWeaponSpoofer.h"
+#include "../Module/Impl/Combat/ModuleAimBot.h"
+#include "../Module/Impl/Combat/ModuleAntiBarrier.h"
+#include "../Module/Impl/Combat/ModuleAntiImmortal.h"
+#include "../Module/Impl/Combat/ModuleAOEBullets.h"
+#include "../Module/Impl/Combat/ModuleCriticals.h"
+#include "../Module/Impl/Combat/ModuleDamageMultiplier.h"
+#include "../Module/Impl/Combat/ModuleDebuffer.h"
+#include "../Module/Impl/Combat/ModuleFrostAura.h"
+#include "../Module/Impl/Combat/ModuleFullAuto.h"
+#include "../Module/Impl/Combat/ModuleHeadshotMultiplier.h"
+#include "../Module/Impl/Combat/ModuleInstantCharge.h"
+#include "../Module/Impl/Combat/ModuleRapidFire.h"
+#include "../Module/Impl/Combat/ModuleRecoil.h"
+#include "../Module/Impl/Combat/ModuleSpread.h"
+#include "../Module/Impl/Exploit/ModuleAddArmor.h"
+#include "../Module/Impl/Exploit/ModuleAddCurrency.h"
+#include "../Module/Impl/Exploit/ModuleAddPets.h"
+#include "../Module/Impl/Exploit/ModuleInfiniteGemClaim.h"
+#include "../Module/Impl/Exploit/ModulePriceModifier.h"
+#include "../Module/Impl/Exploit/ModuleRewardsMultiplier.h"
+#include "../Module/Impl/Exploit/ModuleSeasonPass.h"
+#include "../Module/Impl/Exploit/ModuleTest.h"
+#include "../Module/Impl/Exploit/ModuleUnlockWeapons.h"
+#include "../Module/Impl/Exploit/ModuleWeaponSpoofer.h"
+#include "../Module/Impl/General/ModuleScoreMultiplier.h"
+#include "../Module/Impl/Movement/ModuleBetterDash.h"
+#include "../Module/Impl/Movement/ModuleDoubleJump.h"
+#include "../Module/Impl/Movement/ModuleFly.h"
+#include "../Module/Impl/Movement/ModuleSpeed.h"
+#include "../Module/Impl/Player/ModuleAntiHeadshot.h"
+#include "../Module/Impl/Player/ModuleGadgetActivator.h"
+#include "../Module/Impl/Player/ModuleImmortality.h"
+#include "../Module/Impl/Player/ModuleImmunity.h"
+#include "../Module/Impl/Player/ModuleInfiniteAmmo.h"
+#include "../Module/Impl/Player/ModuleInvisibility.h"
+#include "../Module/Impl/Player/ModuleReach.h"
+#include "../Module/Impl/Visual/ModuleArrayList.h"
+#include "../Module/Impl/Visual/ModuleBetterScope.h"
+#include "../Module/Impl/Visual/ModuleESP.h"
+#include "../Module/Impl/Visual/ModuleFOVChanger.h"
+#include "../Module/Impl/Visual/ModuleLegacyAnimations.h"
+#include "../Module/Impl/Visual/ModuleXRay.h"
 #include "../Offsets/Offsets.h"
 
 uintptr_t Hooks::GameBase;
@@ -63,7 +61,6 @@ uintptr_t Hooks::GameAssembly;
 uintptr_t Hooks::UnityPlayer;
 
 ModuleRapidFire* rapid_fire_module;
-ModuleAntiKick* anti_kick;
 ModuleSpeed* speed_module;
 ModuleBase* infinite_gem_claim_module;
 ModulePriceModifier* lottery_price_module;
@@ -82,6 +79,7 @@ ModuleAddArmor* add_armor_module;
 ModuleAddPets* add_pets_module;
 ModuleAddCurrency* add_currency_module;
 ModuleWeaponSpoofer* weapon_spoofer_module;
+
 std::list<ModuleBase*> player_move_c_modules = { };
 std::list<ModuleBase*> player_move_c_others_modules = { };
 std::list<ModuleBase*> player_fps_controller_sharp_modules = { };
@@ -92,6 +90,7 @@ std::list<ModuleBase*> on_pre_render_modules = { };
 std::list<ModuleBase*> Hooks::on_imgui_draw_modules = { };
 
 uint64_t Hooks::tick = 0;
+uint64_t Hooks::player_fixed_tick = 0;
 std::list<void*> working_player_list;
 std::list<void*> Hooks::player_list;
 void* Hooks::our_player;
@@ -182,7 +181,6 @@ bool Hooks::is_player_enemy(void* player)
     void* nick_label = (void*)*(uint64_t*)((uint64_t)player + Offsets::nickLabel);
     Unity::Color color = {0, 0,  0, 0};
     Functions::TextMeshGetColor(nick_label, &color);
-    std::cout << std::to_string(color.r) << " | " << std::to_string(color.g) << " | " << std::to_string(color.b) << std::endl;
     return color.r == 1 && color.g == 0 && color.b == 0;
 }
 
@@ -272,10 +270,7 @@ inline void __stdcall player_move_c(void* arg)
         if (Hooks::tick % 5 == 0)
         {
             Hooks::main_camera = find_main_camera();
-            if (Hooks::main_camera == nullptr)
-            {
-                if (Hooks::main_camera == nullptr) return player_move_c_original(arg);
-            }
+            if (Hooks::main_camera == nullptr) return player_move_c_original(arg);
             Hooks::our_player = arg;
         }
 
@@ -293,7 +288,7 @@ inline void __stdcall player_move_c(void* arg)
         Hooks::fov_changer_module->run(nullptr);
         esp_module->add_esp(arg);
         working_player_list.push_back(arg);
-
+        
         for (auto player_move_c_others_module : player_move_c_others_modules)
         {
             player_move_c_others_module->run(arg);
@@ -313,6 +308,7 @@ inline void __stdcall player_move_c_fixed(void* arg)
     void* player_damageable = (void*)*(uint64_t*)((uint64_t)arg + Offsets::playerMoveCPlayerDamageable);
     if (my_player)
     {
+        Hooks::player_fixed_tick++;
         for (ModuleBase* player_damageable_module : player_damageable_modules)
         {
             player_damageable_module->run(player_damageable);
@@ -575,7 +571,7 @@ void Hooks::load()
     rapid_fire_module = new ModuleRapidFire();
     speed_module = new ModuleSpeed();
     infinite_gem_claim_module = (ModuleBase*) new ModuleInfiniteGemClaim();
-    lottery_price_module = new ModulePriceModifier;
+    lottery_price_module = new ModulePriceModifier();
     rewards_multiplier_module = new ModuleRewardsMultiplier();
     season_pass_module = new ModuleSeasonPass();
     damage_multiplier_module = new ModuleDamageMultiplier();
@@ -591,39 +587,44 @@ void Hooks::load()
     esp_module = new ModuleESP();
     player_move_c_modules.push_back((ModuleBase*) esp_module);
     aim_bot_module = new ModuleAimBot();
+    
+    player_move_c_modules.push_back((ModuleBase*) new ModuleFly());
+    player_move_c_modules.push_back((ModuleBase*) new ModuleGadgetActivator());
     player_move_c_modules.push_back((ModuleBase*) new ModuleInvisibility());
-
     player_move_c_modules.push_back((ModuleBase*) new ModuleTest());
-
     
     /*
      does fucking nothing with these vals xddddd
     player_move_c_modules.push_back((ModuleBase*) new ModuleExtraDisplay());
     */
-    
+
     on_imgui_draw_modules.push_back((ModuleBase*) new ModuleArrayList());
     
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleCriticals());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleReach());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleRecoil());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleHeadshotMultiplier());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleSpread());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleDebuffer());
+    weapon_sounds_modules.push_back((ModuleBase*) new ModuleAntiBarrier());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleAOEBullets());
+    weapon_sounds_modules.push_back((ModuleBase*) new ModuleBetterDash());
+    weapon_sounds_modules.push_back((ModuleBase*) new ModuleBetterScope());
+    weapon_sounds_modules.push_back((ModuleBase*) new ModuleCriticals());
+    weapon_sounds_modules.push_back((ModuleBase*) new ModuleDebuffer());
+    weapon_sounds_modules.push_back((ModuleBase*) new ModuleDoubleJump());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleFrostAura());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleFullAuto());
+    weapon_sounds_modules.push_back((ModuleBase*) new ModuleHeadshotMultiplier());
+    weapon_sounds_modules.push_back((ModuleBase*) new ModuleImmunity());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleInstantCharge());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleBetterScope());
+    weapon_sounds_modules.push_back((ModuleBase*) new ModuleLegacyAnimations());
+    weapon_sounds_modules.push_back((ModuleBase*) new ModuleReach());
+    weapon_sounds_modules.push_back((ModuleBase*) new ModuleRecoil());
+    weapon_sounds_modules.push_back((ModuleBase*) new ModuleSpread());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleScoreMultiplier());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleXRay());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleDoubleJump());
-    // weapon_sounds_modules.push_back((ModuleBase*) new InfiniteArmor());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleAntiBarrier());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleImmunity());
 
     // Will wreak havoc on literally everyone, even other cheaters :D
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleAntiHeadshot());
 
+    // weapon_sounds_modules.push_back((ModuleBase*) new InfiniteArmor());
+    // weapon_sounds_modules.push_back((ModuleBase*) new ModulePolymorpher()); this can work, but need to look into it
+    
     infinite_ammo_module = new ModuleInfiniteAmmo();
     // player_damageable_modules.push_back((ModuleBase*) new ModuleInfiniteAmmo());
     // player_move_c_modules.push_back((ModuleBase*) new ModuleHeal());
@@ -631,6 +632,12 @@ void Hooks::load()
     fov_changer_module = (ModuleBase*) new ModuleFOVChanger();
     on_pre_render_modules.push_back(fov_changer_module);
 
+    // autosort everything alphabetically (finally xd)
+    std::sort(BKCImGuiHooker::modules.begin(), BKCImGuiHooker::modules.end(), [](const BKCModule* mod1, const BKCModule* mod2)
+    {
+        return mod1->name.compare(mod2->name) <= 0;
+    });
+    
     // Post Module Load
     BKCImGuiHooker::modules_loaded = true;
 }

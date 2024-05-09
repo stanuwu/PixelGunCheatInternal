@@ -13,7 +13,7 @@ public:
         BKCImGuiHooker::modules.push_back(m);
     }
     
-    WPARAM key = 0x00;
+    WPARAM key = 0x0;
     std::string name;
     BKCModule* module;
     
@@ -30,7 +30,20 @@ public:
     void toggle()
     {
         module->enabled = !module->enabled;
+
+        if (module->enabled)
+        {
+            on_enable();
+        }
+        else
+        {
+            on_disable();
+        }
     }
+
+    virtual void on_enable() { }
+
+    virtual void on_disable() { }
     
     virtual void do_module(void* arg) = 0;
 

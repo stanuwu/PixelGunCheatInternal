@@ -34,7 +34,7 @@ WPARAM MapLeftRightKeys(const MSG& msg);
 
 // Boykisser Central Vars
 std::string BKCImGuiHooker::c_Title = "Boykisser Central";
-std::string BKCImGuiHooker::c_RealBuild = "v2.1";
+std::string BKCImGuiHooker::c_RealBuild = "v2.2";
 static std::string c_Build = ":3";
 std::stringstream full_title;
 std::string combo_file = "default";
@@ -439,7 +439,7 @@ std::vector<std::string> native_font_list(bool ttf_only)
 }
 
 HWND imgui_hwnd;
-std::list<BKCModule*> BKCImGuiHooker::modules = {};
+std::vector<BKCModule*> BKCImGuiHooker::modules = {};
 ImFont* BKCImGuiHooker::gui_font = nullptr;
 ImFont* BKCImGuiHooker::watermark_font = nullptr;
 ImFont* BKCImGuiHooker::arraylist_font = nullptr;
@@ -448,6 +448,7 @@ bool BKCImGuiHooker::config_loaded = false;
 bool BKCImGuiHooker::c_GuiEnabled = false;
 float BKCImGuiHooker::scale_factor = 1;
 std::vector<std::string> fonts = native_font_list(true);
+int window_display_mode = -1;
 
 void DrawClientSettingsWindow(bool is_dx_11);
 void DrawConfigsWindow(bool is_dx_11);
@@ -474,14 +475,9 @@ void BKCImGuiHooker::setup_imgui_hwnd(HWND handle, void* device, void* device_co
     embraceTheDarkness();
     
     ImGui_ImplWin32_Init(imgui_hwnd);
-    if (is_dx_11)
-    {
-        ImGui_ImplDX11_Init((ID3D11Device*)device, (ID3D11DeviceContext*)device_context);
-    }
-    else
-    {
-        ImGui_ImplDX10_Init((ID3D10Device*)device);
-    }
+    
+    if (is_dx_11) ImGui_ImplDX11_Init((ID3D11Device*)device, (ID3D11DeviceContext*)device_context);
+    else ImGui_ImplDX10_Init((ID3D10Device*)device);
     
 
     int horizontal = 0;
@@ -540,6 +536,7 @@ void BKCImGuiHooker::start(void* g_mainRenderTargetView, void* g_pd3dDevice, voi
         save_config("default");
         Logger::log_info("Loaded default config!");
     }
+    
     // TODO: Make this not suck
     if (font_changed)
     {
@@ -575,13 +572,9 @@ void BKCImGuiHooker::start(void* g_mainRenderTargetView, void* g_pd3dDevice, voi
     }
     
     // Start the Dear ImGui frame
-    if (is_dx_11)
-    {
-        ImGui_ImplDX11_NewFrame();
-    } else
-    {
-        ImGui_ImplDX10_NewFrame();
-    }
+    if (is_dx_11) ImGui_ImplDX11_NewFrame();
+    else ImGui_ImplDX10_NewFrame();
+
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
     
@@ -589,34 +582,67 @@ void BKCImGuiHooker::start(void* g_mainRenderTargetView, void* g_pd3dDevice, voi
     
     if (c_GuiEnabled)
     {
-        ImGui::Begin(full_title.str().c_str(), nullptr, ImGuiWindowFlags_MenuBar);
+        ImGui::Begin(full_title.str().c_str(), nullptr);
 
-        if (ImGui::BeginMenuBar())
+        if (ImGui::Button("General")) window_display_mode = 0;
+        ImGui::SameLine();
+        if (ImGui::Button("Combat")) window_display_mode = 1;
+        ImGui::SameLine();
+        if (ImGui::Button("Visual")) window_display_mode = 2;
+        ImGui::SameLine();
+        if (ImGui::Button("Movement")) window_display_mode = 3;
+        ImGui::SameLine();
+        if (ImGui::Button("Player")) window_display_mode = 4;
+        ImGui::SameLine();
+        if (ImGui::Button("Exploit")) window_display_mode = 5;
+        ImGui::SameLine();
+        if (ImGui::Button("Configs")) window_display_mode = 6;
+        ImGui::SameLine();
+        if (ImGui::Button("Settings")) window_display_mode = 7;
+
+        switch (window_display_mode)
         {
-            if (ImGui::BeginMenu("Windows"))
-            {
-                ImGui::MenuItem("Client Settings", nullptr, &show_client_settings);
-                ImGui::MenuItem("Configs", nullptr, &show_configs);
-                ImGui::EndMenu();
-            }
-            
-            ImGui::EndMenuBar();
+        case 0:
+            HandleCategoryRendering("General", GENERAL);
+            break;
+        case 1:
+            HandleCategoryRendering("Combat", COMBAT);
+            break;
+        case 2:
+            HandleCategoryRendering("Visual", VISUAL);
+            break;
+        case 3:
+            HandleCategoryRendering("Movement", MOVEMENT);
+            break;
+        case 4:
+            HandleCategoryRendering("Player", PLAYER);
+            break;
+        case 5:
+            HandleCategoryRendering("Exploit", EXPLOIT);
+            break;
+        case 6:
+            DrawClientSettingsWindow(is_dx_11);
+            break;
+        case 7:
+            DrawConfigsWindow(is_dx_11);
+            break;
+        default:
+            ImGui::Text("Welcome to Boykisser Central, Happy Modding!");
+            ImGui::SameLine();
+            ImGui::TextColored({ 1.0f, 0.0f, 0.0f, 1.0f }, "<3");
+            ImGui::Text("Please select a category above to use the menu...");
+            break;
         }
-        
-        HandleCategoryRendering("General", GENERAL);
-        HandleCategoryRendering("Combat", COMBAT);
-        HandleCategoryRendering("Visual", VISUAL);
-        HandleCategoryRendering("Movement", MOVEMENT);
-        HandleCategoryRendering("Player", PLAYER);
-        HandleCategoryRendering("Exploit", EXPLOIT);
         
         ImGui::End();
 
         // ENABLE THIS FOR EASILY FINDING WHAT YOU NEED TO ADD TO THE GUI
         // ImGui::ShowDemoWindow();
 
+        /*
         if (show_client_settings) DrawClientSettingsWindow(is_dx_11);
         if (show_configs) DrawConfigsWindow(is_dx_11);
+        */
     }
 
     // Modules
@@ -656,8 +682,6 @@ void BKCImGuiHooker::start(void* g_mainRenderTargetView, void* g_pd3dDevice, voi
 
 void DrawClientSettingsWindow(bool is_dx_11)
 {
-    ImGui::Begin("Client Settings", &show_client_settings);
-
     if (ImGui::BeginCombo("Font", current_font.c_str()))
     {
         for (std::string::size_type i = 0; i < fonts.size(); i++)
@@ -720,14 +744,10 @@ void DrawClientSettingsWindow(bool is_dx_11)
     {
         Hooks::dump_item_records();
     }
-    
-    ImGui::End();
 }
 
 void DrawConfigsWindow(bool is_dx_11)
 {
-    ImGui::Begin("Config Manager##config", &show_configs);
-
     ImGui::InputText("##config_text", input_file, sizeof(input_file));
     ImGui::SameLine();
     
@@ -766,8 +786,6 @@ void DrawConfigsWindow(bool is_dx_11)
     {
         save_config(combo_file.c_str());
     }
-
-    ImGui::End();
 } 
 
 std::string strlow(std::string str)
@@ -846,7 +864,6 @@ void HandleModuleSettingRendering(BKCModule& module)
 
 void HandleModuleRendering(BKCModule& module)
 {
-    ImGui::Indent();
     if (ImGui::CollapsingHeader(module.name.c_str()))
     {
         std::stringstream module_enabled_id;
@@ -858,18 +875,26 @@ void HandleModuleRendering(BKCModule& module)
         HandleModuleSettingRendering(module);
         ImGui::Unindent();
     }
-    ImGui::Unindent();
+    
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::SetTooltip(module.description.c_str());
+    }
 }
 
 
 void HandleCategoryRendering(const std::string& name, const BKCCategory cat)
 {
+    for (auto& module : BKCImGuiHooker::modules)
+    {
+        if (module->category != cat) continue;
+        HandleModuleRendering(*module);
+    }
+    
+    /*
     if (ImGui::CollapsingHeader(name.c_str()))
     {
-        for (auto& module : BKCImGuiHooker::modules)
-        {
-            if (module->category != cat) continue;
-            HandleModuleRendering(*module);
-        }
+        // inner
     }
+    */
 }

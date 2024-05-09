@@ -1,9 +1,8 @@
 ﻿#pragma once
 
-#include <assert.h>
 #include <cstdint>
 
-#include "../Module/Impl/ModuleAOEBullets.h"
+#include "../Hooks/Hooks.h"
 
 struct Ray
 {
@@ -28,7 +27,6 @@ struct RaycastHit
     float u;
     float v;
     int collider;
-    
 };
 
 struct itemObtainParams
@@ -89,5 +87,8 @@ public:
     static void AddSomeCurrency(void* currency, int amount, bool arg1, int enum1, int enum2, int enum3, int enum4);
     static void* ProgressUpdaterGetInstance();
     static void ProgressAddCurrency(void* instance, void* currency, int amount, int enum1, bool bool1, bool bool2, itemObtainParams* obtainParams);
+    static void ActivateGadget(void* arg, int gadget_id, int level);
+    static void DeactivateGadget(void* arg, int gadget_id);
+    static void DoSomething(void* arg, int eff_id, float test);
     static ImVec4 ImVec4i(int r, int g, int b, int a = 255);
 };
