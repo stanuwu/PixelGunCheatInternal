@@ -621,10 +621,10 @@ void BKCImGuiHooker::start(void* g_mainRenderTargetView, void* g_pd3dDevice, voi
             HandleCategoryRendering("Exploit", EXPLOIT);
             break;
         case 6:
-            DrawClientSettingsWindow(is_dx_11);
+            DrawConfigsWindow(is_dx_11);
             break;
         case 7:
-            DrawConfigsWindow(is_dx_11);
+            DrawClientSettingsWindow(is_dx_11);
             break;
         default:
             ImGui::Text("Welcome to Boykisser Central, Happy Modding!");
