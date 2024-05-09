@@ -10,7 +10,7 @@
 static BKCSliderInt __aim_bot_target_size = BKCSliderInt("Target Marker Size", 5, 1, 20);
 static BKCCheckbox __aim_bot_target_marker = BKCCheckbox("Target Marker", true);
 static BKCCheckbox __aim_bot_silent_aim = BKCCheckbox("Silent Aim", false);
-static BKCSliderInt __aim_bot_silent_aim_radius = BKCSliderInt("Silent Aim Radius", 30, 1, 90);
+static BKCSliderInt __aim_bot_silent_aim_radius = BKCSliderInt("Silent Aim Radius", 60, 1, 1000);
 static BKCCheckbox __aim_bot_through_walls = BKCCheckbox("Through Walls", false);
 static BKCCheckbox __aim_bot_body_shot = BKCCheckbox("Body Shot", false);
 static BKCModule __aim_bot = { "Aim Bot", COMBAT, 0x0, true, {&__aim_bot_target_marker, &__aim_bot_target_size, &__aim_bot_silent_aim, &__aim_bot_silent_aim_radius, &__aim_bot_through_walls, &__aim_bot_body_shot} };
