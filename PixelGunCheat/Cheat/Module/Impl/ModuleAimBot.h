@@ -247,8 +247,17 @@ public:
             {
                 draw_aim(draw.screen_pos);
             }
+            if (__aim_bot_silent_aim.enabled) draw_silent_aim_circle();
         }
         to_draw_aim.clear();
+    }
+
+    void draw_silent_aim_circle()
+    {
+        if (__aim_bot_silent_aim.enabled && is_enabled())
+        {
+            ImGui::GetBackgroundDrawList()->AddCircle({ (window_size_aim.right + window_size_aim.left) / 2.0f, (window_size_aim.bottom + window_size_aim.top) / 2.0f }, (float)__aim_bot_silent_aim_radius.value, color_marker, 64, 2.0f);
+        }
     }
 
     void draw_aim(Unity::Vector3 screen_pos)
@@ -258,7 +267,7 @@ public:
             ImGui::GetBackgroundDrawList()->AddCircleFilled({screen_pos.x, screen_pos.y}, (float)__aim_bot_target_size.value + 0.5f, color_border);
             ImGui::GetBackgroundDrawList()->AddCircleFilled({screen_pos.x, screen_pos.y}, (float)__aim_bot_target_size.value, color_marker);
 
-            ImGui::GetBackgroundDrawList()->AddCircle({ screen_pos.x, screen_pos.y }, (float)__aim_bot_silent_aim_radius.value, color_marker, 32, 1.0f);
+            // ImGui::GetBackgroundDrawList()->AddCircle({(window_size_aim.right + window_size_aim.left) / 2.0f, (window_size_aim.bottom + window_size_aim.top) / 2.0f}, (float)__aim_bot_silent_aim_radius.value, color_marker, 32, 1.0f);
         }
     }
 };
