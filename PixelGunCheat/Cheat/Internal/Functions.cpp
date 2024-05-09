@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <stdbool.h>
 
+#include "../Hooks/Hooks.h"
 #include "../Offsets/Offsets.h"
 
 static uintptr_t GameBase_;
@@ -169,10 +170,31 @@ void Functions::AddSomeCurrency(void* currency, int amount, bool arg1, int enum1
     return fn(currency, amount, arg1, enum1, enum2, enum3, enum4); 
 }
 
+void Functions::ActivateGadget(void* arg, int gadget_id, int level)
+{
+    if (!arg) return;
+    static const auto fn = (void(*)(void*, int, void*, int))(GameAssembly_ + Offsets::GadgetActivate);
+    return fn(arg, gadget_id, Hooks::create_system_string("TrustMeBroThisIsARealCallToThisMethod"), level);
+}
+
+void Functions::DeactivateGadget(void* arg, int gadget_id)
+{
+    if (!arg) return;
+    static const auto fn = (void(*)(void*, int))(GameAssembly_ + Offsets::GadgetDeactivate);
+    return fn(arg, gadget_id);
+}
+
 void* Functions::ProgressUpdaterGetInstance()
 {
     static const auto fn = (void*(*)())(GameAssembly_ + Offsets::ProgressUpdaterGetInstance);
     return fn(); 
+}
+
+void Functions::DoSomething(void* arg, int eff_id, float test)
+{
+    if (!arg) return;
+    static const auto fn = (void(*)(void*, int, float))(GameAssembly_ + 0x1b209c0);
+    return fn(arg, eff_id, test);
 }
 
 void Functions::ProgressAddCurrency(void* instance, void* currency, int amount, int enum1, bool bool1, bool bool2, itemObtainParams* obtainParams)

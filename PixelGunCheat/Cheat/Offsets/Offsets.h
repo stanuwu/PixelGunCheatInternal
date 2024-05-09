@@ -46,6 +46,9 @@ public:
     static inline uint64_t AddClanChestPoints = 0x2057470;
     static inline uint64_t ProgressUpdaterGetInstance = 0xa32e20;
     static inline uint64_t ProgressAddCurrency = 0xa0a5d0;
+    static inline uint64_t GadgetActivate = 0x1b7aff0;
+    static inline uint64_t GadgetDeactivate = 0x1b96e10;
+    static inline uint64_t RemoveWeapon = 0x65e390;
     
     // Fields
     static inline uint64_t scopeSpeed = 0x100;
@@ -76,6 +79,7 @@ public:
     static inline uint64_t stunTime = 0x248;
     static inline uint64_t stunRadius = 0x24C;
     static inline uint64_t isBlindEffect = 0x270;
+    static inline uint64_t blindEffect = 0x274;
     static inline uint64_t isBlindEffectTime = 0x278;
     static inline uint64_t isSlowdown = 0x22C;
     static inline uint64_t slowdownCoeff = 0x230;

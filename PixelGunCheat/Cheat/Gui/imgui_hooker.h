@@ -106,6 +106,7 @@ class BKCModule
 {
 public:
     std::string name;
+    std::string description;
     BKCCategory category = NONE;
     WPARAM key = 0x0;
     bool enabled = false;
@@ -119,7 +120,7 @@ public:
 class BKCImGuiHooker
 {
 public:
-    static std::list<BKCModule*> modules;
+    static std::vector<BKCModule*> modules;
     static ImFont* gui_font;
     static ImFont* watermark_font;
     static ImFont* arraylist_font;
