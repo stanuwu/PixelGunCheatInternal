@@ -12,7 +12,7 @@ static BKCCheckbox __aim_bot_silent_aim = BKCCheckbox("Silent Aim", false);
 static BKCSliderInt __aim_bot_silent_aim_radius = BKCSliderInt("Silent Aim Radius", 60, 1, 1000);
 static BKCCheckbox __aim_bot_through_walls = BKCCheckbox("Through Walls", false);
 static BKCCheckbox __aim_bot_body_shot = BKCCheckbox("Body Shot", false);
-static BKCModule __aim_bot = { "Aim Bot", "\"Oh hey look a civilian airliner!\" *brrrrrrrrr*", COMBAT, 0x0, true, {&__aim_bot_target_marker, &__aim_bot_target_size, &__aim_bot_through_walls, &__aim_bot_body_shot} };
+static BKCModule __aim_bot = { "Aim Bot", "\"Oh hey look a civilian airliner!\" *brrrrrrrrr*", COMBAT, 0x0, true, {&__aim_bot_target_marker, &__aim_bot_target_size, &__aim_bot_silent_aim, &__aim_bot_silent_aim_radius, &__aim_bot_through_walls, &__aim_bot_body_shot} };
 
 static ImU32 color_marker = ImGui::ColorConvertFloat4ToU32({1.00f, 0.00f, 1.00f, 1.00f});
 static ImU32 color_border = ImGui::ColorConvertFloat4ToU32({0.00f, 0.00f, 0.00f, 1.00f});
