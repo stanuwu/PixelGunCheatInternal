@@ -8,9 +8,11 @@
 
 static BKCSliderInt __aim_bot_target_size = BKCSliderInt("Target Marker Size", 5, 1, 20);
 static BKCCheckbox __aim_bot_target_marker = BKCCheckbox("Target Marker", true);
+static BKCCheckbox __aim_bot_silent_aim = BKCCheckbox("Silent Aim", false);
+static BKCSliderInt __aim_bot_silent_aim_radius = BKCSliderInt("Silent Aim Radius", 60, 1, 1000);
 static BKCCheckbox __aim_bot_through_walls = BKCCheckbox("Through Walls", false);
 static BKCCheckbox __aim_bot_body_shot = BKCCheckbox("Body Shot", false);
-static BKCModule __aim_bot = { "Aim Bot", "\"Oh hey look a civilian airliner!\" *brrrrrrrrr*", COMBAT, 0x0, true, {&__aim_bot_target_marker, &__aim_bot_target_size, &__aim_bot_through_walls, &__aim_bot_body_shot} };
+static BKCModule __aim_bot = { "Aim Bot", "\"Oh hey look a civilian airliner!\" *brrrrrrrrr*", COMBAT, 0x0, true, {&__aim_bot_target_marker, &__aim_bot_target_size, &__aim_bot_silent_aim, &__aim_bot_silent_aim_radius, &__aim_bot_through_walls, &__aim_bot_body_shot} };
 
 static ImU32 color_marker = ImGui::ColorConvertFloat4ToU32({1.00f, 0.00f, 1.00f, 1.00f});
 static ImU32 color_border = ImGui::ColorConvertFloat4ToU32({0.00f, 0.00f, 0.00f, 1.00f});
@@ -29,6 +31,14 @@ static bool is_on_screen_aim(Unity::Vector3 pos)
     const int width = window_size_aim.right - window_size_aim.left;
     const int height = window_size_aim.bottom - window_size_aim.top;
     return pos.z > 0.01f && pos.x > -100 && pos.y > -100 && pos.x < (float)width + 100 && pos.y < (float)height + 100;
+}
+
+static bool is_within_silent_aim(Unity::Vector3 pos, float rad)
+{
+    const float center_x = (window_size_aim.right + window_size_aim.left) / 2.0f;
+    const float center_y = (window_size_aim.bottom + window_size_aim.top) / 2.0f;
+    float distance = std::sqrt((pos.x - center_x) * (pos.x - center_x) + (pos.y - center_y) * (pos.y - center_y));
+    return distance <= rad && pos.z > 0.01f;
 }
 
 static bool is_zero(float* vector)
@@ -108,8 +118,13 @@ public:
             
             Unity::Vector3 screen;
             Functions::CameraWorldToScreen(camera, &world, &screen);
-
-            if (!is_on_screen_aim(screen)) continue;
+            if (__aim_bot_silent_aim.enabled)
+            {
+                if (!is_within_silent_aim(screen, (float)__aim_bot_silent_aim_radius.value)) continue;
+            }
+            else {
+                if (!is_on_screen_aim(screen)) continue;
+            }
             if (screen.z <= 0) continue;
             
             Unity::Vector3 velocity = {0, 0, 0};
@@ -231,8 +246,17 @@ public:
             {
                 draw_aim(draw.screen_pos);
             }
+            if (__aim_bot_silent_aim.enabled) draw_silent_aim_circle();
         }
         to_draw_aim.clear();
+    }
+
+    void draw_silent_aim_circle()
+    {
+        if (__aim_bot_silent_aim.enabled && is_enabled())
+        {
+            ImGui::GetBackgroundDrawList()->AddCircle({ (window_size_aim.right + window_size_aim.left) / 2.0f, (window_size_aim.bottom + window_size_aim.top) / 2.0f }, (float)__aim_bot_silent_aim_radius.value, color_marker, 64, 2.0f);
+        }
     }
 
     void draw_aim(Unity::Vector3 screen_pos)
@@ -241,6 +265,8 @@ public:
         {
             ImGui::GetBackgroundDrawList()->AddCircleFilled({screen_pos.x, screen_pos.y}, (float)__aim_bot_target_size.value + 0.5f, color_border);
             ImGui::GetBackgroundDrawList()->AddCircleFilled({screen_pos.x, screen_pos.y}, (float)__aim_bot_target_size.value, color_marker);
+
+            // ImGui::GetBackgroundDrawList()->AddCircle({(window_size_aim.right + window_size_aim.left) / 2.0f, (window_size_aim.bottom + window_size_aim.top) / 2.0f}, (float)__aim_bot_silent_aim_radius.value, color_marker, 32, 1.0f);
         }
     }
 };
