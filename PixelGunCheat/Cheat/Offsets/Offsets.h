@@ -7,6 +7,7 @@ public:
     // Functions
     static inline uint64_t PlayerMoveCUpdate = 0x1bb57c0;
     static inline uint64_t WeaponSoundsUpdate = 0x812ed0;
+    static inline uint64_t WeaponSoundsLateUpdate = 0x80BAE0;
     static inline uint64_t SetNextCriticalHit = 0x80bf60;
     static inline uint64_t MakeInvisibleForSeconds = 0x1b12dc0;
     static inline uint64_t InfiniteGemClaim = 0x4bc210;
@@ -30,6 +31,8 @@ public:
     static inline uint64_t PremiumPass = 0x18fec70;
     static inline uint64_t GetItemRecordDict = 0x7bf930;
     static inline uint64_t AddWeapon = 0x661e30;
+    static inline uint64_t GetIDListParentInstance = 0x14d37e0;
+    static inline uint64_t GetIDList = 0x14a0ef0;
     static inline uint64_t ItemRecordGetShopId = 0x5920c0;
     static inline uint64_t GetDamageMultiplier = 0x114eb80;
     static inline uint64_t GetPlayerSpeed = 0x1153020;
@@ -53,6 +56,9 @@ public:
     // Fields
     static inline uint64_t scopeSpeed = 0x100;
     static inline uint64_t zoomXray = 0xCE;
+    static inline uint64_t bulletBreakout = 0x1ad;
+    static inline uint64_t bulletSuperBreakout = 0x1af;
+    static inline uint64_t railgunStopAtWall = 0x1d0;
     static inline uint64_t shootDelay = 0x1B8;
     static inline uint64_t bulletDelay = 0x1B4;
     static inline uint64_t delayInBurstShooting = 0x5E8;

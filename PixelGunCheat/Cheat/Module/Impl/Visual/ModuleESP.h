@@ -146,6 +146,9 @@ public:
         else if (__esp_style.current_value == L"CS-like")
         {
             ImGui::GetBackgroundDrawList()->AddText({screen_pos.x + 1 - size.x / 2, screen_pos.y + 1 - height2}, color_black, player_name.c_str());
+            ImGui::GetBackgroundDrawList()->AddText({screen_pos.x + 1 - size.x / 2, screen_pos.y - 1 - height2}, color_black, player_name.c_str());
+            ImGui::GetBackgroundDrawList()->AddText({screen_pos.x - 1 - size.x / 2, screen_pos.y + 1 - height2}, color_black, player_name.c_str());
+            ImGui::GetBackgroundDrawList()->AddText({screen_pos.x - 1 - size.x / 2, screen_pos.y - 1 - height2}, color_black, player_name.c_str());
             ImGui::GetBackgroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, color_black, (float)__esp_corner_rounding.value, 0, (float)__esp_thickness.value * 2);
             ImGui::GetBackgroundDrawList()->AddText({screen_pos.x - size.x / 2, screen_pos.y - height2}, final_color, player_name.c_str());
             ImGui::GetBackgroundDrawList()->AddRect({screen_pos.x - width2, screen_pos.y - height2}, {screen_pos.x + width2, screen_pos.y + height2}, final_color, (float)__esp_corner_rounding.value, 0, (float)__esp_thickness.value);

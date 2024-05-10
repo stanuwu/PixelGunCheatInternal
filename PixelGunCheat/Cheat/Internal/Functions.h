@@ -76,6 +76,9 @@ public:
     static bool BehaviourGetEnabled(void* arg);
     static void AddWeapon(void* arg, void* string, int source, bool bool1, bool bool2, void* class1, void* struct1);
     static void* GetItemRecordDict();
+    static void* GetDataListStaticInstance();
+    static void* GetDataList(void* arg, int type);
+    static void* GetWeaponSkinList();
     static void* ItemRecordGetShopId(void* arg);
     static void GiveWear(void* id);
     static void GiveWeapon(void* id, bool event, bool auto_upgrade);
@@ -90,5 +93,6 @@ public:
     static void ActivateGadget(void* arg, int gadget_id, int level);
     static void DeactivateGadget(void* arg, int gadget_id);
     static void DoSomething(void* arg, int eff_id, float test);
+    static void* SystemObjectToString(void* arg);
     static ImVec4 ImVec4i(int r, int g, int b, int a = 255);
 };

@@ -7,7 +7,7 @@
 static BKCCheckbox __random_blind = BKCCheckbox("Blind Random", false, "Randomizes what blindness effect is applied to the enemy.");
 static BKCSlider __blind_duration = BKCSlider("Blind Duration", 9999, 0, 9999);
 
-static BKCModule __debuffer = { "Blinder", "Bleach their eyes!!!", COMBAT, 0x0, true, { &__random_blind, &__blind_duration } };
+static BKCModule __blinder = { "Blinder", "Bleach their eyes!!!", COMBAT, 0x0, true, { &__random_blind, &__blind_duration } };
 
 static std::vector blind_effects = {
     23, 26, 28, 30, 31, 32, 33, 34, 35, 36, 37,
@@ -19,7 +19,7 @@ static std::vector blind_effects = {
 class ModuleBlinder : ModuleBase
 {
 public:
-    ModuleBlinder() : ModuleBase(&__debuffer) {}
+    ModuleBlinder() : ModuleBase(&__blinder) {}
     
     void do_module(void* arg) override
     {
@@ -35,7 +35,7 @@ public:
                 1,
                 std::mt19937{std::random_device{}()}
             );
-            set_int(arg, 0x274, out[0]); // blindEffect
+            set_int(arg, Offsets::blindEffect, out[0]); // blindEffect
         }
     }
 };

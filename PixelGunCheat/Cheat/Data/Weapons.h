@@ -1314,5 +1314,5 @@ L"portal_ess",
 L"party_sniper_rifle",
 L"win_las_beam",
 L"cosmic_wayfarer",
-L"Itrgal_treasurer",
+L"Itrgal_treasurer"
 };

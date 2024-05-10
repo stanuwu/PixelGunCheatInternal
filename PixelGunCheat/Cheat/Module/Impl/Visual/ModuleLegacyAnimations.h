@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "../../ModuleBase.h"
 #include "../../../Hooks/Hooks.h"
-#include "../../../Offsets/Offsets.h"
 
 static BKCModule __legacy_animations = { "Legacy Animations", "Back to the good old days (only on some weapons)", VISUAL, 0x0, false, { } };
 

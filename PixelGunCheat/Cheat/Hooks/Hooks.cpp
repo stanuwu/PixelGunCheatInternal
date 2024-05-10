@@ -1,10 +1,10 @@
 ﻿#include "Hooks.h"
 
 #include <codecvt>
+#include <fstream>
 #include <list>
 #include <set>
 #include <sstream>
-#include <stdbool.h>
 
 #include "MinHook.h"
 #include "../Data/Weapons.h"
@@ -16,6 +16,7 @@
 #include "../Module/Impl/Combat/ModuleAntiBarrier.h"
 #include "../Module/Impl/Combat/ModuleAntiImmortal.h"
 #include "../Module/Impl/Combat/ModuleAOEBullets.h"
+#include "../Module/Impl/Combat/ModuleBlinder.h"
 #include "../Module/Impl/Combat/ModuleCriticals.h"
 #include "../Module/Impl/Combat/ModuleDamageMultiplier.h"
 #include "../Module/Impl/Combat/ModuleDebuffer.h"
@@ -23,6 +24,7 @@
 #include "../Module/Impl/Combat/ModuleFullAuto.h"
 #include "../Module/Impl/Combat/ModuleHeadshotMultiplier.h"
 #include "../Module/Impl/Combat/ModuleInstantCharge.h"
+#include "../Module/Impl/Combat/ModulePiercer.h"
 #include "../Module/Impl/Combat/ModuleRapidFire.h"
 #include "../Module/Impl/Combat/ModuleRecoil.h"
 #include "../Module/Impl/Combat/ModuleSpread.h"
@@ -97,6 +99,77 @@ void* Hooks::our_player;
 void* Hooks::main_camera;
 Unity::Vector3 zero = Unity::Vector3(0, 0, 0);
 void* Hooks::aimed_pos = &zero;
+std::map<std::string, int> Hooks::enum_OfferItemType = {
+    { "None",                 0    },
+    { "Weapons",              10   },
+    { "Armor",                20   },
+    { "Mask",                 30   },
+    { "Hat",                  40   },
+    { "Boots",                50   },
+    { "Cape",                 60   },
+    { "Skin",                 65   },
+    { "Gadget",               70   },
+    { "Pet",                  80   },
+    { "Egg",                  83   },
+    { "LobbyItem",            85   },
+    { "FortItem",             90   },
+    { "Gems",                 1000 },
+    { "Coins",                1010 },
+    { "Leprechaun",           1020 },
+    { "WeaponUpgrade",        1030 },
+    { "GachaFreeSpin",        1040 },
+    { "EventCurrency",        1050 },
+    { "VIP",                  1060 },
+    { "Parts",                1070 },
+    { "Royale",               1080 },
+    { "BattlePassLevel",      1090 },
+    { "BattlePassExp",        1100 },
+    { "BattlePassCurrency",   1110 },
+    { "GoldenSkin",           1120 },
+    { "EventChest",           1130 },
+    { "CraftCurrency",        1140 },
+    { "Module",               1150 },
+    { "ModulePoint",          1155 },
+    { "ModuleChest",          1160 },
+    { "WeaponSkin",           1170 },
+    { "ClanCurrency",         1180 },
+    { "Coupons",              1190 },
+    { "Currency",             1200 },
+    { "Character",            1210 },
+    { "ClanShields",          1220 },
+    { "ClanLootBox",          1230 },
+    { "ClanPlaceable",        1240 },
+    { "ClanPlaceablePoint",   1250 },
+    { "Detail",               1300 },
+    { "WeaponLevelUpgrade",   1310 },
+    { "PlayerBuff",           1320 },
+    { "ClanBuff",             1330 },
+    { "WeaponQualityUpgrade", 1340 },
+    { "ArmorSkin",            1350 },
+    { "ClanBuilding",         1360 },
+    { "ClanBuildingPoint",    1370 },
+    { "FreeUpgrade",          1380 },
+    { "Chest",                1390 },
+    { "Exp",                  1400 },
+    { "Stats",                1410 },
+    { "ModeSlots",            1420 },
+    { "Executable",           1430 },
+    { "Tank",                 1440 },
+    { "VIP20",                1450 },
+    { "LootBox",              1460 },
+    { "Graffiti",             1470 },
+    { "PixelPassExp",         1490 },
+    { "ClanRankExperience",   1500 },
+    { "WearSkin",             1510 },
+    { "Applicable",           1520 },
+    { "CraftSet",             1530 },
+    { "FeatureExp",           1540 },
+    { "PackagedItem",         1550 },
+    { "Achievement",          1560 },
+    { "ExpirySimple",         1570 },
+    { "Static",               1580 },
+    { "GemsHarvester",        1590 },
+};
 
 // TODO: clean unused imports in all files
 
@@ -112,6 +185,22 @@ void* Hooks::create_system_string_w(std::wstring string)
     std::string s(string.begin(), string.end());
     Unity::System_String* ns = IL2CPP::String::New(s);
     return ns;
+}
+
+std::string clean_string(std::string string)
+{
+    std::vector<char> bytes(string.begin(), string.end());
+    bytes.push_back('\0');
+    std::list<char> chars;
+    for (byte byte : bytes)
+    {
+        if (byte)
+        {
+            chars.push_back(byte);
+        }
+    }
+    std::string clean(chars.begin(), chars.end());
+    return clean;
 }
 
 void Hooks::dump_item_records()
@@ -130,6 +219,37 @@ void Hooks::dump_item_records()
     Logger::log_debug("Dumping Finished");
 }
 
+void Hooks::dump_all_records()
+{
+    FILE* file;
+    fopen_s(&file, "latest_OfferItemType_dump.txt", "w+");
+    std::ofstream out(file);
+    
+    for (auto entry : enum_OfferItemType)
+    {
+        auto name = entry.first;
+        auto dict = (Unity::il2cppList<Unity::System_String*>*)Functions::GetDataList(Functions::GetDataListStaticInstance(), entry.second);
+        Logger::log_info("[Universal Dumper] Dumping Records of Type '" + name + "' (Estimated Size: " + std::to_string(dict->m_pListArray->m_uMaxLength) + ")");
+        out << "[Universal Dumper] Dumping Records of Type '" + name + "' (Estimated Size: " + std::to_string(dict->m_pListArray->m_uMaxLength) + ")" << std::endl;
+        int real_size = 0;
+
+        for (int i = 0; i < dict->m_pListArray->m_uMaxLength; ++i)
+        {
+            Unity::System_String* key = dict->m_pListArray->At(i);
+            if (key == nullptr) break;
+            out << clean_string(key->ToString()) << std::endl;
+            real_size++;
+        }
+
+        Logger::log_warn("[Universal Dumper] Record of Type '" + name + "' End-of-List (Real Size: " + std::to_string(real_size) + ")");
+        out << "[Universal Dumper] Record of Type '" + name + "' End-of-List (Real Size = " + std::to_string(real_size) + ")" << std::endl;
+    }
+    
+    Logger::log_info("[Universal Dumper] Dumping Finished");
+    out << "[Universal Dumper] Dumping Finished" << std::endl;
+    fclose(file);
+}
+
 void Hooks::draw_all()
 {
     if (esp_module == nullptr) return;
@@ -142,22 +262,6 @@ void nuke_player_list()
 {
     working_player_list.clear();
     Hooks::player_list.clear();
-}
-
-std::string clean_string(std::string string)
-{
-    std::vector<char> bytes(string.begin(), string.end());
-    bytes.push_back('\0');
-    std::list<char> chars;
-    for (byte byte : bytes)
-    {
-        if (byte)
-        {
-            chars.push_back(byte);
-        }
-    }
-    std::string clean(chars.begin(), chars.end());
-    return clean;
 }
 
 std::string Hooks::get_player_name(void* player_move_c)
@@ -209,6 +313,9 @@ Unity::CCamera* find_main_camera()
     Unity::il2cppClass* camera_class = IL2CPP::Class::Find("UnityEngine.Camera");
     Unity::il2cppObject* camera_type = IL2CPP::Class::GetSystemType(camera_class);
     Unity::il2cppArray<Unity::CCamera*>* cameras = Unity::Object::FindObjectsOfType<Unity::CCamera>(camera_type);
+
+    if (cameras == nullptr) return nullptr;
+    
     for (int i = 0; i < cameras->m_uMaxLength; i++)
     {
         Unity::CCamera* camera = cameras->At(i);
@@ -239,10 +346,20 @@ inline void __stdcall weapon_sounds_call(void* arg)
     {
         ((ModuleBase*)add_currency_module)->run(arg);
     }
+
+    /*
+    auto dict = (Unity::il2cppList<void*>*)Functions::GetWeaponSkinList();
+    for (int i = 0; i < dict->m_pListArray->m_uMaxLength; ++i)
+    {
+        void* key = dict->m_pListArray->At(i);
+        if (key == nullptr) break;
+        std::cout << ((Unity::System_String*)((uint64_t)key + 0x18))->ToString() << std::endl;
+    }
+    */
     
     if (is_my_player_weapon_sounds(arg))
     {
-        if (Hooks::our_player != nullptr) ((ModuleBase*)aim_bot_module)->run(arg);
+        if (Hooks::our_player != nullptr && aim_bot_module && aim_bot_module->is_using_silent_aim) ((ModuleBase*)aim_bot_module)->run(arg);
         
         for (ModuleBase* weapon_sounds_module : weapon_sounds_modules)
         {
@@ -260,6 +377,17 @@ inline void __stdcall weapon_sounds_call(void* arg)
     return weapon_sounds_original(arg);
 }
 
+inline void(__stdcall* weapon_sounds_late_original)(void* arg);
+inline void __stdcall weapon_sounds_late_call(void* arg)
+{
+    if (is_my_player_weapon_sounds(arg))
+    {
+        if (Hooks::our_player != nullptr && aim_bot_module && !aim_bot_module->is_using_silent_aim) ((ModuleBase*)aim_bot_module)->run(arg);
+    }
+
+    return weapon_sounds_late_original(arg);
+}
+
 inline void(__stdcall* player_move_c_original)(void* arg);
 inline void __stdcall player_move_c(void* arg)
 {
@@ -267,13 +395,11 @@ inline void __stdcall player_move_c(void* arg)
 
     if (my_player)
     {
-        if (Hooks::tick % 5 == 0)
-        {
-            Hooks::main_camera = find_main_camera();
-            if (Hooks::main_camera == nullptr) return player_move_c_original(arg);
-            Hooks::our_player = arg;
-        }
-
+        // Just do this every fucking call innit
+        Hooks::main_camera = find_main_camera();
+        if (Hooks::main_camera == nullptr) return player_move_c_original(arg);
+        Hooks::our_player = arg;
+        
         Hooks::fov_changer_module->run(nullptr);
         
         for (ModuleBase* player_move_c_module : player_move_c_modules)
@@ -309,6 +435,7 @@ inline void __stdcall player_move_c_fixed(void* arg)
     if (my_player)
     {
         Hooks::player_fixed_tick++;
+        
         for (ModuleBase* player_damageable_module : player_damageable_modules)
         {
             player_damageable_module->run(player_damageable);
@@ -421,6 +548,38 @@ inline bool __stdcall season_pass_premium(void* arg)
     }
     
     return season_pass_premium_original(arg);
+}
+
+inline void (__stdcall* debug_log_orig)(void* arg);
+inline void __stdcall debug_log(void* arg)
+{
+    Unity::System_String* str = (Unity::System_String*)arg;
+    Logger::log_info("[UNITY] " + clean_string(str->ToString()));
+    return debug_log_orig(arg);
+}
+
+inline void (__stdcall* debug_log_error_orig)(void* arg);
+inline void __stdcall debug_log_error(void* arg)
+{
+    Unity::System_String* str = (Unity::System_String*)arg;
+    Logger::log_err("[UNITY] " + clean_string(str->ToString()));
+    return debug_log_error_orig(arg);
+}
+
+inline void (__stdcall* debug_log_fmt_orig)(void* arg);
+inline void __stdcall debug_log_fmt(void* arg)
+{
+    Unity::System_String* str = (Unity::System_String*)arg;
+    Logger::log_info("[UNITY] " + clean_string(str->ToString()));
+    return debug_log_fmt_orig(arg);
+}
+
+inline void (__stdcall* debug_log_error_fmt_orig)(void* arg);
+inline void __stdcall debug_log_error_fmt(void* arg)
+{
+    Unity::System_String* str = (Unity::System_String*)arg;
+    Logger::log_err("[UNITY] " + clean_string(str->ToString()));
+    return debug_log_error_fmt_orig(arg);
 }
 
 inline void (__stdcall* add_weapon_original)(void* arg, void* string, int source, bool bool1, bool bool2, void* class1, void* struct1);
@@ -550,6 +709,7 @@ void Hooks::load()
     
     // Hook Functions Here
     hook_function(Offsets::WeaponSoundsUpdate, &weapon_sounds_call, &weapon_sounds_original);
+    hook_function(0x80BAE0, &weapon_sounds_late_call, &weapon_sounds_late_original);
     hook_function(Offsets::PlayerMoveCUpdate, &player_move_c, &player_move_c_original);
     hook_function(Offsets::InfiniteGemClaim, &infinite_gem_claim, &infinite_gem_claim_original);
     hook_function(Offsets::RapidFire, &rapid_fire, &rapid_fire_original);
@@ -566,6 +726,12 @@ void Hooks::load()
     hook_function(Offsets::GetAmmo, &ammo, &ammo_original);
     hook_function(Offsets::GetDamageMultiplier, &damage_multiplier, &damage_multiplier_original);
     hook_function(Offsets::PlayerGetImmortality, &get_immortality, &get_immortality_original);
+
+    hook_function(0x43938D0, &debug_log, &debug_log_orig); // Log 1arg
+    hook_function(0x43931B0, &debug_log_error, &debug_log_error_orig); // LogError 1arg
+
+    hook_function(0x4393800, &debug_log_fmt, &debug_log_fmt_orig); // Log 2arg
+    hook_function(0x43930E0, &debug_log_error_fmt, &debug_log_error_fmt_orig); // LogError 2arg
     
     // Init Modules Here
     rapid_fire_module = new ModuleRapidFire();
@@ -604,6 +770,7 @@ void Hooks::load()
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleAOEBullets());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleBetterDash());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleBetterScope());
+    weapon_sounds_modules.push_back((ModuleBase*) new ModuleBlinder());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleCriticals());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleDebuffer());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleDoubleJump());
@@ -613,6 +780,7 @@ void Hooks::load()
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleImmunity());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleInstantCharge());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleLegacyAnimations());
+    weapon_sounds_modules.push_back((ModuleBase*) new ModulePiercer());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleReach());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleRecoil());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleSpread());

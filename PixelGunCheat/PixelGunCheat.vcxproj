@@ -267,6 +267,7 @@
     <ClInclude Include="Cheat\Module\Impl\Combat\ModuleFullAuto.h" />
     <ClInclude Include="Cheat\Module\Impl\Combat\ModuleHeadshotMultiplier.h" />
     <ClInclude Include="Cheat\Module\Impl\Combat\ModuleInstantCharge.h" />
+    <ClInclude Include="Cheat\Module\Impl\Combat\ModulePiercer.h" />
     <ClInclude Include="Cheat\Module\Impl\Combat\ModulePolymorpher.h" />
     <ClInclude Include="Cheat\Module\Impl\Combat\ModuleRapidFire.h" />
     <ClInclude Include="Cheat\Module\Impl\Combat\ModuleRecoil.h" />

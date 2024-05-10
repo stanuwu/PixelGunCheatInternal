@@ -115,6 +115,24 @@ void* Functions::GetItemRecordDict()
     return fn(); 
 }
 
+void* Functions::GetDataListStaticInstance()
+{
+    static const auto fn = (void*(*)())(GameAssembly_ + Offsets::GetIDListParentInstance);
+    return fn();
+}
+
+void* Functions::GetDataList(void* arg, int type)
+{
+    static const auto fn = (void*(*)(void*, int))(GameAssembly_ + Offsets::GetIDList);
+    return fn(arg, type); 
+}
+
+void* Functions::GetWeaponSkinList() // <--- currently useless xd wrong version
+{
+    static const auto fn = (void*(*)())(GameAssembly_ + 0xe804e0); // 0xe82770 || 0xe82df0
+    return fn();
+}
+
 void* Functions::ItemRecordGetShopId(void* arg)
 {
     if (!arg) return nullptr;
@@ -182,6 +200,13 @@ void Functions::DeactivateGadget(void* arg, int gadget_id)
     if (!arg) return;
     static const auto fn = (void(*)(void*, int))(GameAssembly_ + Offsets::GadgetDeactivate);
     return fn(arg, gadget_id);
+}
+
+void* Functions::SystemObjectToString(void* arg)
+{
+    if (!arg) return nullptr;
+    static const auto fn = (void*(*)(void*))(GameAssembly_ + 0x3970900);
+    return fn(arg);
 }
 
 void* Functions::ProgressUpdaterGetInstance()

@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <list>
+#include <map>
 #include <xstring>
 
 #include "../Module/ModuleBase.h"
@@ -17,6 +18,7 @@ public:
     static void* create_system_string(std::string string);
     static void* create_system_string_w(std::wstring string);
     static void dump_item_records();
+    static void dump_all_records();
     static void draw_all();
     static std::string get_player_name(void* player_move_c);
     static void* get_player_transform(void* player);
@@ -28,4 +30,5 @@ public:
     static uintptr_t UnityPlayer;
     static ModuleBase* fov_changer_module;
     static std::list<ModuleBase*> on_imgui_draw_modules;
+    static std::map<std::string, int> enum_OfferItemType;
 };

@@ -744,6 +744,13 @@ void DrawClientSettingsWindow(bool is_dx_11)
     {
         Hooks::dump_item_records();
     }
+
+    ImGui::SameLine();
+    
+    if (ImGui::Button("Dump All Records (Dev)"))
+    {
+        Hooks::dump_all_records();
+    }
 }
 
 void DrawConfigsWindow(bool is_dx_11)
