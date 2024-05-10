@@ -9,6 +9,7 @@ struct ArmorData
 };
 
 static inline std::vector<ArmorData> armor_names = {
+    // SAFE START
     { 6, L"league1_hat_hitman" },
     { 6, L"league2_hat_cowboyhat" },
     { 6, L"league3_hat_afro" },
@@ -181,7 +182,7 @@ static inline std::vector<ArmorData> armor_names = {
     { 12, L"mask_smart_bullet_bazooka" },
     { 12, L"mask_stop_posting_hepi" },
     { 12, L"mask_natural" },
-    { 12, L"mask_veteran" },
+    { 12, L"mask_veteran" }, 
     { 8, L"avarar_krampus_elf" },
     { 8, L"avatar_3catspammer" },
     { 8, L"avatar_70_corruption" },
@@ -281,7 +282,7 @@ static inline std::vector<ArmorData> armor_names = {
     { 8, L"avatar_cursed_pharaoh" },
     { 8, L"avatar_cyber_citizen" },
     { 8, L"avatar_cyber_girl" },
-    { 8, L"avatar_cyber_hare" },
+    { 8, L"avatar_cyber_hare" }, 
     { 8, L"avatar_cybercop" },
     { 8, L"avatar_cyborg_boar" },
     { 8, L"avatar_cyborg_rhino" },
@@ -381,7 +382,7 @@ static inline std::vector<ArmorData> armor_names = {
     { 8, L"avatar_head_of_academy" },
     { 8, L"avatar_heavy_dive_suit" },
     { 8, L"avatar_heavy_siege_robot" },
-    { 8, L"avatar_heavy_stormtrooper" },
+    { 8, L"avatar_heavy_stormtrooper" }, 
     { 8, L"avatar_helga_the_breaker" },
     { 8, L"avatar_helicopter_pilot" },
     { 8, L"avatar_hercules" },
@@ -481,7 +482,7 @@ static inline std::vector<ArmorData> armor_names = {
     { 8, L"avatar_mystical_fairy" },
     { 8, L"avatar_nature_spirit" },
     { 8, L"avatar_navy_tactical_suit" },
-    { 8, L"avatar_neon" },
+    { 8, L"avatar_neon" }, 
     { 8, L"avatar_neptune" },
     { 8, L"avatar_netrunner" },
     { 8, L"avatar_nimble_viking" },
@@ -530,7 +531,9 @@ static inline std::vector<ArmorData> armor_names = {
     { 8, L"avatar_redskin" },
     { 8, L"avatar_rescuer" },
     { 8, L"avatar_revived" },
-    { 8, L"avatar_rgb_hero" },
+    // SAFE END
+    // { 8, L"avatar_rgb_hero" }, TODO: FIND DEV UNLOCK MODE
+    // Possibly unsafe after
     { 8, L"avatar_richman" },
     { 8, L"avatar_robb_e" },
     { 8, L"avatar_robo_elf" },
@@ -654,5 +657,5 @@ static inline std::vector<ArmorData> armor_names = {
     { 8, L"avatar_zombie_clown" },
     { 8, L"avatar_zombie_dude" },
     { 8, L"avatar_zombified_alien" },
-    { 8, L"avatar_еmperor_son" },
+    { 8, L"avatar_emperor_son" }, 
 };
