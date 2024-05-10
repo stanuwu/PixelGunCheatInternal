@@ -347,6 +347,8 @@ inline void __stdcall weapon_sounds_call(void* arg)
         ((ModuleBase*)add_currency_module)->run(arg);
     }
 
+    // void* weapon_skin_settings = Functions::GetWeaponSkinSettings(Hooks::create_system_string("Weapon977_nothern_lights_black_hole"));
+
     /*
     auto dict = (Unity::il2cppList<void*>*)Functions::GetWeaponSkinList();
     for (int i = 0; i < dict->m_pListArray->m_uMaxLength; ++i)

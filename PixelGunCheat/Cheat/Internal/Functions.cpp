@@ -127,10 +127,24 @@ void* Functions::GetDataList(void* arg, int type)
     return fn(arg, type); 
 }
 
-void* Functions::GetWeaponSkinList() // <--- currently useless xd wrong version
+void* Functions::GetWeaponSkinSettings(void* id)
 {
-    static const auto fn = (void*(*)())(GameAssembly_ + 0xe804e0); // 0xe82770 || 0xe82df0
-    return fn();
+    static const auto fn = (void*(*)(void*))(GameAssembly_ + 0x8ff5b0);
+    return fn(id);
+}
+
+/*
+void Functions::PurchaseSkin(void* thing)
+{
+    static const auto fn = (void(*)(void*))(GameAssembly_ + 0x8ff420);
+    return fn(thing);
+}
+*/
+
+bool Functions::SetWeaponForPurchase(void* settings)
+{
+    static const auto fn = (bool(*)(void*))(GameAssembly_ + 0x911550);
+    return fn(settings);
 }
 
 void* Functions::ItemRecordGetShopId(void* arg)
