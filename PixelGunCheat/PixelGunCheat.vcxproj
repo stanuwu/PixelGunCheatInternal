@@ -252,6 +252,7 @@
     <ClInclude Include="Cheat\Data\Gadgets.h" />
     <ClInclude Include="Cheat\Data\Pets.h" />
     <ClInclude Include="Cheat\Data\Weapons.h" />
+    <ClInclude Include="Cheat\Data\WeaponSkins.h" />
     <ClInclude Include="Cheat\Gui\imgui_hooker.h" />
     <ClInclude Include="Cheat\Hooks\Hooks.h" />
     <ClInclude Include="Cheat\Internal\Functions.h" />
@@ -304,6 +305,7 @@
     <ClInclude Include="Cheat\Module\Impl\Visual\ModuleESP.h" />
     <ClInclude Include="Cheat\Module\Impl\Visual\ModuleFOVChanger.h" />
     <ClInclude Include="Cheat\Module\Impl\Visual\ModuleLegacyAnimations.h" />
+    <ClInclude Include="Cheat\Module\Impl\Visual\ModuleSkinChanger.h" />
     <ClInclude Include="Cheat\Module\Impl\Visual\ModuleXRay.h" />
     <ClInclude Include="Cheat\Module\ModuleBase.h" />
     <ClCompile Include="kiero\kiero.h" />

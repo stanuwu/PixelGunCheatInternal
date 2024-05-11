@@ -57,6 +57,7 @@
 #include "../Module/Impl/Visual/ModuleESP.h"
 #include "../Module/Impl/Visual/ModuleFOVChanger.h"
 #include "../Module/Impl/Visual/ModuleLegacyAnimations.h"
+#include "../Module/Impl/Visual/ModuleSkinChanger.h"
 #include "../Module/Impl/Visual/ModuleXRay.h"
 #include "../Offsets/Offsets.h"
 
@@ -79,6 +80,7 @@ ModuleUnlockGadgets* unlock_gadgets_module;
 ModuleInfiniteAmmo* infinite_ammo_module;
 ModuleDamageMultiplier* damage_multiplier_module;
 ModuleAntiImmortal* anti_immortal_module;
+ModuleSkinChanger* skin_changer_module;
 ModuleImmortality* immortality_module;
 ModuleSpoofModules* spoof_modules_module;
 ModuleAddArmor* add_armor_module;
@@ -330,10 +332,18 @@ Unity::CCamera* find_main_camera()
     return Unity::Camera::GetMain();
 }
 
+bool has_sent_warn = false;
+
 // Hook Functions
 inline void(__stdcall* weapon_sounds_original)(void* arg);
 inline void __stdcall weapon_sounds_call(void* arg)
 {
+    if (skin_changer_module != nullptr && !has_sent_warn && ((ModuleBase*)skin_changer_module)->is_enabled())
+    {
+        Logger::log_warn("[!!!] Skin changer enabled, please go inside weapon loadout and click on the weapon you wanted the skin for, or go into a match and switch to the weapon!");
+        has_sent_warn = true;
+    }
+    
     if (unlock_weapons_module != nullptr)
     {
         ((ModuleBase*)unlock_weapons_module)->run(arg);
@@ -745,6 +755,47 @@ inline int __stdcall spoof_module_level(void* arg)
     return spoof_module_level_orig(arg);
 }
 
+std::vector<std::wstring> split(std::wstring s, std::wstring delimiter) {
+    size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+    std::wstring token;
+    std::vector<std::wstring> res;
+
+    while ((pos_end = s.find(delimiter, pos_start)) != std::wstring::npos) {
+        token = s.substr (pos_start, pos_end - pos_start);
+        pos_start = pos_end + delim_len;
+        res.push_back (token);
+    }
+
+    res.push_back (s.substr(pos_start));
+    return res;
+}
+
+inline void* (__stdcall* weapon_set_orig)(void* arg);
+inline void* __stdcall weapon_set(void* arg)
+{
+    if (!((ModuleBase*)skin_changer_module)->is_enabled())
+    {
+        has_sent_warn = false;
+        return weapon_set_orig(arg);
+    }
+    
+    std::wstring lookup = skin_changer_module->current();
+    std::string name = clean_string(((Unity::System_String*) arg)->ToString());
+    std::wstring w_name(name.begin(), name.end());
+    void* mitm_catch = weapon_set_orig(arg);
+    std::wstring target_weapon = split(lookup, L"_")[0];
+    
+    if (mitm_catch != nullptr && w_name.find(target_weapon) != std::string::npos)
+    {
+        uint64_t skin = (uint64_t) Functions::GetWeaponSkinSettings(Hooks::create_system_string_w(lookup));
+        *(uint64_t*)((uint64_t)mitm_catch + 0x78) = skin;
+        Logger::log_warn("[!!!] Successfully switched weapon, disabling Skin Changer!");
+        ((ModuleBase*)skin_changer_module)->toggle();
+    }
+    
+    return mitm_catch;
+}
+ 
 // Static
 void hook_function(uint64_t offset, LPVOID detour, void* original)
 {
@@ -794,6 +845,8 @@ void Hooks::load()
     hook_function(Offsets::PlayerGetImmortality, &get_immortality, &get_immortality_original);
 
     hook_function(Offsets::SpoofModuleLevel, &spoof_module_level, &spoof_module_level_orig);
+
+    hook_function(0x8ff7c0, &weapon_set, &weapon_set_orig);
     
     // LOG HOOKS
     hook_function(0x43938D0, &debug_log, &debug_log_orig); // Log 1arg
@@ -822,6 +875,7 @@ void Hooks::load()
     unlock_weapons_module = new ModuleUnlockWeapons();
     unlock_gadgets_module = new ModuleUnlockGadgets();
     spoof_modules_module = new ModuleSpoofModules();
+    skin_changer_module = new ModuleSkinChanger();
     add_armor_module = new ModuleAddArmor();
     add_pets_module = new ModuleAddPets();
     add_currency_module = new ModuleAddCurrency();

@@ -16,6 +16,7 @@ public:
     WPARAM key = 0x0;
     std::string name;
     BKCModule* module;
+    bool last_enable;
     
     void run(void* arg)
     {

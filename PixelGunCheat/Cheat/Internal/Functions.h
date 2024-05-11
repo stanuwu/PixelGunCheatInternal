@@ -79,7 +79,6 @@ public:
     static void* GetDataListStaticInstance();
     static void* GetDataList(void* arg, int type);
     static void* GetWeaponSkinSettings(void* id);
-    static bool SetWeaponForPurchase(void* settings);
     static void* ItemRecordGetShopId(void* arg);
     static void GiveGadget(void* id, int up);
     static void GiveWear(void* id);
