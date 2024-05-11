@@ -249,6 +249,7 @@
   <ItemGroup>
     <ClInclude Include="Cheat\Data\Armor.h" />
     <ClInclude Include="Cheat\Data\Currency.h" />
+    <ClInclude Include="Cheat\Data\Gadgets.h" />
     <ClInclude Include="Cheat\Data\Pets.h" />
     <ClInclude Include="Cheat\Data\Weapons.h" />
     <ClInclude Include="Cheat\Gui\imgui_hooker.h" />
@@ -280,6 +281,7 @@
     <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleRewardsMultiplier.h" />
     <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleSeasonPass.h" />
     <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleTest.h" />
+    <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleUnlockGadgets.h" />
     <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleUnlockWeapons.h" />
     <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleWeaponSpoofer.h" />
     <ClInclude Include="Cheat\Module\Impl\General\ModuleScoreMultiplier.h" />

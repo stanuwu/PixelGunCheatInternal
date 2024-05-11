@@ -40,6 +40,7 @@ public:
     static inline uint64_t GiveWear = 0x2066cd0;
     static inline uint64_t GiveWeapon = 0x2064c40;
     static inline uint64_t GivePets = 0x2063140;
+    static inline uint64_t GiveGadget = 0x1eecb80;
     static inline uint64_t AddGems = 0x2059040;
     static inline uint64_t AddCoins = 0x2058a60;
     static inline uint64_t AddSomeCurrency = 0x2055e80;

@@ -81,6 +81,7 @@ public:
     static void* GetWeaponSkinSettings(void* id);
     static bool SetWeaponForPurchase(void* settings);
     static void* ItemRecordGetShopId(void* arg);
+    static void GiveGadget(void* id, int up);
     static void GiveWear(void* id);
     static void GiveWeapon(void* id, bool event, bool auto_upgrade);
     static void GivePets(void* id, int count);

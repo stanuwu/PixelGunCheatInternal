@@ -36,6 +36,7 @@
 #include "../Module/Impl/Exploit/ModuleRewardsMultiplier.h"
 #include "../Module/Impl/Exploit/ModuleSeasonPass.h"
 #include "../Module/Impl/Exploit/ModuleTest.h"
+#include "../Module/Impl/Exploit/ModuleUnlockGadgets.h"
 #include "../Module/Impl/Exploit/ModuleUnlockWeapons.h"
 #include "../Module/Impl/Exploit/ModuleWeaponSpoofer.h"
 #include "../Module/Impl/General/ModuleScoreMultiplier.h"
@@ -73,6 +74,7 @@ ModuleAimBot* aim_bot_module;
 ModuleSeasonPass* season_pass_module;
 ModuleBase* Hooks::fov_changer_module;
 ModuleUnlockWeapons* unlock_weapons_module;
+ModuleUnlockGadgets* unlock_gadgets_module;
 ModuleInfiniteAmmo* infinite_ammo_module;
 ModuleDamageMultiplier* damage_multiplier_module;
 ModuleAntiImmortal* anti_immortal_module;
@@ -334,6 +336,10 @@ inline void __stdcall weapon_sounds_call(void* arg)
     {
         ((ModuleBase*)unlock_weapons_module)->run(arg);
     }
+    if (unlock_gadgets_module != nullptr)
+    {
+        ((ModuleBase*)unlock_gadgets_module)->run(arg);
+    }
     if (add_armor_module != nullptr)
     {
         ((ModuleBase*)add_armor_module)->run(arg);
@@ -580,7 +586,6 @@ inline void __stdcall debug_log_error(void* arg)
     return debug_log_error_orig(arg);
 }
 
-
 inline void (__stdcall* debug_log_fmt_orig)(void* arg);
 inline void __stdcall debug_log_fmt(void* arg)
 {
@@ -607,6 +612,34 @@ inline void __stdcall debug_log_error_fmt(void* arg)
     std::string cpp_str = clean_string(str->ToString());
     Logger::log_err("[UNITY] " + cpp_str);
     return debug_log_error_fmt_orig(arg);
+}
+
+inline void (__stdcall* debug_log_fmt_orig2)(void* arg);
+inline void __stdcall debug_log_fmt2(void* arg)
+{
+    Unity::System_String* str = (Unity::System_String*)arg;
+    std::string cpp_str = clean_string(str->ToString());
+    if (cpp_str.find("eventstore") != std::string::npos) return debug_log_fmt_orig2(arg);
+    Logger::log_info("[UNITY] " + cpp_str);
+    return debug_log_fmt_orig2(arg);
+}
+
+inline void (__stdcall* debug_log_warn_fmt_orig2)(void* arg);
+inline void __stdcall debug_log_warn_fmt2(void* arg)
+{
+    Unity::System_String* str = (Unity::System_String*)arg;
+    std::string cpp_str = clean_string(str->ToString());
+    Logger::log_warn("[UNITY] " + cpp_str);
+    return debug_log_warn_fmt_orig2(arg);
+}
+
+inline void (__stdcall* debug_log_error_fmt_orig2)(void* arg);
+inline void __stdcall debug_log_error_fmt2(void* arg)
+{
+    Unity::System_String* str = (Unity::System_String*)arg;
+    std::string cpp_str = clean_string(str->ToString());
+    Logger::log_err("[UNITY] " + cpp_str);
+    return debug_log_error_fmt_orig2(arg);
 }
 
 inline void (__stdcall* add_weapon_original)(void* arg, void* string, int source, bool bool1, bool bool2, void* class1, void* struct1);
@@ -758,6 +791,10 @@ void Hooks::load()
     hook_function(0x4393800, &debug_log_fmt, &debug_log_fmt_orig); // Log 2arg
     hook_function(0x4393670, &debug_log_warn_fmt, &debug_log_warn_fmt_orig); // LogWarning 2arg
     hook_function(0x43930E0, &debug_log_error_fmt, &debug_log_error_fmt_orig); // LogError 2arg
+
+    hook_function(0x43933F0, &debug_log_fmt2, &debug_log_fmt_orig2); // LogFormat 2arg
+    hook_function(0x43934C0, &debug_log_warn_fmt2, &debug_log_warn_fmt_orig2); // LogWarningFormat 2arg
+    hook_function(0x4393010, &debug_log_error_fmt2, &debug_log_error_fmt_orig2); // LogErrorFormat 2arg
     
     // Init Modules Here
     rapid_fire_module = new ModuleRapidFire();
@@ -771,6 +808,7 @@ void Hooks::load()
     immortality_module = new ModuleImmortality();
     
     unlock_weapons_module = new ModuleUnlockWeapons();
+    unlock_gadgets_module = new ModuleUnlockGadgets();
     add_armor_module = new ModuleAddArmor();
     add_pets_module = new ModuleAddPets();
     add_currency_module = new ModuleAddCurrency();

@@ -148,6 +148,12 @@ void* Functions::ItemRecordGetShopId(void* arg)
     return fn(arg); 
 }
 
+void Functions::GiveGadget(void* id, int up)
+{
+    static const auto fn = (void(*)(void*, int))(GameAssembly_ + Offsets::GiveGadget);
+    return fn(id, up); 
+}
+
 void Functions::GiveWear(void* id)
 {
     static const auto fn = (void(*)(void*))(GameAssembly_ + Offsets::GiveWear);
