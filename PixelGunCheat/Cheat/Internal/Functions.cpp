@@ -141,12 +141,6 @@ void Functions::PurchaseSkin(void* thing)
 }
 */
 
-bool Functions::SetWeaponForPurchase(void* settings)
-{
-    static const auto fn = (bool(*)(void*))(GameAssembly_ + 0x911550);
-    return fn(settings);
-}
-
 void* Functions::ItemRecordGetShopId(void* arg)
 {
     if (!arg) return nullptr;

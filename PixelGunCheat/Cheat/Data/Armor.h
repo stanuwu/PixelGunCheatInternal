@@ -9,7 +9,7 @@ struct ArmorData
 };
 
 static inline std::vector<ArmorData> armor_names = {
-    // SAFE START
+    // Hats
 { 6, L"league1_hat_hitman" },
 { 6, L"league2_hat_cowboyhat" },
 { 6, L"league3_hat_afro" },
@@ -41,6 +41,7 @@ static inline std::vector<ArmorData> armor_names = {
 { 6, L"hat_magic_gift" },
 { 6, L"hat_space_delivery" },
 { 6, L"hat_veteran" },
+    // Armor
 { 7, L"Armor_Adamant_Const_2" },
 { 7, L"Armor_Almaz_3" },
 { 7, L"Armor_Army_1" },
@@ -71,6 +72,7 @@ static inline std::vector<ArmorData> armor_names = {
 { 7, L"armor_magic_gift" },
 { 7, L"armor_natural" },
 { 7, L"armor_veteran" },
+    // Capes
 { 9, L"cape_Custom" },
 { 9, L"cape_EliteCrafter" },
 { 9, L"StormTrooperCape_Up1" },
@@ -104,6 +106,7 @@ static inline std::vector<ArmorData> armor_names = {
 { 9, L"cape_veteran" },
 { 9, L"cape_magic_gift" },
 { 9, L"cape_pg_hero_cape" },
+    // Boots
 { 10, L"boots_gray" },
 { 10, L"StormTrooperBoots_Up1" },
 { 10, L"StormTrooperBoots_Up2" },
@@ -143,6 +146,7 @@ static inline std::vector<ArmorData> armor_names = {
 { 10, L"boots_natural" },
 { 10, L"boots_space_delivery" },
 { 10, L"boots_veteran" },
+    // Masks
 { 12, L"mask_trooper" },
 { 12, L"mask_trooper_up1" },
 { 12, L"mask_trooper_up2" },
@@ -183,6 +187,7 @@ static inline std::vector<ArmorData> armor_names = {
 { 12, L"mask_stop_posting_hepi" },
 { 12, L"mask_natural" },
 { 12, L"mask_veteran" },
+    // Avatars
 { 8, L"avarar_krampus_elf" },
 { 8, L"avatar_3catspammer" },
 { 8, L"avatar_70_corruption" },
@@ -656,6 +661,7 @@ static inline std::vector<ArmorData> armor_names = {
 { 8, L"avatar_zombie_dude" },
 { 8, L"avatar_zombified_alien" },
 { 8, L"avatar_еmperor_son" },
+    // Royale Unlockables
 { 8, L"aaaaa_trail" },
 { 8, L"air_trail" },
 { 8, L"ancient_ice_trail" },
@@ -1060,6 +1066,7 @@ static inline std::vector<ArmorData> armor_names = {
 { 8, L"wooden_glider" },
 { 8, L"zeus_wrath_trail" },
 { 8, L"сurvature_of_space_trail" },
+    // Shovels
 { 8, L"additional_hand_shovel" },
 { 8, L"adventure_shovel" },
 { 8, L"aliens_shredder_shovel" },
@@ -1162,5 +1169,5 @@ static inline std::vector<ArmorData> armor_names = {
 { 8, L"tomahawk_shovel" },
 { 8, L"ultimatum_shovel" },
 { 8, L"wand_of_summoning_shovel" },
-{ 8, L"worker_shovel" },
+{ 8, L"worker_shovel" }
 };

@@ -556,31 +556,56 @@ inline void (__stdcall* debug_log_orig)(void* arg);
 inline void __stdcall debug_log(void* arg)
 {
     Unity::System_String* str = (Unity::System_String*)arg;
-    Logger::log_info("[UNITY] " + clean_string(str->ToString()));
+    std::string cpp_str = clean_string(str->ToString());
+    if (cpp_str.find("eventstore") != std::string::npos) return debug_log_orig(arg);
+    Logger::log_info("[UNITY] " + cpp_str);
     return debug_log_orig(arg);
+}
+
+inline void (__stdcall* debug_log_warn_orig)(void* arg);
+inline void __stdcall debug_log_warn(void* arg)
+{
+    Unity::System_String* str = (Unity::System_String*)arg;
+    std::string cpp_str = clean_string(str->ToString());
+    Logger::log_warn("[UNITY] " + cpp_str);
+    return debug_log_warn_orig(arg);
 }
 
 inline void (__stdcall* debug_log_error_orig)(void* arg);
 inline void __stdcall debug_log_error(void* arg)
 {
     Unity::System_String* str = (Unity::System_String*)arg;
-    Logger::log_err("[UNITY] " + clean_string(str->ToString()));
+    std::string cpp_str = clean_string(str->ToString());
+    Logger::log_err("[UNITY] " + cpp_str);
     return debug_log_error_orig(arg);
 }
+
 
 inline void (__stdcall* debug_log_fmt_orig)(void* arg);
 inline void __stdcall debug_log_fmt(void* arg)
 {
     Unity::System_String* str = (Unity::System_String*)arg;
-    Logger::log_info("[UNITY] " + clean_string(str->ToString()));
+    std::string cpp_str = clean_string(str->ToString());
+    if (cpp_str.find("eventstore") != std::string::npos) return debug_log_fmt_orig(arg);
+    Logger::log_info("[UNITY] " + cpp_str);
     return debug_log_fmt_orig(arg);
+}
+
+inline void (__stdcall* debug_log_warn_fmt_orig)(void* arg);
+inline void __stdcall debug_log_warn_fmt(void* arg)
+{
+    Unity::System_String* str = (Unity::System_String*)arg;
+    std::string cpp_str = clean_string(str->ToString());
+    Logger::log_warn("[UNITY] " + cpp_str);
+    return debug_log_warn_fmt_orig(arg);
 }
 
 inline void (__stdcall* debug_log_error_fmt_orig)(void* arg);
 inline void __stdcall debug_log_error_fmt(void* arg)
 {
     Unity::System_String* str = (Unity::System_String*)arg;
-    Logger::log_err("[UNITY] " + clean_string(str->ToString()));
+    std::string cpp_str = clean_string(str->ToString());
+    Logger::log_err("[UNITY] " + cpp_str);
     return debug_log_error_fmt_orig(arg);
 }
 
@@ -645,6 +670,7 @@ inline void __stdcall add_weapon(void* arg, void* string, int source, bool bool1
             return;
         }
     }
+    
     add_weapon_original(arg, string, source, bool1, bool2, class1, struct1);
 }
 
@@ -652,7 +678,6 @@ inline int(__stdcall* ammo_in_clip_original)(void* arg);
 inline int __stdcall ammo_in_clip(void* arg)
 {
     if (((ModuleBase*)infinite_ammo_module)->is_enabled()) return 9999;
-
     return ammo_in_clip_original(arg);
 }
 
@@ -660,7 +685,6 @@ inline int(__stdcall* ammo_original)(void* arg);
 inline int __stdcall ammo(void* arg)
 {
     if (((ModuleBase*)infinite_ammo_module)->is_enabled()) return 9999;
-
     return ammo_original(arg);
 }
 
@@ -668,7 +692,6 @@ inline float(__stdcall* damage_multiplier_original)(void* arg);
 inline float __stdcall damage_multiplier(void* arg)
 {   
     if (((ModuleBase*)damage_multiplier_module)->is_enabled()) return damage_multiplier_module->amount();
-
     return damage_multiplier_original(arg);
 }
 
@@ -677,7 +700,6 @@ inline bool __stdcall get_immortality(void* arg)
 {
     if (((ModuleBase*)immortality_module)->is_enabled() && arg == Hooks::our_player) return true;
     if (((ModuleBase*)anti_immortal_module)->is_enabled() && arg != Hooks::our_player) return false;
-
     return get_immortality_original(arg);
 }
 
@@ -711,7 +733,7 @@ void Hooks::load()
     
     // Hook Functions Here
     hook_function(Offsets::WeaponSoundsUpdate, &weapon_sounds_call, &weapon_sounds_original);
-    hook_function(0x80BAE0, &weapon_sounds_late_call, &weapon_sounds_late_original);
+    hook_function(Offsets::WeaponSoundsLateUpdate, &weapon_sounds_late_call, &weapon_sounds_late_original);
     hook_function(Offsets::PlayerMoveCUpdate, &player_move_c, &player_move_c_original);
     hook_function(Offsets::InfiniteGemClaim, &infinite_gem_claim, &infinite_gem_claim_original);
     hook_function(Offsets::RapidFire, &rapid_fire, &rapid_fire_original);
@@ -730,9 +752,11 @@ void Hooks::load()
     hook_function(Offsets::PlayerGetImmortality, &get_immortality, &get_immortality_original);
 
     hook_function(0x43938D0, &debug_log, &debug_log_orig); // Log 1arg
+    hook_function(0x4393740, &debug_log_warn, &debug_log_warn_orig); // LogWarning 1arg
     hook_function(0x43931B0, &debug_log_error, &debug_log_error_orig); // LogError 1arg
 
     hook_function(0x4393800, &debug_log_fmt, &debug_log_fmt_orig); // Log 2arg
+    hook_function(0x4393670, &debug_log_warn_fmt, &debug_log_warn_fmt_orig); // LogWarning 2arg
     hook_function(0x43930E0, &debug_log_error_fmt, &debug_log_error_fmt_orig); // LogError 2arg
     
     // Init Modules Here
@@ -750,7 +774,6 @@ void Hooks::load()
     add_armor_module = new ModuleAddArmor();
     add_pets_module = new ModuleAddPets();
     add_currency_module = new ModuleAddCurrency();
-    // weapon_spoofer_module = new ModuleWeaponSpoofer();
 
     esp_module = new ModuleESP();
     player_move_c_modules.push_back((ModuleBase*) esp_module);
@@ -760,11 +783,6 @@ void Hooks::load()
     player_move_c_modules.push_back((ModuleBase*) new ModuleGadgetActivator());
     player_move_c_modules.push_back((ModuleBase*) new ModuleInvisibility());
     player_move_c_modules.push_back((ModuleBase*) new ModuleTest());
-    
-    /*
-     does fucking nothing with these vals xddddd
-    player_move_c_modules.push_back((ModuleBase*) new ModuleExtraDisplay());
-    */
 
     on_imgui_draw_modules.push_back((ModuleBase*) new ModuleArrayList());
     
