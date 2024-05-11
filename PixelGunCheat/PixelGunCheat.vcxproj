@@ -285,6 +285,7 @@
     <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleUnlockWeapons.h" />
     <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleWeaponSpoofer.h" />
     <ClInclude Include="Cheat\Module\Impl\General\ModuleScoreMultiplier.h" />
+    <ClInclude Include="Cheat\Module\Impl\General\ModuleSpoofModules.h" />
     <ClInclude Include="Cheat\Module\Impl\Movement\ModuleBetterDash.h" />
     <ClInclude Include="Cheat\Module\Impl\Movement\ModuleDoubleJump.h" />
     <ClInclude Include="Cheat\Module\Impl\Movement\ModuleFly.h" />

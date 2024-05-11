@@ -40,6 +40,7 @@
 #include "../Module/Impl/Exploit/ModuleUnlockWeapons.h"
 #include "../Module/Impl/Exploit/ModuleWeaponSpoofer.h"
 #include "../Module/Impl/General/ModuleScoreMultiplier.h"
+#include "../Module/Impl/General/ModuleSpoofModules.h"
 #include "../Module/Impl/Movement/ModuleBetterDash.h"
 #include "../Module/Impl/Movement/ModuleDoubleJump.h"
 #include "../Module/Impl/Movement/ModuleFly.h"
@@ -79,6 +80,7 @@ ModuleInfiniteAmmo* infinite_ammo_module;
 ModuleDamageMultiplier* damage_multiplier_module;
 ModuleAntiImmortal* anti_immortal_module;
 ModuleImmortality* immortality_module;
+ModuleSpoofModules* spoof_modules_module;
 ModuleAddArmor* add_armor_module;
 ModuleAddPets* add_pets_module;
 ModuleAddCurrency* add_currency_module;
@@ -707,33 +709,40 @@ inline void __stdcall add_weapon(void* arg, void* string, int source, bool bool1
     add_weapon_original(arg, string, source, bool1, bool2, class1, struct1);
 }
 
-inline int(__stdcall* ammo_in_clip_original)(void* arg);
+inline int (__stdcall* ammo_in_clip_original)(void* arg);
 inline int __stdcall ammo_in_clip(void* arg)
 {
     if (((ModuleBase*)infinite_ammo_module)->is_enabled()) return 9999;
     return ammo_in_clip_original(arg);
 }
 
-inline int(__stdcall* ammo_original)(void* arg);
+inline int (__stdcall* ammo_original)(void* arg);
 inline int __stdcall ammo(void* arg)
 {
     if (((ModuleBase*)infinite_ammo_module)->is_enabled()) return 9999;
     return ammo_original(arg);
 }
 
-inline float(__stdcall* damage_multiplier_original)(void* arg);
+inline float (__stdcall* damage_multiplier_original)(void* arg);
 inline float __stdcall damage_multiplier(void* arg)
 {   
     if (((ModuleBase*)damage_multiplier_module)->is_enabled()) return damage_multiplier_module->amount();
     return damage_multiplier_original(arg);
 }
 
-inline bool(__stdcall* get_immortality_original)(void* arg);
+inline bool (__stdcall* get_immortality_original)(void* arg);
 inline bool __stdcall get_immortality(void* arg)
 {
     if (((ModuleBase*)immortality_module)->is_enabled() && arg == Hooks::our_player) return true;
     if (((ModuleBase*)anti_immortal_module)->is_enabled() && arg != Hooks::our_player) return false;
     return get_immortality_original(arg);
+}
+
+inline int (__stdcall* spoof_module_level_orig)(void* arg);
+inline int __stdcall spoof_module_level(void* arg)
+{
+    if (((ModuleBase*)spoof_modules_module)->is_enabled()) return spoof_modules_module->level();
+    return spoof_module_level_orig(arg);
 }
 
 // Static
@@ -784,6 +793,9 @@ void Hooks::load()
     hook_function(Offsets::GetDamageMultiplier, &damage_multiplier, &damage_multiplier_original);
     hook_function(Offsets::PlayerGetImmortality, &get_immortality, &get_immortality_original);
 
+    hook_function(0x1593980, &spoof_module_level, &spoof_module_level_orig);
+    
+    // LOG HOOKS
     hook_function(0x43938D0, &debug_log, &debug_log_orig); // Log 1arg
     hook_function(0x4393740, &debug_log_warn, &debug_log_warn_orig); // LogWarning 1arg
     hook_function(0x43931B0, &debug_log_error, &debug_log_error_orig); // LogError 1arg
@@ -809,6 +821,7 @@ void Hooks::load()
     
     unlock_weapons_module = new ModuleUnlockWeapons();
     unlock_gadgets_module = new ModuleUnlockGadgets();
+    spoof_modules_module = new ModuleSpoofModules();
     add_armor_module = new ModuleAddArmor();
     add_pets_module = new ModuleAddPets();
     add_currency_module = new ModuleAddCurrency();

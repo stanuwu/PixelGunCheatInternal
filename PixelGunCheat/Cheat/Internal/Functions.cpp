@@ -229,6 +229,13 @@ void* Functions::ProgressUpdaterGetInstance()
     return fn(); 
 }
 
+void Functions::AddModule(void* arg, int count, void* id)
+{
+    if (!arg) return;
+    static const auto fn = (void(*)(void*, int, void*))(GameAssembly_ + 0xa297f0);
+    return fn(arg, count, id);
+}
+
 void Functions::DoSomething(void* arg, int eff_id, float test)
 {
     if (!arg) return;
