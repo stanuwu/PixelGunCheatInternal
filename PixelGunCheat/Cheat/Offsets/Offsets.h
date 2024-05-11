@@ -52,6 +52,7 @@ public:
     static inline uint64_t GetIDList = 0x14a0ef0;
     static inline uint64_t GadgetActivate = 0x1b7aff0;
     static inline uint64_t GadgetDeactivate = 0x1b96e10;
+    static inline uint64_t SpoofModuleLevel = 0x1593980;
     
     // Fields
     static inline uint64_t scopeSpeed = 0x100;

@@ -793,7 +793,7 @@ void Hooks::load()
     hook_function(Offsets::GetDamageMultiplier, &damage_multiplier, &damage_multiplier_original);
     hook_function(Offsets::PlayerGetImmortality, &get_immortality, &get_immortality_original);
 
-    hook_function(0x1593980, &spoof_module_level, &spoof_module_level_orig);
+    hook_function(Offsets::SpoofModuleLevel, &spoof_module_level, &spoof_module_level_orig);
     
     // LOG HOOKS
     hook_function(0x43938D0, &debug_log, &debug_log_orig); // Log 1arg
