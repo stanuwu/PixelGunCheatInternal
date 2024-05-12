@@ -53,6 +53,11 @@ public:
     static inline uint64_t GadgetActivate = 0x1b7aff0;
     static inline uint64_t GadgetDeactivate = 0x1b96e10;
     static inline uint64_t SpoofModuleLevel = 0x1593980;
+    static inline uint64_t ModulePerkDuration = 0x1f19a80;
+    static inline uint64_t ThrowGadgetDamage = 0x1f19670;
+    static inline uint64_t GadgetDuration = 0x1f18d50;
+    static inline uint64_t GadgetCooldown = 0x1f19730;
+    static inline uint64_t TeamKill = 0x1afab30;
     
     // Fields
     static inline uint64_t scopeSpeed = 0x100;

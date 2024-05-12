@@ -148,10 +148,10 @@ void* Functions::ItemRecordGetShopId(void* arg)
     return fn(arg); 
 }
 
-void Functions::GiveGadget(void* id, int up)
+void Functions::GiveGadget(void* id, int level)
 {
     static const auto fn = (void(*)(void*, int))(GameAssembly_ + Offsets::GiveGadget);
-    return fn(id, up); 
+    return fn(id, level); 
 }
 
 void Functions::GiveWear(void* id)
@@ -234,6 +234,13 @@ void Functions::AddModule(void* arg, int count, void* id)
     if (!arg) return;
     static const auto fn = (void(*)(void*, int, void*))(GameAssembly_ + 0xa297f0);
     return fn(arg, count, id);
+}
+
+void Functions::SendChat(void* arg, void* msg)
+{
+    if (!arg) return;
+    static const auto fn = (void(*)(void*, void*, bool, void*))(GameAssembly_ + 0x1b1bd50);
+    return fn(arg, msg, false, Hooks::create_system_string(""));
 }
 
 void Functions::DoSomething(void* arg, int eff_id, float test)

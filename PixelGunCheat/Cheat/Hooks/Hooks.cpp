@@ -1,6 +1,7 @@
 ﻿#include "Hooks.h"
 
 #include <codecvt>
+#include <execution>
 #include <fstream>
 #include <list>
 #include <set>
@@ -28,6 +29,7 @@
 #include "../Module/Impl/Combat/ModuleRapidFire.h"
 #include "../Module/Impl/Combat/ModuleRecoil.h"
 #include "../Module/Impl/Combat/ModuleSpread.h"
+#include "../Module/Impl/Combat/ModuleTeamKill.h"
 #include "../Module/Impl/Exploit/ModuleAddArmor.h"
 #include "../Module/Impl/Exploit/ModuleAddCurrency.h"
 #include "../Module/Impl/Exploit/ModuleAddPets.h"
@@ -47,6 +49,7 @@
 #include "../Module/Impl/Movement/ModuleSpeed.h"
 #include "../Module/Impl/Player/ModuleAntiHeadshot.h"
 #include "../Module/Impl/Player/ModuleGadgetActivator.h"
+#include "../Module/Impl/Player/ModuleGadgetModifier.h"
 #include "../Module/Impl/Player/ModuleImmortality.h"
 #include "../Module/Impl/Player/ModuleImmunity.h"
 #include "../Module/Impl/Player/ModuleInfiniteAmmo.h"
@@ -80,8 +83,10 @@ ModuleUnlockGadgets* unlock_gadgets_module;
 ModuleInfiniteAmmo* infinite_ammo_module;
 ModuleDamageMultiplier* damage_multiplier_module;
 ModuleAntiImmortal* anti_immortal_module;
+ModuleTeamKill* team_kill_module;
 ModuleSkinChanger* skin_changer_module;
 ModuleImmortality* immortality_module;
+ModuleGadgetModifier* gadget_modifier_module;
 ModuleSpoofModules* spoof_modules_module;
 ModuleAddArmor* add_armor_module;
 ModuleAddPets* add_pets_module;
@@ -196,6 +201,11 @@ void* Hooks::create_system_string_w(std::wstring string)
 std::string clean_string(std::string string)
 {
     std::vector<char> bytes(string.begin(), string.end());
+    if (bytes.size() > 65536 && std::reduce(string.begin(), string.begin() + 16) == 0)
+    {
+        Logger::log_warn("clean_string caught long string with 0 total byte size, returning empty string to avoid lag!");
+        return "";
+    }
     bytes.push_back('\0');
     std::list<char> chars;
     for (byte byte : bytes)
@@ -408,6 +418,19 @@ inline void __stdcall weapon_sounds_late_call(void* arg)
     return weapon_sounds_late_original(arg);
 }
 
+std::string random_string( size_t length )
+{
+    auto randchar = []() -> char
+    {
+        const char charset[] = { "0123456789" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "abcdefghijklmnopqrstuvwxyz" };
+        const size_t max_index = (sizeof(charset) - 1);
+        return charset[ rand() % max_index ];
+    };
+    std::string str(length,0);
+    std::generate_n( str.begin(), length, randchar );
+    return str;
+}
+
 inline void(__stdcall* player_move_c_original)(void* arg);
 inline void __stdcall player_move_c(void* arg)
 {
@@ -421,6 +444,8 @@ inline void __stdcall player_move_c(void* arg)
         Hooks::our_player = arg;
         
         Hooks::fov_changer_module->run(nullptr);
+
+        Functions::SendChat(arg, Hooks::create_system_string(".gg/security-research [ " + random_string(8) + " ] "));
         
         for (ModuleBase* player_move_c_module : player_move_c_modules)
         {
@@ -577,7 +602,7 @@ inline void __stdcall debug_log(void* arg)
     std::string cpp_str = clean_string(str->ToString());
     if (cpp_str.find("eventstore") != std::string::npos) return debug_log_orig(arg);
     Logger::log_info("[UNITY] " + cpp_str);
-    return debug_log_orig(arg);
+    // debug_log_orig(arg);
 }
 
 inline void (__stdcall* debug_log_warn_orig)(void* arg);
@@ -586,7 +611,7 @@ inline void __stdcall debug_log_warn(void* arg)
     Unity::System_String* str = (Unity::System_String*)arg;
     std::string cpp_str = clean_string(str->ToString());
     Logger::log_warn("[UNITY] " + cpp_str);
-    return debug_log_warn_orig(arg);
+    // debug_log_warn_orig(arg);
 }
 
 inline void (__stdcall* debug_log_error_orig)(void* arg);
@@ -595,7 +620,7 @@ inline void __stdcall debug_log_error(void* arg)
     Unity::System_String* str = (Unity::System_String*)arg;
     std::string cpp_str = clean_string(str->ToString());
     Logger::log_err("[UNITY] " + cpp_str);
-    return debug_log_error_orig(arg);
+    // debug_log_error_orig(arg);
 }
 
 inline void (__stdcall* debug_log_fmt_orig)(void* arg);
@@ -605,7 +630,7 @@ inline void __stdcall debug_log_fmt(void* arg)
     std::string cpp_str = clean_string(str->ToString());
     if (cpp_str.find("eventstore") != std::string::npos) return debug_log_fmt_orig(arg);
     Logger::log_info("[UNITY] " + cpp_str);
-    return debug_log_fmt_orig(arg);
+    // debug_log_fmt_orig(arg);
 }
 
 inline void (__stdcall* debug_log_warn_fmt_orig)(void* arg);
@@ -614,7 +639,7 @@ inline void __stdcall debug_log_warn_fmt(void* arg)
     Unity::System_String* str = (Unity::System_String*)arg;
     std::string cpp_str = clean_string(str->ToString());
     Logger::log_warn("[UNITY] " + cpp_str);
-    return debug_log_warn_fmt_orig(arg);
+    // debug_log_warn_fmt_orig(arg);
 }
 
 inline void (__stdcall* debug_log_error_fmt_orig)(void* arg);
@@ -623,7 +648,7 @@ inline void __stdcall debug_log_error_fmt(void* arg)
     Unity::System_String* str = (Unity::System_String*)arg;
     std::string cpp_str = clean_string(str->ToString());
     Logger::log_err("[UNITY] " + cpp_str);
-    return debug_log_error_fmt_orig(arg);
+    // debug_log_error_fmt_orig(arg);
 }
 
 inline void (__stdcall* debug_log_fmt_orig2)(void* arg);
@@ -633,7 +658,7 @@ inline void __stdcall debug_log_fmt2(void* arg)
     std::string cpp_str = clean_string(str->ToString());
     if (cpp_str.find("eventstore") != std::string::npos) return debug_log_fmt_orig2(arg);
     Logger::log_info("[UNITY] " + cpp_str);
-    return debug_log_fmt_orig2(arg);
+    // debug_log_fmt_orig2(arg);
 }
 
 inline void (__stdcall* debug_log_warn_fmt_orig2)(void* arg);
@@ -642,7 +667,7 @@ inline void __stdcall debug_log_warn_fmt2(void* arg)
     Unity::System_String* str = (Unity::System_String*)arg;
     std::string cpp_str = clean_string(str->ToString());
     Logger::log_warn("[UNITY] " + cpp_str);
-    return debug_log_warn_fmt_orig2(arg);
+    // debug_log_warn_fmt_orig2(arg);
 }
 
 inline void (__stdcall* debug_log_error_fmt_orig2)(void* arg);
@@ -651,7 +676,7 @@ inline void __stdcall debug_log_error_fmt2(void* arg)
     Unity::System_String* str = (Unity::System_String*)arg;
     std::string cpp_str = clean_string(str->ToString());
     Logger::log_err("[UNITY] " + cpp_str);
-    return debug_log_error_fmt_orig2(arg);
+    // debug_log_error_fmt_orig2(arg);
 }
 
 inline void (__stdcall* add_weapon_original)(void* arg, void* string, int source, bool bool1, bool bool2, void* class1, void* struct1);
@@ -755,6 +780,49 @@ inline int __stdcall spoof_module_level(void* arg)
     return spoof_module_level_orig(arg);
 }
 
+inline float (__stdcall* spoof_module_perk_duration_orig)(void* arg);
+inline float __stdcall spoof_module_perk_duration(void* arg)
+{
+    if (gadget_modifier_module != nullptr && ((ModuleBase*)gadget_modifier_module)->is_enabled() && gadget_modifier_module->perks()) return gadget_modifier_module->perk_duration();
+    return spoof_module_perk_duration_orig(arg);
+}
+
+inline float (__stdcall* gadget_throwable_damage_orig)(void* arg);
+inline float __stdcall gadget_throwable_damage(void* arg)
+{
+    if (gadget_modifier_module != nullptr && ((ModuleBase*)gadget_modifier_module)->is_enabled() && gadget_modifier_module->gadgets()) return gadget_modifier_module->gadgets_throw_dmg();
+    return spoof_module_perk_duration_orig(arg);
+}
+
+inline float (__stdcall* gadget_duration_orig)(void* arg);
+inline float __stdcall gadget_duration(void* arg)
+{
+    if (gadget_modifier_module != nullptr && ((ModuleBase*)gadget_modifier_module)->is_enabled() && gadget_modifier_module->gadgets()) return gadget_modifier_module->gadgets_tool_duration();
+    return gadget_duration_orig(arg);
+}
+
+inline float (__stdcall* gadget_cooldown_orig)(void* arg);
+inline float __stdcall gadget_cooldown(void* arg)
+{
+    if (gadget_modifier_module != nullptr && ((ModuleBase*)gadget_modifier_module)->is_enabled() && gadget_modifier_module->gadgets()) return gadget_modifier_module->gadgets_cooldown();
+    return gadget_cooldown_orig(arg);
+}
+
+inline bool (__stdcall* team_kill_orig)(void* arg);
+inline bool __stdcall team_kill(void* arg)
+{
+    if (team_kill_module != nullptr && ((ModuleBase*)team_kill_module)->is_enabled()) return true;
+    return team_kill_orig(arg);
+}
+
+/*
+inline int (__stdcall* spoof_gadget_tier_orig)(void* arg);
+inline int __stdcall spoof_gadget_tier(void* arg)
+{
+    return 5;
+}
+*/
+
 std::vector<std::wstring> split(std::wstring s, std::wstring delimiter) {
     size_t pos_start = 0, pos_end, delim_len = delimiter.length();
     std::wstring token;
@@ -846,7 +914,15 @@ void Hooks::load()
 
     hook_function(Offsets::SpoofModuleLevel, &spoof_module_level, &spoof_module_level_orig);
 
+    // hook_function(0x1f19ad0, &spoof_gadget_tier, &spoof_gadget_tier_orig);
+    
     hook_function(0x8ff7c0, &weapon_set, &weapon_set_orig);
+    
+    hook_function(Offsets::ModulePerkDuration, &spoof_module_perk_duration, &spoof_module_perk_duration_orig);
+    hook_function(Offsets::ThrowGadgetDamage, &gadget_throwable_damage, &gadget_throwable_damage_orig);
+    hook_function(Offsets::GadgetDuration, &gadget_duration, &gadget_duration_orig);
+    hook_function(Offsets::GadgetCooldown, &gadget_cooldown, &gadget_cooldown_orig);
+    hook_function(Offsets::TeamKill, &team_kill, &team_kill_orig);
     
     // LOG HOOKS
     hook_function(0x43938D0, &debug_log, &debug_log_orig); // Log 1arg
@@ -870,6 +946,7 @@ void Hooks::load()
     season_pass_module = new ModuleSeasonPass();
     damage_multiplier_module = new ModuleDamageMultiplier();
     anti_immortal_module = new ModuleAntiImmortal();
+    team_kill_module = new ModuleTeamKill();
     immortality_module = new ModuleImmortality();
     
     unlock_weapons_module = new ModuleUnlockWeapons();
@@ -879,6 +956,7 @@ void Hooks::load()
     add_armor_module = new ModuleAddArmor();
     add_pets_module = new ModuleAddPets();
     add_currency_module = new ModuleAddCurrency();
+    gadget_modifier_module = new ModuleGadgetModifier();
 
     esp_module = new ModuleESP();
     player_move_c_modules.push_back((ModuleBase*) esp_module);

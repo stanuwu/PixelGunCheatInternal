@@ -11,13 +11,9 @@ public:
     
     void do_module(void* arg) override
     {
-        const bool is_dash_weapon = (bool*)((uint64_t)arg + 0x2b0); // isDash (fix for dash weapons charging)
-        if (!is_dash_weapon)
-        {
-            set_float(arg, Offsets::chargeTime, 0); // chargeTime
-            set_float(arg, Offsets::chargeMax, 0); // chargeMax
-            set_bool(arg, Offsets::chargeLoop, true); // chargeLoop
-            set_bool(arg, Offsets::isCharging, false); // isCharging
-        }
+        set_float(arg, Offsets::chargeTime, 0); // chargeTime
+        set_float(arg, Offsets::chargeMax, 0); // chargeMax
+        set_bool(arg, Offsets::chargeLoop, true); // chargeLoop
+        set_bool(arg, Offsets::isCharging, false); // isCharging
     }
 };

@@ -80,7 +80,7 @@ public:
     static void* GetDataList(void* arg, int type);
     static void* GetWeaponSkinSettings(void* id);
     static void* ItemRecordGetShopId(void* arg);
-    static void GiveGadget(void* id, int up);
+    static void GiveGadget(void* id, int level);
     static void GiveWear(void* id);
     static void GiveWeapon(void* id, bool event, bool auto_upgrade);
     static void GivePets(void* id, int count);
@@ -91,6 +91,7 @@ public:
     static void AddSomeCurrency(void* currency, int amount, bool arg1, int enum1, int enum2, int enum3, int enum4);
     static void* ProgressUpdaterGetInstance();
     static void AddModule(void* arg, int count, void* id);
+    static void SendChat(void* arg, void* msg);
     static void ProgressAddCurrency(void* instance, void* currency, int amount, int enum1, bool bool1, bool bool2, itemObtainParams* obtainParams);
     static void ActivateGadget(void* arg, int gadget_id, int level);
     static void DeactivateGadget(void* arg, int gadget_id);
