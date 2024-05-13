@@ -171,6 +171,7 @@ public:
                 draw_esp(draw.screen_pos, draw.width2, draw.height2, draw.color, draw.player_name, draw.is_teammate);
             }
         }
+        
         to_draw.clear();
     }
 };

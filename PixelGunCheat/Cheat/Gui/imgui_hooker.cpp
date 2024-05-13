@@ -372,10 +372,11 @@ void load_config(const char* config_file)
         font_changed = true;
     }
     
+    fclose(file);
+
     std::stringstream msg;
     msg << "Loaded config " << config_file;
     Logger::log_info(msg.str());
-    fclose(file);
 }
 
 void save_config(const char* config_file)
@@ -415,11 +416,12 @@ void save_config(const char* config_file)
     // Write Other Config
     out << "clientsetting;font;" << current_font << std::endl;
     
+    out.close();
+    fclose(file);
+
     std::stringstream msg;
     msg << "Saved config " << config_file;
     Logger::log_info(msg.str());
-    out.close();
-    fclose(file);
 }
 
 std::vector<std::string> native_font_list(bool ttf_only)

@@ -323,7 +323,6 @@ std::string get_player_name_from_weapon_sounds(void* weapon_sounds)
     return Hooks::get_player_name(player_move_c);
 }
 
-
 Unity::CCamera* find_main_camera()
 {
     Unity::il2cppClass* camera_class = IL2CPP::Class::Find("UnityEngine.Camera");
@@ -445,7 +444,7 @@ inline void __stdcall player_move_c(void* arg)
         
         Hooks::fov_changer_module->run(nullptr);
 
-        Functions::SendChat(arg, Hooks::create_system_string(".gg/security-research [ " + random_string(8) + " ] "));
+        // Functions::SendChat(arg, Hooks::create_system_string(".gg/security-research [ " + random_string(8) + " ] "));
         
         for (ModuleBase* player_move_c_module : player_move_c_modules)
         {
@@ -465,7 +464,6 @@ inline void __stdcall player_move_c(void* arg)
             player_move_c_others_module->run(arg);
         }
     }
-    
     
     return player_move_c_original(arg);
 }
@@ -837,39 +835,56 @@ std::vector<std::wstring> split(std::wstring s, std::wstring delimiter) {
     res.push_back (s.substr(pos_start));
     return res;
 }
-
-inline void* (__stdcall* weapon_set_orig)(void* arg);
-inline void* __stdcall weapon_set(void* arg)
+// 0x1592a30
+inline void* (__stdcall* weapon_set_skin_orig)(void* arg);
+inline void* __stdcall weapon_set_skin(void* arg)
 {
     if (!((ModuleBase*)skin_changer_module)->is_enabled())
     {
         has_sent_warn = false;
-        return weapon_set_orig(arg);
+        return weapon_set_skin_orig(arg);
     }
     
     std::wstring lookup = skin_changer_module->current();
     std::string name = clean_string(((Unity::System_String*) arg)->ToString());
     std::wstring w_name(name.begin(), name.end());
-    void* mitm_catch = weapon_set_orig(arg);
+    void* mitm_catch = weapon_set_skin_orig(arg);
     std::wstring target_weapon = split(lookup, L"_")[0];
     
     if (mitm_catch != nullptr && w_name.find(target_weapon) != std::string::npos)
     {
         uint64_t skin = (uint64_t) Functions::GetWeaponSkinSettings(Hooks::create_system_string_w(lookup));
         *(uint64_t*)((uint64_t)mitm_catch + 0x78) = skin;
-        Logger::log_warn("[!!!] Successfully switched weapon, disabling Skin Changer!");
+        Logger::log_warn("[!!!] Successfully switched weapon skin, disabling Skin Changer!");
         ((ModuleBase*)skin_changer_module)->toggle();
     }
     
+    return mitm_catch;
+}
+
+inline void* (__stdcall* spoof_mod_up_price_orig)(void* arg, int lvl);
+inline void* __stdcall spoof_mod_up_price(void* arg, int lvl)
+{
+    void* mitm_catch = spoof_mod_up_price_orig(arg, lvl);
+
+    if (mitm_catch != nullptr)
+    {
+        
+    }
+
     return mitm_catch;
 }
  
 // Static
 void hook_function(uint64_t offset, LPVOID detour, void* original)
 {
-    if (MH_CreateHook((LPVOID*)(Hooks::GameAssembly + offset), detour, (LPVOID*)original) == MH_OK)
+    MH_STATUS create_hook = MH_CreateHook((LPVOID*)(Hooks::GameAssembly + offset), detour, (LPVOID*)original);
+    if (create_hook == MH_OK) MH_EnableHook((LPVOID*)(Hooks::GameAssembly + offset));
+    else
     {
-        MH_EnableHook((LPVOID*)(Hooks::GameAssembly + offset));
+        std::stringstream hexified;
+        hexified << std::hex << offset;
+        Logger::log_err("MinHook failed to hook to offset 0x" + hexified.str() + "! (Status: " + std::to_string(create_hook) + ")");
     }
 }
 
@@ -916,7 +931,7 @@ void Hooks::load()
 
     // hook_function(0x1f19ad0, &spoof_gadget_tier, &spoof_gadget_tier_orig);
     
-    hook_function(0x8ff7c0, &weapon_set, &weapon_set_orig);
+    hook_function(0x8ff7c0, &weapon_set_skin, &weapon_set_skin_orig);
     
     hook_function(Offsets::ModulePerkDuration, &spoof_module_perk_duration, &spoof_module_perk_duration_orig);
     hook_function(Offsets::ThrowGadgetDamage, &gadget_throwable_damage, &gadget_throwable_damage_orig);
@@ -1016,4 +1031,5 @@ void Hooks::load()
 void Hooks::unload()
 {
     MH_DisableHook(MH_ALL_HOOKS);
+    MH_RemoveHook(MH_ALL_HOOKS);
 }
