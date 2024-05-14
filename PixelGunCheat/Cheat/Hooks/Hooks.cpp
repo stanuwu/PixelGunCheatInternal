@@ -1065,7 +1065,7 @@ void Hooks::load()
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleInstantCharge());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleLegacyAnimations());
     weapon_sounds_modules.push_back((ModuleBase*) new ModulePiercer());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModulePolymorpher());
+    // weapon_sounds_modules.push_back((ModuleBase*) new ModulePolymorpher());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleReach());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleRecoil());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleSpread());
