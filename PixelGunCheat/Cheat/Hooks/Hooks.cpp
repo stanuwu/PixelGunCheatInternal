@@ -26,6 +26,7 @@
 #include "../Module/Impl/Combat/ModuleHeadshotMultiplier.h"
 #include "../Module/Impl/Combat/ModuleInstantCharge.h"
 #include "../Module/Impl/Combat/ModulePiercer.h"
+#include "../Module/Impl/Combat/ModulePolymorpher.h"
 #include "../Module/Impl/Combat/ModuleRapidFire.h"
 #include "../Module/Impl/Combat/ModuleRecoil.h"
 #include "../Module/Impl/Combat/ModuleSpread.h"
@@ -200,12 +201,12 @@ void* Hooks::create_system_string_w(std::wstring string)
 
 std::string clean_string(std::string string)
 {
-    std::vector<char> bytes(string.begin(), string.end());
-    if (bytes.size() > 65536 && std::reduce(string.begin(), string.begin() + 16) == 0)
+    if (string.size() > 524288)
     {
         Logger::log_warn("clean_string caught long string with 0 total byte size, returning empty string to avoid lag!");
         return "";
     }
+    std::vector<char> bytes(string.begin(), string.end());
     bytes.push_back('\0');
     std::list<char> chars;
     for (byte byte : bytes)
@@ -217,6 +218,24 @@ std::string clean_string(std::string string)
     }
     std::string clean(chars.begin(), chars.end());
     return clean;
+}
+
+std::string tokenizer(std::string string, std::string token)
+{
+    std::vector<char> bytes(string.begin(), string.end());
+    std::stringstream out;
+    int idx = 0;
+    for (char byte : bytes)
+    {
+        if (byte)
+        {
+            std::string str_char{byte};
+            out << str_char;
+            if (idx != (int)(bytes.size() - 1)) out << token;
+        }
+        idx++;
+    }
+    return out.str();
 }
 
 void Hooks::dump_item_records()
@@ -597,9 +616,12 @@ inline void (__stdcall* debug_log_orig)(void* arg);
 inline void __stdcall debug_log(void* arg)
 {
     Unity::System_String* str = (Unity::System_String*)arg;
-    std::string cpp_str = clean_string(str->ToString());
-    if (cpp_str.find("eventstore") != std::string::npos) return debug_log_orig(arg);
-    Logger::log_info("[UNITY] " + cpp_str);
+    if (str->m_iLength < 524288)
+    {
+        std::string cpp_str = clean_string(str->ToString());
+        if (cpp_str.find("eventstore") != std::string::npos) return debug_log_orig(arg);
+        Logger::log_info("[UNITY] " + cpp_str);
+    }
     // debug_log_orig(arg);
 }
 
@@ -607,8 +629,11 @@ inline void (__stdcall* debug_log_warn_orig)(void* arg);
 inline void __stdcall debug_log_warn(void* arg)
 {
     Unity::System_String* str = (Unity::System_String*)arg;
-    std::string cpp_str = clean_string(str->ToString());
-    Logger::log_warn("[UNITY] " + cpp_str);
+    if (str->m_iLength < 524288)
+    {
+        std::string cpp_str = clean_string(str->ToString());
+        Logger::log_warn("[UNITY] " + cpp_str);
+    }
     // debug_log_warn_orig(arg);
 }
 
@@ -616,8 +641,11 @@ inline void (__stdcall* debug_log_error_orig)(void* arg);
 inline void __stdcall debug_log_error(void* arg)
 {
     Unity::System_String* str = (Unity::System_String*)arg;
-    std::string cpp_str = clean_string(str->ToString());
-    Logger::log_err("[UNITY] " + cpp_str);
+    if (str->m_iLength < 524288)
+    {
+        std::string cpp_str = clean_string(str->ToString());
+        Logger::log_err("[UNITY] " + cpp_str);
+    }
     // debug_log_error_orig(arg);
 }
 
@@ -625,9 +653,12 @@ inline void (__stdcall* debug_log_fmt_orig)(void* arg);
 inline void __stdcall debug_log_fmt(void* arg)
 {
     Unity::System_String* str = (Unity::System_String*)arg;
-    std::string cpp_str = clean_string(str->ToString());
-    if (cpp_str.find("eventstore") != std::string::npos) return debug_log_fmt_orig(arg);
-    Logger::log_info("[UNITY] " + cpp_str);
+    if (str->m_iLength < 524288)
+    {
+        std::string cpp_str = clean_string(str->ToString());
+        if (cpp_str.find("eventstore") != std::string::npos) return debug_log_fmt_orig(arg);
+        Logger::log_info("[UNITY] " + cpp_str);
+    }
     // debug_log_fmt_orig(arg);
 }
 
@@ -635,8 +666,11 @@ inline void (__stdcall* debug_log_warn_fmt_orig)(void* arg);
 inline void __stdcall debug_log_warn_fmt(void* arg)
 {
     Unity::System_String* str = (Unity::System_String*)arg;
-    std::string cpp_str = clean_string(str->ToString());
-    Logger::log_warn("[UNITY] " + cpp_str);
+    if (str->m_iLength < 524288)
+    {
+        std::string cpp_str = clean_string(str->ToString());
+        Logger::log_warn("[UNITY] " + cpp_str);
+    }
     // debug_log_warn_fmt_orig(arg);
 }
 
@@ -644,8 +678,11 @@ inline void (__stdcall* debug_log_error_fmt_orig)(void* arg);
 inline void __stdcall debug_log_error_fmt(void* arg)
 {
     Unity::System_String* str = (Unity::System_String*)arg;
-    std::string cpp_str = clean_string(str->ToString());
-    Logger::log_err("[UNITY] " + cpp_str);
+    if (str->m_iLength < 524288)
+    {
+        std::string cpp_str = clean_string(str->ToString());
+        Logger::log_err("[UNITY] " + cpp_str);
+    }
     // debug_log_error_fmt_orig(arg);
 }
 
@@ -653,9 +690,12 @@ inline void (__stdcall* debug_log_fmt_orig2)(void* arg);
 inline void __stdcall debug_log_fmt2(void* arg)
 {
     Unity::System_String* str = (Unity::System_String*)arg;
-    std::string cpp_str = clean_string(str->ToString());
-    if (cpp_str.find("eventstore") != std::string::npos) return debug_log_fmt_orig2(arg);
-    Logger::log_info("[UNITY] " + cpp_str);
+    if (str->m_iLength < 524288)
+    {
+        std::string cpp_str = clean_string(str->ToString());
+        if (cpp_str.find("eventstore") != std::string::npos) return debug_log_fmt_orig2(arg);
+        Logger::log_info("[UNITY] " + cpp_str);
+    }
     // debug_log_fmt_orig2(arg);
 }
 
@@ -663,8 +703,11 @@ inline void (__stdcall* debug_log_warn_fmt_orig2)(void* arg);
 inline void __stdcall debug_log_warn_fmt2(void* arg)
 {
     Unity::System_String* str = (Unity::System_String*)arg;
-    std::string cpp_str = clean_string(str->ToString());
-    Logger::log_warn("[UNITY] " + cpp_str);
+    if (str->m_iLength < 524288)
+    {
+        std::string cpp_str = clean_string(str->ToString());
+        Logger::log_warn("[UNITY] " + cpp_str);
+    }
     // debug_log_warn_fmt_orig2(arg);
 }
 
@@ -672,8 +715,11 @@ inline void (__stdcall* debug_log_error_fmt_orig2)(void* arg);
 inline void __stdcall debug_log_error_fmt2(void* arg)
 {
     Unity::System_String* str = (Unity::System_String*)arg;
-    std::string cpp_str = clean_string(str->ToString());
-    Logger::log_err("[UNITY] " + cpp_str);
+    if (str->m_iLength < 524288)
+    {
+        std::string cpp_str = clean_string(str->ToString());
+        Logger::log_err("[UNITY] " + cpp_str);
+    }
     // debug_log_error_fmt_orig2(arg);
 }
 
@@ -813,6 +859,22 @@ inline bool __stdcall team_kill(void* arg)
     return team_kill_orig(arg);
 }
 
+inline void (__stdcall* chat_bypass_orig)(void* arg, void* str, bool clan, void* empty);
+inline void __stdcall chat_bypass(void* arg, void* str, bool clan, void* empty)
+{
+    std::string zero_space = "\u0001";
+    str = Hooks::create_system_string(tokenizer(clean_string(((Unity::System_String*)str)->ToString()), zero_space));
+    chat_bypass_orig(arg, str, clan, empty);
+}
+
+inline void (__stdcall* force_pandoras_orig)(void* arg, float b);
+inline void __stdcall force_pandoras(void* arg, float b)
+{
+    // std::cout << std::to_string(*(int*)((uint64_t)arg)) << std::endl;
+    force_pandoras_orig(arg, b);
+}
+
+
 /*
 inline int (__stdcall* spoof_gadget_tier_orig)(void* arg);
 inline int __stdcall spoof_gadget_tier(void* arg)
@@ -835,6 +897,7 @@ std::vector<std::wstring> split(std::wstring s, std::wstring delimiter) {
     res.push_back (s.substr(pos_start));
     return res;
 }
+
 // 0x1592a30
 inline void* (__stdcall* weapon_set_skin_orig)(void* arg);
 inline void* __stdcall weapon_set_skin(void* arg)
@@ -938,6 +1001,9 @@ void Hooks::load()
     hook_function(Offsets::GadgetDuration, &gadget_duration, &gadget_duration_orig);
     hook_function(Offsets::GadgetCooldown, &gadget_cooldown, &gadget_cooldown_orig);
     hook_function(Offsets::TeamKill, &team_kill, &team_kill_orig);
+
+    hook_function(0x1b1bd50, &chat_bypass, &chat_bypass_orig);
+    hook_function(0x1bbf0e0, &force_pandoras, &force_pandoras_orig);
     
     // LOG HOOKS
     hook_function(0x43938D0, &debug_log, &debug_log_orig); // Log 1arg
@@ -999,6 +1065,7 @@ void Hooks::load()
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleInstantCharge());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleLegacyAnimations());
     weapon_sounds_modules.push_back((ModuleBase*) new ModulePiercer());
+    weapon_sounds_modules.push_back((ModuleBase*) new ModulePolymorpher());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleReach());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleRecoil());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleSpread());
