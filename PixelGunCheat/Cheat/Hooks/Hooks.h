@@ -11,6 +11,7 @@ class Hooks
 public:
     static uint64_t tick;
     static uint64_t player_fixed_tick;
+    static RECT win_size_info;
     static std::list<void*> player_list;
     static void* our_player;
     static void* main_camera;

@@ -105,6 +105,7 @@ std::list<ModuleBase*> Hooks::on_imgui_draw_modules = { };
 
 uint64_t Hooks::tick = 0;
 uint64_t Hooks::player_fixed_tick = 0;
+RECT Hooks::win_size_info;
 std::list<void*> working_player_list;
 std::list<void*> Hooks::player_list;
 void* Hooks::our_player;
@@ -538,6 +539,12 @@ inline float __stdcall speed(void* arg)
 inline float(__stdcall* on_pre_render_original)(void* arg);
 inline float __stdcall on_pre_render(void* arg)
 {
+    if (Hooks::tick % 60 == 0)
+    {
+        std::cout << GetActiveWindow() << std::endl;
+        GetWindowRect(GetActiveWindow(), &Hooks::win_size_info);
+    }
+    
     Hooks::tick++;
     
     Hooks::player_list = working_player_list;

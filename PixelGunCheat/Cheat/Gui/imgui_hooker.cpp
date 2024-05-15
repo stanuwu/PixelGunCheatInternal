@@ -48,7 +48,7 @@ static bool rhd_is_float = false;
 static LPVOID last_rhd = nullptr;
 static ImU32 color_title = ImGui::ColorConvertFloat4ToU32(Functions::ImVec4i(255, 180, 230));
 static ImU32 color_bg = ImGui::ColorConvertFloat4ToU32({0.00f, 0.00f, 0.00f, 0.85f});
-std::string current_font = "C:/Windows/Fonts/comic.ttf";
+std::string current_font = "C:/Windows/Fonts/micross.ttf";
 static bool boundless_value_setting = false;
 static bool font_changed = false;
 
