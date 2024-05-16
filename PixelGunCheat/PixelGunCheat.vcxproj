@@ -243,6 +243,7 @@
       <LinkCompiled>true</LinkCompiled>
       <AdditionalIncludeDirectories>;C:\Users\Hideri\Documents\vcpkg\installed\x64-windows\include</AdditionalIncludeDirectories>
     </ClCompile>
+    <ClCompile Include="Cheat\Util\ClientUtil.cpp" />
     <ClCompile Include="kiero\kiero.cpp" />
     <ClCompile Include="dllmain.cpp" />
   </ItemGroup>
@@ -251,6 +252,7 @@
     <ClInclude Include="Cheat\Data\Currency.h" />
     <ClInclude Include="Cheat\Data\Gadgets.h" />
     <ClInclude Include="Cheat\Data\Pets.h" />
+    <ClInclude Include="Cheat\Data\WeaponMods.h" />
     <ClInclude Include="Cheat\Data\Weapons.h" />
     <ClInclude Include="Cheat\Data\WeaponSkins.h" />
     <ClInclude Include="Cheat\Gui\imgui_hooker.h" />
@@ -279,7 +281,7 @@
     <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleAddCurrency.h" />
     <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleAddPets.h" />
     <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleInfiniteGemClaim.h" />
-    <ClInclude Include="Cheat\Module\Impl\Exploit\ModulePriceModifier.h" />
+    <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleLotteryModifier.h" />
     <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleRewardsMultiplier.h" />
     <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleSeasonPass.h" />
     <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleTest.h" />
@@ -312,6 +314,7 @@
     <ClInclude Include="Cheat\Module\ModuleBase.h" />
     <ClCompile Include="kiero\kiero.h" />
     <ClInclude Include="Cheat\Offsets\Offsets.h" />
+    <ClInclude Include="Cheat\Util\ClientUtil.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

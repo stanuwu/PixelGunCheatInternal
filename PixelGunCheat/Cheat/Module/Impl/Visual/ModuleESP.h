@@ -49,7 +49,7 @@ public:
     
     void do_module(void* arg) override
     {
-        if ((Hooks::tick + 30) % 60 == 0)
+        if ((ClientUtil::tick + 30) % 60 == 0)
         {
             GetWindowRect(GetActiveWindow(), &window_size_esp);
         }
@@ -121,7 +121,7 @@ public:
             Logger::log_err("ESP failed to properly resolve player data, trying to catch error to prevent crash!");
             Logger::log_err("Copy the info below and send it to @george2bush or @hiderikzki on discord! (if none present, please still inform us) (thank you <3)");
             std::stringstream exinfo;
-            exinfo << "!! EXINFO !! : t_count=" << Hooks::tick << ", pl_cnt=" << Hooks::player_list.size() << "/" << Hooks::player_list.max_size() << ", p_ptr=" << Hooks::our_player << ", c_ptr=" << Hooks::main_camera << " ;;;";
+            exinfo << "!! EXINFO !! : t_count=" << ClientUtil::tick << ", pl_cnt=" << Hooks::player_list.size() << "/" << Hooks::player_list.max_size() << ", p_ptr=" << Hooks::our_player << ", c_ptr=" << Hooks::main_camera << " ;;;";
             Logger::log_err(exinfo.str());
             */
             to_draw.clear();

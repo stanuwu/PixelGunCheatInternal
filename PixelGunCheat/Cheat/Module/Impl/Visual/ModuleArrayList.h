@@ -5,12 +5,13 @@
 #include "../../../Hooks/Hooks.h"
 #include "../../../Internal/Functions.h"
 
-static BKCDropdown __module_sort_type = BKCDropdown("Module Sort Mode", L"Alphabetic", { L"Alphabetic", L"Text Length" });
+static BKCDropdown __module_sort_type = BKCDropdown("Module Sort", L"Text Length", { L"Alphabetic", L"Text Length" });
 static BKCDropdown __screen_position = BKCDropdown("Position", L"Top Left", { L"Top Left", L"Top Right" });
-static BKCSliderInt __background_opacity = BKCSliderInt("Background Opacity (%)", 85, 0, 100, "Changes how dark the background renders as");
-static BKCSliderInt __module_separation = BKCSliderInt("Module Y Separation", 0, 0, 12, "Distance on the vertical axis between modules");
-static BKCCheckbox __dont_extend_bg_on_separation = BKCCheckbox("No Extend Background", true, "Disables background extending on module separation");
-static BKCModule __array_list = { "Module List", "Shows your modules", VISUAL, 0x0, true, { &__module_sort_type, &__screen_position, &__background_opacity, &__module_separation, &__dont_extend_bg_on_separation } };
+static BKCSliderInt __background_opacity = BKCSliderInt("Background Opacity (%)", 50, 0, 100, "Changes how dark the background renders as");
+static BKCSliderInt __module_separation = BKCSliderInt("Y Separation", 1, 0, 12, "Distance on the vertical axis between modules");
+static BKCCheckbox __line_on_side = BKCCheckbox("Line on Side", true, "Adds a line to the side of every module");
+static BKCCheckbox __dont_extend_bg_on_separation = BKCCheckbox("No Extend Background", false, "Disables background extending on module separation");
+static BKCModule __array_list = { "Module List", "Shows your enabled modules", VISUAL, 0x0, true, { &__module_sort_type, &__screen_position, &__background_opacity, &__module_separation, &__line_on_side, &__dont_extend_bg_on_separation } };
 
 static ImU32 color_array = ImGui::ColorConvertFloat4ToU32(Functions::ImVec4i(255, 180, 230));
 
@@ -24,8 +25,10 @@ public:
         ImGui::PushFont(BKCImGuiHooker::arraylist_font);
         
         // ArrayList
-        const int win_width = Hooks::win_size_info.right - Hooks::win_size_info.left;
-        const float win_width_float = (float) win_width;
+        const int win_width = ClientUtil::win_size_info.right - ClientUtil::win_size_info.left;
+        const float win_width_float = (float)win_width;
+        const float bg_offset = 4;
+        const float extra_offset = __line_on_side.enabled ? 2 : 0;
         float x = 0;
         float y = 0;
 
@@ -39,7 +42,6 @@ public:
             y = 48 * BKCImGuiHooker::scale_factor;
             break;
         case 1:
-            x = win_width - (5 + 200 * BKCImGuiHooker::scale_factor);
             y = 5 * BKCImGuiHooker::scale_factor;
             break;
         default:
@@ -69,24 +71,34 @@ public:
             {
                 mod_y = 0;
             }
+
+            ImVec2 text_size = ImGui::CalcTextSize(mod->name.c_str());
             
             if (__background_opacity.value != 0)
             {
-                ImVec2 text_size = ImGui::CalcTextSize(mod->name.c_str());
-                ImGui::GetBackgroundDrawList()->AddRectFilled({ x, y + 2 }, { x + 200 * BKCImGuiHooker::scale_factor, y + text_size.y + mod_y + 2 }, ImGui::ColorConvertFloat4ToU32({ 0.00f, 0.00f, 0.00f, (float)__background_opacity.value / 100.0f }), 0);
+                if (__screen_position.current_index == 1)
+                {
+                    x = win_width_float - (7 + text_size.x * BKCImGuiHooker::scale_factor);
+                    ImGui::GetBackgroundDrawList()->AddRectFilled({ x - bg_offset * 2 - extra_offset, y + 2 }, { x + text_size.x * BKCImGuiHooker::scale_factor, y + text_size.y + mod_y + 2 }, ImGui::ColorConvertFloat4ToU32({ 0.00f, 0.00f, 0.00f, (float)__background_opacity.value / 100.0f }), 0);
+                    ImGui::GetBackgroundDrawList()->AddRectFilled({ win_width_float - 7 - extra_offset, y + 2 }, { win_width_float - 7, y + text_size.y + mod_y + 2 }, color_array, 0);
+                }
+                else
+                {
+                    ImGui::GetBackgroundDrawList()->AddRectFilled({ x, y + 2 }, { x + text_size.x * BKCImGuiHooker::scale_factor + bg_offset * 2 + extra_offset, y + text_size.y + mod_y + 2 }, ImGui::ColorConvertFloat4ToU32({ 0.00f, 0.00f, 0.00f, (float)__background_opacity.value / 100.0f }), 0);
+                    ImGui::GetBackgroundDrawList()->AddRectFilled({ x, y + 2 }, { x + extra_offset, y + text_size.y + mod_y + 2 }, color_array, 0);
+                }
             }
             
             switch (__screen_position.current_index)
             {
             case 0:
-                ImGui::GetBackgroundDrawList()->AddText(nullptr, size, { x + 6, y + 2 + mod_y / 2 + 1 }, ImGui::ColorConvertFloat4ToU32({ 0.0f, 0.0f, 0.0f, 1.0f }), mod->name.c_str());
-                ImGui::GetBackgroundDrawList()->AddText(nullptr, size, { x + 5, y + 2 + mod_y / 2 }, color_array, mod->name.c_str());
+                ImGui::GetBackgroundDrawList()->AddText(nullptr, size, { x + 1 + bg_offset + extra_offset, y + 2 + mod_y / 2 + 1 }, ImGui::ColorConvertFloat4ToU32({ 0.0f, 0.0f, 0.0f, 1.0f }), mod->name.c_str());
+                ImGui::GetBackgroundDrawList()->AddText(nullptr, size, { x + bg_offset + extra_offset, y + 2 + mod_y / 2 }, color_array, mod->name.c_str());
                 break;
             case 1:
             {
-                ImVec2 text_size = ImGui::CalcTextSize(mod->name.c_str());
-                ImGui::GetBackgroundDrawList()->AddText(nullptr, size, { win_width_float - text_size.x - 6, y + 2 + mod_y / 2 + 1 }, ImGui::ColorConvertFloat4ToU32({ 0.0f, 0.0f, 0.0f, 1.0f }), mod->name.c_str());
-                ImGui::GetBackgroundDrawList()->AddText(nullptr, size, { win_width_float - text_size.x - 7, y + 2 + mod_y / 2 }, color_array, mod->name.c_str());
+                ImGui::GetBackgroundDrawList()->AddText(nullptr, size, { win_width_float - text_size.x - (6 + bg_offset + extra_offset), y + 2 + mod_y / 2 + 1 }, ImGui::ColorConvertFloat4ToU32({ 0.0f, 0.0f, 0.0f, 1.0f }), mod->name.c_str());
+                ImGui::GetBackgroundDrawList()->AddText(nullptr, size, { win_width_float - text_size.x - (7 + bg_offset + extra_offset), y + 2 + mod_y / 2 }, color_array, mod->name.c_str());
                 break;
             }
             default:

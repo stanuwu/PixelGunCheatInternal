@@ -8,7 +8,6 @@
 #include <sstream>
 
 #include "MinHook.h"
-#include "../Data/Weapons.h"
 #include "../Internal/Functions.h"
 #include "../Module/ModuleBase.h"
 #include "../Logger/Logger.h"
@@ -35,7 +34,7 @@
 #include "../Module/Impl/Exploit/ModuleAddCurrency.h"
 #include "../Module/Impl/Exploit/ModuleAddPets.h"
 #include "../Module/Impl/Exploit/ModuleInfiniteGemClaim.h"
-#include "../Module/Impl/Exploit/ModulePriceModifier.h"
+#include "../Module/Impl/Exploit/ModuleLotteryModifier.h"
 #include "../Module/Impl/Exploit/ModuleRewardsMultiplier.h"
 #include "../Module/Impl/Exploit/ModuleSeasonPass.h"
 #include "../Module/Impl/Exploit/ModuleTest.h"
@@ -64,6 +63,7 @@
 #include "../Module/Impl/Visual/ModuleSkinChanger.h"
 #include "../Module/Impl/Visual/ModuleXRay.h"
 #include "../Offsets/Offsets.h"
+#include "../Util/ClientUtil.h"
 
 uintptr_t Hooks::GameBase;
 uintptr_t Hooks::GameAssembly;
@@ -72,7 +72,7 @@ uintptr_t Hooks::UnityPlayer;
 ModuleRapidFire* rapid_fire_module;
 ModuleSpeed* speed_module;
 ModuleBase* infinite_gem_claim_module;
-ModulePriceModifier* lottery_price_module;
+ModuleLotteryModifier* lottery_price_module;
 ModuleBase* fast_levels_module;
 ModuleRewardsMultiplier* rewards_multiplier_module;
 ModuleESP* esp_module;
@@ -103,9 +103,6 @@ std::list<ModuleBase*> player_damageable_modules = { };
 std::list<ModuleBase*> on_pre_render_modules = { };
 std::list<ModuleBase*> Hooks::on_imgui_draw_modules = { };
 
-uint64_t Hooks::tick = 0;
-uint64_t Hooks::player_fixed_tick = 0;
-RECT Hooks::win_size_info;
 std::list<void*> working_player_list;
 std::list<void*> Hooks::player_list;
 void* Hooks::our_player;
@@ -200,45 +197,6 @@ void* Hooks::create_system_string_w(std::wstring string)
     return ns;
 }
 
-std::string clean_string(std::string string)
-{
-    if (string.size() > 524288)
-    {
-        Logger::log_warn("clean_string caught long string with 0 total byte size, returning empty string to avoid lag!");
-        return "";
-    }
-    std::vector<char> bytes(string.begin(), string.end());
-    bytes.push_back('\0');
-    std::list<char> chars;
-    for (byte byte : bytes)
-    {
-        if (byte)
-        {
-            chars.push_back(byte);
-        }
-    }
-    std::string clean(chars.begin(), chars.end());
-    return clean;
-}
-
-std::string tokenizer(std::string string, std::string token)
-{
-    std::vector<char> bytes(string.begin(), string.end());
-    std::stringstream out;
-    int idx = 0;
-    for (char byte : bytes)
-    {
-        if (byte)
-        {
-            std::string str_char{byte};
-            out << str_char;
-            if (idx != (int)(bytes.size() - 1)) out << token;
-        }
-        idx++;
-    }
-    return out.str();
-}
-
 void Hooks::dump_item_records()
 {
     Logger::log_debug("Dumping Records");
@@ -273,7 +231,7 @@ void Hooks::dump_all_records()
         {
             Unity::System_String* key = dict->m_pListArray->At(i);
             if (key == nullptr) break;
-            out << clean_string(key->ToString()) << std::endl;
+            out << ClientUtil::CleanString(key->ToString()) << std::endl;
             real_size++;
         }
 
@@ -307,7 +265,7 @@ std::string Hooks::get_player_name(void* player_move_c)
     void* name_ptr = Functions::TextMeshGetText(nick_label);
     if (name_ptr == nullptr) return "";
     std::string name = ((Unity::System_String*)name_ptr)->ToString();
-    return clean_string(name);
+    return ClientUtil::CleanString(name);
 }
 
 void* Hooks::get_player_transform(void* player)
@@ -354,7 +312,7 @@ Unity::CCamera* find_main_camera()
     for (int i = 0; i < cameras->m_uMaxLength; i++)
     {
         Unity::CCamera* camera = cameras->At(i);
-        std::string name = clean_string((*camera->GetName()).ToString());
+        std::string name = ClientUtil::CleanString((*camera->GetName()).ToString());
         if (name == "ThirdPersonCamera(Clone)") return camera;
     }
     
@@ -497,7 +455,7 @@ inline void __stdcall player_move_c_fixed(void* arg)
     void* player_damageable = (void*)*(uint64_t*)((uint64_t)arg + Offsets::playerMoveCPlayerDamageable);
     if (my_player)
     {
-        Hooks::player_fixed_tick++;
+        ClientUtil::fixed_tick_ingame++;
         
         for (ModuleBase* player_damageable_module : player_damageable_modules)
         {
@@ -539,13 +497,12 @@ inline float __stdcall speed(void* arg)
 inline float(__stdcall* on_pre_render_original)(void* arg);
 inline float __stdcall on_pre_render(void* arg)
 {
-    if (Hooks::tick % 60 == 0)
+    if (ClientUtil::tick % 60 == 0)
     {
-        std::cout << GetActiveWindow() << std::endl;
-        GetWindowRect(GetActiveWindow(), &Hooks::win_size_info);
+        ClientUtil::UpdateWinSize();
     }
     
-    Hooks::tick++;
+    ClientUtil::tick++;
     
     Hooks::player_list = working_player_list;
     const std::list<void*> tl;
@@ -625,11 +582,11 @@ inline void __stdcall debug_log(void* arg)
     Unity::System_String* str = (Unity::System_String*)arg;
     if (str->m_iLength < 524288)
     {
-        std::string cpp_str = clean_string(str->ToString());
-        if (cpp_str.find("eventstore") != std::string::npos) return debug_log_orig(arg);
+        std::string cpp_str = ClientUtil::CleanString(str->ToString());
+        if (cpp_str.find("eventstore") != std::string::npos || cpp_str.find("FreeChestController.AreAdcAvailable") != std::string::npos) return debug_log_orig(arg);
         Logger::log_info("[UNITY] " + cpp_str);
+        debug_log_orig(arg);
     }
-    // debug_log_orig(arg);
 }
 
 inline void (__stdcall* debug_log_warn_orig)(void* arg);
@@ -638,10 +595,10 @@ inline void __stdcall debug_log_warn(void* arg)
     Unity::System_String* str = (Unity::System_String*)arg;
     if (str->m_iLength < 524288)
     {
-        std::string cpp_str = clean_string(str->ToString());
+        std::string cpp_str = ClientUtil::CleanString(str->ToString());
         Logger::log_warn("[UNITY] " + cpp_str);
+        debug_log_warn_orig(arg);
     }
-    // debug_log_warn_orig(arg);
 }
 
 inline void (__stdcall* debug_log_error_orig)(void* arg);
@@ -650,10 +607,10 @@ inline void __stdcall debug_log_error(void* arg)
     Unity::System_String* str = (Unity::System_String*)arg;
     if (str->m_iLength < 524288)
     {
-        std::string cpp_str = clean_string(str->ToString());
+        std::string cpp_str = ClientUtil::CleanString(str->ToString());
         Logger::log_err("[UNITY] " + cpp_str);
+        debug_log_error_orig(arg);
     }
-    // debug_log_error_orig(arg);
 }
 
 inline void (__stdcall* debug_log_fmt_orig)(void* arg);
@@ -662,11 +619,11 @@ inline void __stdcall debug_log_fmt(void* arg)
     Unity::System_String* str = (Unity::System_String*)arg;
     if (str->m_iLength < 524288)
     {
-        std::string cpp_str = clean_string(str->ToString());
-        if (cpp_str.find("eventstore") != std::string::npos) return debug_log_fmt_orig(arg);
+        std::string cpp_str = ClientUtil::CleanString(str->ToString());
+        if (cpp_str.find("eventstore") != std::string::npos || cpp_str.find("FreeChestController.AreAdcAvailable") != std::string::npos) return debug_log_fmt_orig(arg);
         Logger::log_info("[UNITY] " + cpp_str);
+        debug_log_fmt_orig(arg);
     }
-    // debug_log_fmt_orig(arg);
 }
 
 inline void (__stdcall* debug_log_warn_fmt_orig)(void* arg);
@@ -675,10 +632,10 @@ inline void __stdcall debug_log_warn_fmt(void* arg)
     Unity::System_String* str = (Unity::System_String*)arg;
     if (str->m_iLength < 524288)
     {
-        std::string cpp_str = clean_string(str->ToString());
+        std::string cpp_str = ClientUtil::CleanString(str->ToString());
         Logger::log_warn("[UNITY] " + cpp_str);
+        debug_log_warn_fmt_orig(arg);
     }
-    // debug_log_warn_fmt_orig(arg);
 }
 
 inline void (__stdcall* debug_log_error_fmt_orig)(void* arg);
@@ -687,10 +644,10 @@ inline void __stdcall debug_log_error_fmt(void* arg)
     Unity::System_String* str = (Unity::System_String*)arg;
     if (str->m_iLength < 524288)
     {
-        std::string cpp_str = clean_string(str->ToString());
+        std::string cpp_str = ClientUtil::CleanString(str->ToString());
         Logger::log_err("[UNITY] " + cpp_str);
+        debug_log_error_fmt_orig(arg);
     }
-    // debug_log_error_fmt_orig(arg);
 }
 
 inline void (__stdcall* debug_log_fmt_orig2)(void* arg);
@@ -699,11 +656,11 @@ inline void __stdcall debug_log_fmt2(void* arg)
     Unity::System_String* str = (Unity::System_String*)arg;
     if (str->m_iLength < 524288)
     {
-        std::string cpp_str = clean_string(str->ToString());
-        if (cpp_str.find("eventstore") != std::string::npos) return debug_log_fmt_orig2(arg);
+        std::string cpp_str = ClientUtil::CleanString(str->ToString());
+        if (cpp_str.find("eventstore") != std::string::npos || cpp_str.find("FreeChestController.AreAdcAvailable") != std::string::npos) return debug_log_fmt_orig2(arg);
         Logger::log_info("[UNITY] " + cpp_str);
+        debug_log_fmt_orig2(arg);
     }
-    // debug_log_fmt_orig2(arg);
 }
 
 inline void (__stdcall* debug_log_warn_fmt_orig2)(void* arg);
@@ -712,10 +669,10 @@ inline void __stdcall debug_log_warn_fmt2(void* arg)
     Unity::System_String* str = (Unity::System_String*)arg;
     if (str->m_iLength < 524288)
     {
-        std::string cpp_str = clean_string(str->ToString());
+        std::string cpp_str = ClientUtil::CleanString(str->ToString());
         Logger::log_warn("[UNITY] " + cpp_str);
+        debug_log_warn_fmt_orig2(arg);
     }
-    // debug_log_warn_fmt_orig2(arg);
 }
 
 inline void (__stdcall* debug_log_error_fmt_orig2)(void* arg);
@@ -724,10 +681,10 @@ inline void __stdcall debug_log_error_fmt2(void* arg)
     Unity::System_String* str = (Unity::System_String*)arg;
     if (str->m_iLength < 524288)
     {
-        std::string cpp_str = clean_string(str->ToString());
+        std::string cpp_str = ClientUtil::CleanString(str->ToString());
         Logger::log_err("[UNITY] " + cpp_str);
+        debug_log_error_fmt_orig2(arg);
     }
-    // debug_log_error_fmt_orig2(arg);
 }
 
 inline void (__stdcall* add_weapon_original)(void* arg, void* string, int source, bool bool1, bool bool2, void* class1, void* struct1);
@@ -870,7 +827,7 @@ inline void (__stdcall* chat_bypass_orig)(void* arg, void* str, bool clan, void*
 inline void __stdcall chat_bypass(void* arg, void* str, bool clan, void* empty)
 {
     std::string zero_space = "\u0001";
-    str = Hooks::create_system_string(tokenizer(clean_string(((Unity::System_String*)str)->ToString()), zero_space));
+    str = Hooks::create_system_string(ClientUtil::TokenizeString(ClientUtil::CleanString(((Unity::System_String*)str)->ToString()), zero_space));
     chat_bypass_orig(arg, str, clan, empty);
 }
 
@@ -916,7 +873,7 @@ inline void* __stdcall weapon_set_skin(void* arg)
     }
     
     std::wstring lookup = skin_changer_module->current();
-    std::string name = clean_string(((Unity::System_String*) arg)->ToString());
+    std::string name = ClientUtil::CleanString(((Unity::System_String*) arg)->ToString());
     std::wstring w_name(name.begin(), name.end());
     void* mitm_catch = weapon_set_skin_orig(arg);
     std::wstring target_weapon = split(lookup, L"_")[0];
@@ -932,6 +889,7 @@ inline void* __stdcall weapon_set_skin(void* arg)
     return mitm_catch;
 }
 
+/*
 inline void* (__stdcall* spoof_mod_up_price_orig)(void* arg, int lvl);
 inline void* __stdcall spoof_mod_up_price(void* arg, int lvl)
 {
@@ -943,6 +901,60 @@ inline void* __stdcall spoof_mod_up_price(void* arg, int lvl)
     }
 
     return mitm_catch;
+}
+*/
+
+inline void* (__stdcall* lottery_core_orig)(int a, bool b, void* c, void* d, bool e);
+inline void* __stdcall lottery_core(int a, bool b, void* c, void* d, bool e)
+{
+    /*
+    if (((ModuleBase*)lottery_price_module)->is_enabled() && lottery_price_module->is_mod_add_in_use() && !lottery_price_module->adding())
+    {
+        if (lottery_price_module->mod_add_all())
+        {
+            lottery_price_module->set_adding(true);
+            
+            for (auto mod : weapon_mods)
+            {
+                std::string normal(mod.begin(), mod.end());
+                Logger::log_debug("Adding Mod: " + normal);
+                lottery_core_orig(a, b, c, d, e);
+                lottery_price_module->add_progress();
+                std::chrono::milliseconds(100);
+            }
+
+            lottery_price_module->set_adding(false);
+            lottery_price_module->reset_progress();
+            ((ModuleBase*)lottery_price_module)->toggle();
+        }
+    }
+    */
+
+    return lottery_core_orig(a, b, c, d, e);
+}
+
+inline void* (__stdcall* lottery_drop_id_orig)(void* arg);
+inline void* __stdcall lottery_drop_id(void* arg)
+{
+    void* id = lottery_drop_id_orig(arg);
+    if (((ModuleBase*)lottery_price_module)->is_enabled() && lottery_price_module->is_mod_add_in_use())return Hooks::create_system_string_w(lottery_price_module->curr_weapon());
+    return id;
+}
+
+inline int (__stdcall* lottery_drop_count_orig)(void* arg);
+inline int __stdcall lottery_drop_count(void* arg)
+{
+    if(((ModuleBase*)lottery_price_module)->is_enabled()) return lottery_price_module->lottery_count();
+    return lottery_drop_count_orig(arg);
+}
+
+inline int (__stdcall* lottery_drop_type_orig)(void* arg);
+inline int __stdcall lottery_drop_type(void* arg)
+{
+    // NOTE: This requires a valid matching type for what you are adding, otherwise pressing open chest either 1. Doesn't do anything, 2. Unlocks just currencies, or 3. Unlocks default drops
+    // WARNING: DO NOT USE 200 (CraftItem), IT WILL AUTO-BAN ON LOTTERY SCREEN ENTER
+    if (((ModuleBase*)lottery_price_module)->is_enabled() && lottery_price_module->is_mod_add_in_use()) return 1100;
+    return lottery_drop_type_orig(arg);
 }
  
 // Static
@@ -1001,7 +1013,7 @@ void Hooks::load()
 
     // hook_function(0x1f19ad0, &spoof_gadget_tier, &spoof_gadget_tier_orig);
     
-    hook_function(0x8ff7c0, &weapon_set_skin, &weapon_set_skin_orig);
+    hook_function(Offsets::WeaponSetSkin, &weapon_set_skin, &weapon_set_skin_orig);
     
     hook_function(Offsets::ModulePerkDuration, &spoof_module_perk_duration, &spoof_module_perk_duration_orig);
     hook_function(Offsets::ThrowGadgetDamage, &gadget_throwable_damage, &gadget_throwable_damage_orig);
@@ -1010,7 +1022,13 @@ void Hooks::load()
     hook_function(Offsets::TeamKill, &team_kill, &team_kill_orig);
 
     hook_function(0x1b1bd50, &chat_bypass, &chat_bypass_orig);
-    hook_function(0x1bbf0e0, &force_pandoras, &force_pandoras_orig);
+    // hook_function(0x1bbf0e0, &force_pandoras, &force_pandoras_orig);
+
+    // hook_function(0xcb9f30, &lottery_core, &lottery_core_orig);
+    
+    hook_function(Offsets::LotteryDropCount, &lottery_drop_count, &lottery_drop_count_orig);
+    hook_function(Offsets::LotteryDropId, &lottery_drop_id, &lottery_drop_id_orig);
+    hook_function(Offsets::LotteryDropType, &lottery_drop_type, &lottery_drop_type_orig);
     
     // LOG HOOKS
     hook_function(0x43938D0, &debug_log, &debug_log_orig); // Log 1arg
@@ -1029,7 +1047,7 @@ void Hooks::load()
     rapid_fire_module = new ModuleRapidFire();
     speed_module = new ModuleSpeed();
     infinite_gem_claim_module = (ModuleBase*) new ModuleInfiniteGemClaim();
-    lottery_price_module = new ModulePriceModifier();
+    lottery_price_module = new ModuleLotteryModifier();
     rewards_multiplier_module = new ModuleRewardsMultiplier();
     season_pass_module = new ModuleSeasonPass();
     damage_multiplier_module = new ModuleDamageMultiplier();
@@ -1072,7 +1090,6 @@ void Hooks::load()
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleInstantCharge());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleLegacyAnimations());
     weapon_sounds_modules.push_back((ModuleBase*) new ModulePiercer());
-    // weapon_sounds_modules.push_back((ModuleBase*) new ModulePolymorpher());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleReach());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleRecoil());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleSpread());

@@ -58,6 +58,10 @@ public:
     static inline uint64_t GadgetDuration = 0x1f18d50;
     static inline uint64_t GadgetCooldown = 0x1f19730;
     static inline uint64_t TeamKill = 0x1afab30;
+    static inline uint64_t LotteryDropCount = 0xb9a430;
+    static inline uint64_t LotteryDropId = 0xb9a530;
+    static inline uint64_t LotteryDropType = 0xb9a580;
+    static inline uint64_t WeaponSetSkin = 0x8ff7c0;
     
     // Fields
     static inline uint64_t scopeSpeed = 0x100;

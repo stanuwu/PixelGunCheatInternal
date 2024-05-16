@@ -660,9 +660,12 @@ void BKCImGuiHooker::start(void* g_mainRenderTargetView, void* g_pd3dDevice, voi
     // Watermark
     ImGui::PushFont(watermark_font);
     float size = ImGui::GetFontSize();
-    ImVec2 true_size = ImGui::CalcTextSize(full_title.str().c_str());
-    ImGui::GetBackgroundDrawList()->AddRectFilled({5, 5}, {15 + true_size.x, 10 + true_size.y}, color_bg, 10);
-    ImGui::GetBackgroundDrawList()->AddText(nullptr, size, {11, 6}, ImGui::ColorConvertFloat4ToU32({ 0.0f, 0.0f, 0.0f, 1.0f }), full_title.str().c_str());
+    // ImVec2 true_size = ImGui::CalcTextSize(full_title.str().c_str());
+    // ImGui::GetBackgroundDrawList()->AddRectFilled({5, 5}, {15 + true_size.x, 10 + true_size.y}, color_bg, 10);
+    ImGui::GetBackgroundDrawList()->AddText(nullptr, size, {9, 4}, ImGui::ColorConvertFloat4ToU32({ 0.0f, 0.0f, 0.0f, 0.5f }), full_title.str().c_str());
+    ImGui::GetBackgroundDrawList()->AddText(nullptr, size, {9, 6}, ImGui::ColorConvertFloat4ToU32({ 0.0f, 0.0f, 0.0f, 0.5f }), full_title.str().c_str());
+    ImGui::GetBackgroundDrawList()->AddText(nullptr, size, {11, 4}, ImGui::ColorConvertFloat4ToU32({ 0.0f, 0.0f, 0.0f, 0.5f }), full_title.str().c_str());
+    ImGui::GetBackgroundDrawList()->AddText(nullptr, size, {11, 6}, ImGui::ColorConvertFloat4ToU32({ 0.0f, 0.0f, 0.0f, 0.5f }), full_title.str().c_str());
     ImGui::GetBackgroundDrawList()->AddText(nullptr, size, {10, 5}, color_title, full_title.str().c_str());
     ImGui::PopFont();
     

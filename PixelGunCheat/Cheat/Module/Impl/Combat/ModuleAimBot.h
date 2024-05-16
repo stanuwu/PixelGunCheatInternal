@@ -4,6 +4,7 @@
 #include "../../ModuleBase.h"
 #include "../../../Internal/Functions.h"
 #include "../../../Offsets/Offsets.h"
+#include "../../../Util/ClientUtil.h"
 #include "../IL2CPPResolver/IL2CPP_Resolver.hpp"
 
 static BKCSliderInt __aim_bot_target_size = BKCSliderInt("Target Marker Size", 5, 1, 20);
@@ -96,7 +97,7 @@ public:
     {
         is_using_silent_aim = __aim_bot_silent_aim.enabled;
         
-        if (Hooks::tick % 60 == 0)
+        if (ClientUtil::tick % 60 == 0)
         {
             GetWindowRect(GetActiveWindow(), &window_size_aim);
         }

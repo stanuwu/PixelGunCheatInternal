@@ -16,7 +16,7 @@ public:
     
     void do_module(void* arg) override
     {
-        if (Hooks::player_fixed_tick % 120 == 0) Functions::ActivateGadget(arg, __gadget_id.value, __gadget_level.value);
+        if (ClientUtil::fixed_tick_ingame % 120 == 0) Functions::ActivateGadget(arg, __gadget_id.value, __gadget_level.value);
         gadget_activator_player_instance = arg;
     }
 
