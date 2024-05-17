@@ -40,6 +40,7 @@
 #include "../Module/Impl/Exploit/ModuleTest.h"
 #include "../Module/Impl/Exploit/ModuleUnlockGadgets.h"
 #include "../Module/Impl/Exploit/ModuleUnlockWeapons.h"
+#include "../Module/Impl/Exploit/ModuleUnlockWeaponSkins.h"
 #include "../Module/Impl/Exploit/ModuleWeaponSpoofer.h"
 #include "../Module/Impl/General/ModuleScoreMultiplier.h"
 #include "../Module/Impl/General/ModuleSpoofModules.h"
@@ -60,7 +61,6 @@
 #include "../Module/Impl/Visual/ModuleESP.h"
 #include "../Module/Impl/Visual/ModuleFOVChanger.h"
 #include "../Module/Impl/Visual/ModuleLegacyAnimations.h"
-#include "../Module/Impl/Visual/ModuleSkinChanger.h"
 #include "../Module/Impl/Visual/ModuleXRay.h"
 #include "../Offsets/Offsets.h"
 #include "../Util/ClientUtil.h"
@@ -85,7 +85,7 @@ ModuleInfiniteAmmo* infinite_ammo_module;
 ModuleDamageMultiplier* damage_multiplier_module;
 ModuleAntiImmortal* anti_immortal_module;
 ModuleTeamKill* team_kill_module;
-ModuleSkinChanger* skin_changer_module;
+ModuleUnlockWeaponSkins* skin_changer_module;
 ModuleImmortality* immortality_module;
 ModuleGadgetModifier* gadget_modifier_module;
 ModuleSpoofModules* spoof_modules_module;
@@ -318,19 +318,10 @@ Unity::CCamera* find_main_camera()
     
     return Unity::Camera::GetMain();
 }
-
-bool has_sent_warn = false;
-
 // Hook Functions
 inline void(__stdcall* weapon_sounds_original)(void* arg);
 inline void __stdcall weapon_sounds_call(void* arg)
 {
-    if (skin_changer_module != nullptr && !has_sent_warn && ((ModuleBase*)skin_changer_module)->is_enabled())
-    {
-        Logger::log_warn("[!!!] Skin changer enabled, please go inside weapon loadout and click on the weapon you wanted the skin for, or go into a match and switch to the weapon!");
-        has_sent_warn = true;
-    }
-    
     if (unlock_weapons_module != nullptr)
     {
         ((ModuleBase*)unlock_weapons_module)->run(arg);
@@ -862,7 +853,8 @@ std::vector<std::wstring> split(std::wstring s, std::wstring delimiter) {
     return res;
 }
 
-// 0x1592a30
+// INFO: Obsoleted due to new permanent weapon skin unlocker 
+/*
 inline void* (__stdcall* weapon_set_skin_orig)(void* arg);
 inline void* __stdcall weapon_set_skin(void* arg)
 {
@@ -888,6 +880,7 @@ inline void* __stdcall weapon_set_skin(void* arg)
     
     return mitm_catch;
 }
+*/
 
 /*
 inline void* (__stdcall* spoof_mod_up_price_orig)(void* arg, int lvl);
@@ -944,7 +937,7 @@ inline void* __stdcall lottery_drop_id(void* arg)
 inline int (__stdcall* lottery_drop_count_orig)(void* arg);
 inline int __stdcall lottery_drop_count(void* arg)
 {
-    if(((ModuleBase*)lottery_price_module)->is_enabled()) return lottery_price_module->lottery_count();
+    if(((ModuleBase*)lottery_price_module)->is_enabled() && lottery_price_module->mod_output()) return lottery_price_module->lottery_count();
     return lottery_drop_count_orig(arg);
 }
 
@@ -955,6 +948,17 @@ inline int __stdcall lottery_drop_type(void* arg)
     // WARNING: DO NOT USE 200 (CraftItem), IT WILL AUTO-BAN ON LOTTERY SCREEN ENTER
     if (((ModuleBase*)lottery_price_module)->is_enabled() && lottery_price_module->is_mod_add_in_use()) return 1100;
     return lottery_drop_type_orig(arg);
+}
+
+inline int (__stdcall* force_item_display_orig)(void* arg, int offer_type, void* id);
+inline int __stdcall force_item_display(void* arg, int offer_type, void* id)
+{
+    if (skin_changer_module != nullptr && ((ModuleBase*)skin_changer_module)->is_enabled() && offer_type == 1170)
+    {
+        return force_item_display_orig(arg, offer_type, Hooks::create_system_string_w(skin_changer_module->selected_skin()));
+    }
+
+    return force_item_display_orig(arg, offer_type, id);
 }
  
 // Static
@@ -1013,7 +1017,7 @@ void Hooks::load()
 
     // hook_function(0x1f19ad0, &spoof_gadget_tier, &spoof_gadget_tier_orig);
     
-    hook_function(Offsets::WeaponSetSkin, &weapon_set_skin, &weapon_set_skin_orig);
+    // hook_function(Offsets::WeaponSetSkin, &force_item_display, &force_item_display_orig);
     
     hook_function(Offsets::ModulePerkDuration, &spoof_module_perk_duration, &spoof_module_perk_duration_orig);
     hook_function(Offsets::ThrowGadgetDamage, &gadget_throwable_damage, &gadget_throwable_damage_orig);
@@ -1022,13 +1026,15 @@ void Hooks::load()
     hook_function(Offsets::TeamKill, &team_kill, &team_kill_orig);
 
     hook_function(0x1b1bd50, &chat_bypass, &chat_bypass_orig);
+    
     // hook_function(0x1bbf0e0, &force_pandoras, &force_pandoras_orig);
-
     // hook_function(0xcb9f30, &lottery_core, &lottery_core_orig);
     
     hook_function(Offsets::LotteryDropCount, &lottery_drop_count, &lottery_drop_count_orig);
     hook_function(Offsets::LotteryDropId, &lottery_drop_id, &lottery_drop_id_orig);
     hook_function(Offsets::LotteryDropType, &lottery_drop_type, &lottery_drop_type_orig);
+
+    hook_function(Offsets::ForceItemDisplay, &force_item_display, &force_item_display_orig);
     
     // LOG HOOKS
     hook_function(0x43938D0, &debug_log, &debug_log_orig); // Log 1arg
@@ -1058,7 +1064,7 @@ void Hooks::load()
     unlock_weapons_module = new ModuleUnlockWeapons();
     unlock_gadgets_module = new ModuleUnlockGadgets();
     spoof_modules_module = new ModuleSpoofModules();
-    skin_changer_module = new ModuleSkinChanger();
+    skin_changer_module = new ModuleUnlockWeaponSkins();
     add_armor_module = new ModuleAddArmor();
     add_pets_module = new ModuleAddPets();
     add_currency_module = new ModuleAddCurrency();

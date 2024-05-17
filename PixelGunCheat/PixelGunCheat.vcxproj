@@ -284,6 +284,7 @@
     <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleLotteryModifier.h" />
     <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleRewardsMultiplier.h" />
     <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleSeasonPass.h" />
+    <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleUnlockWeaponSkins.h" />
     <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleTest.h" />
     <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleUnlockGadgets.h" />
     <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleUnlockWeapons.h" />
@@ -309,7 +310,6 @@
     <ClInclude Include="Cheat\Module\Impl\Visual\ModuleESP.h" />
     <ClInclude Include="Cheat\Module\Impl\Visual\ModuleFOVChanger.h" />
     <ClInclude Include="Cheat\Module\Impl\Visual\ModuleLegacyAnimations.h" />
-    <ClInclude Include="Cheat\Module\Impl\Visual\ModuleSkinChanger.h" />
     <ClInclude Include="Cheat\Module\Impl\Visual\ModuleXRay.h" />
     <ClInclude Include="Cheat\Module\ModuleBase.h" />
     <ClCompile Include="kiero\kiero.h" />

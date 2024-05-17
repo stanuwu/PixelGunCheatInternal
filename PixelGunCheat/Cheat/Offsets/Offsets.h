@@ -62,6 +62,7 @@ public:
     static inline uint64_t LotteryDropId = 0xb9a530;
     static inline uint64_t LotteryDropType = 0xb9a580;
     static inline uint64_t WeaponSetSkin = 0x8ff7c0;
+    static inline uint64_t ForceItemDisplay = 0x148c270;
     
     // Fields
     static inline uint64_t scopeSpeed = 0x100;
