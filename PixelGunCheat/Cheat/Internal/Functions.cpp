@@ -247,3 +247,15 @@ ImVec4 Functions::ImVec4i(const int r, const int g, const int b, const int a)
 {
     return { (float) r / 255.0f, (float) g / 255.0f, (float) b / 255.0f, (float) a / 255.0f };
 }
+
+void* Functions::CameraGetMain()
+{
+    static const auto fn = (void*(*)())(GameAssembly_ + Offsets::CameraGetMain);
+    return fn(); 
+}
+
+void Functions::CameraSetFov(void* arg, float fov)
+{
+    static const auto fn = (void(*)(void*, float))(GameAssembly_ + Offsets::CameraSetFieldOfView);
+    return fn(arg, fov); 
+}

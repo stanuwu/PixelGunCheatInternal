@@ -96,4 +96,6 @@ public:
     static void DeactivateGadget(void* arg, int gadget_id);
     static void* SystemObjectToString(void* arg);
     static ImVec4 ImVec4i(int r, int g, int b, int a = 255);
+    static void* CameraGetMain();
+    static void CameraSetFov(void* arg, float fov);
 };

@@ -110,7 +110,7 @@ public:
         Unity::Vector3 prediction;
         void* target = nullptr;
         float distance = 9999999;
-        Unity::CCamera* camera = (Unity::CCamera*)Hooks::main_camera;
+        void* camera = Hooks::main_camera;
         if (camera == nullptr) return;
         for (void* player : Hooks::player_list)
         {
@@ -118,8 +118,10 @@ public:
             // Only Enemies
             if (!Hooks::is_player_enemy(player)) continue;
             
-            Unity::CTransform* transform = (Unity::CTransform*)Hooks::get_player_transform(player);
-            Unity::Vector3 world = transform->GetPosition();
+            void* transform = Hooks::get_player_transform(player);
+            Unity::Vector3 world;
+            Functions::TransformGetPosition(transform, &world);
+            // Unity::Vector3 world = transform->GetPosition();
             
             Unity::Vector3 screen;
             Functions::CameraWorldToScreen(camera, &world, &screen);
@@ -220,7 +222,7 @@ public:
         
         if (target != nullptr && Hooks::main_camera != nullptr)
         {
-            Unity::CTransform* target_t = (Unity::CTransform*)Hooks::get_player_transform(target);
+            void* target_t = Hooks::get_player_transform(target);
             Unity::Vector3 target_p;
             Functions::TransformGetPosition(target_t, &target_p);
             Unity::Vector3 aim_at = {
@@ -228,7 +230,7 @@ public:
                 target_p.y + prediction.y + (__aim_bot_body_shot.enabled ? 0 : 0.75f),
                 target_p.z + prediction.z
             };
-            Unity::CTransform* t = (Unity::CTransform*)Functions::ComponentGetTransform(Hooks::main_camera);
+            void* t = Functions::ComponentGetTransform(Hooks::main_camera);
             if (camera == nullptr) return;
             Hooks::fov_changer_module->run(nullptr);
             Unity::Vector3 screen;

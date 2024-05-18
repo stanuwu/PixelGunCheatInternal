@@ -246,10 +246,10 @@ void Hooks::dump_all_records()
 
 void Hooks::draw_all()
 {
-    // if (esp_module == nullptr) return;
-    // esp_module->draw_all();
-    // if (aim_bot_module == nullptr) return;
-    // aim_bot_module->draw_all_aim();
+    if (esp_module == nullptr) return;
+    esp_module->draw_all();
+    if (aim_bot_module == nullptr) return;
+    aim_bot_module->draw_all_aim();
 }
 
 void nuke_player_list()
@@ -316,7 +316,7 @@ Unity::CCamera* find_main_camera()
         if (name == "ThirdPersonCamera(Clone)") return camera;
     }
     
-    return Unity::Camera::GetMain();
+    return (Unity::CCamera*)Functions::CameraGetMain();
 }
 // Hook Functions
 inline void(__stdcall* weapon_sounds_original)(void* arg);
@@ -342,22 +342,10 @@ inline void __stdcall weapon_sounds_call(void* arg)
     {
         ((ModuleBase*)add_currency_module)->run(arg);
     }
-
-    // void* weapon_skin_settings = Functions::GetWeaponSkinSettings(Hooks::create_system_string("Weapon977_nothern_lights_black_hole"));
-
-    /*
-    auto dict = (Unity::il2cppList<void*>*)Functions::GetWeaponSkinList();
-    for (int i = 0; i < dict->m_pListArray->m_uMaxLength; ++i)
-    {
-        void* key = dict->m_pListArray->At(i);
-        if (key == nullptr) break;
-        std::cout << ((Unity::System_String*)((uint64_t)key + 0x18))->ToString() << std::endl;
-    }
-    */
     
     if (is_my_player_weapon_sounds(arg))
     {
-        // if (Hooks::our_player != nullptr && aim_bot_module && aim_bot_module->is_using_silent_aim) ((ModuleBase*)aim_bot_module)->run(arg);
+        if (Hooks::our_player != nullptr && aim_bot_module && aim_bot_module->is_using_silent_aim) ((ModuleBase*)aim_bot_module)->run(arg);
         
         for (ModuleBase* weapon_sounds_module : weapon_sounds_modules)
         {
@@ -380,7 +368,7 @@ inline void __stdcall weapon_sounds_late_call(void* arg)
 {
     if (is_my_player_weapon_sounds(arg))
     {
-        // if (Hooks::our_player != nullptr && aim_bot_module && !aim_bot_module->is_using_silent_aim) ((ModuleBase*)aim_bot_module)->run(arg);
+        if (Hooks::our_player != nullptr && aim_bot_module && !aim_bot_module->is_using_silent_aim) ((ModuleBase*)aim_bot_module)->run(arg);
     }
 
     return weapon_sounds_late_original(arg);
@@ -407,11 +395,11 @@ inline void __stdcall player_move_c(void* arg)
     if (my_player)
     {
         // Just do this every fucking call innit
-        // Hooks::main_camera = find_main_camera();
-        // if (Hooks::main_camera == nullptr) return player_move_c_original(arg);
+        Hooks::main_camera = find_main_camera();
+        if (Hooks::main_camera == nullptr) return player_move_c_original(arg);
         Hooks::our_player = arg; // WARN: ALWAYS ALLOW THIS TO BE SET, OTHERWISE BREAKS A LOT OF MODULES
         
-        // Hooks::fov_changer_module->run(nullptr);
+        Hooks::fov_changer_module->run(nullptr);
 
         // Functions::SendChat(arg, Hooks::create_system_string(".gg/security-research [ " + random_string(8) + " ] "));
         
@@ -425,7 +413,7 @@ inline void __stdcall player_move_c(void* arg)
         // Other Players
         if (Hooks::main_camera == nullptr) return player_move_c_original(arg);
         Hooks::fov_changer_module->run(nullptr);
-        // esp_module->add_esp(arg);
+        esp_module->add_esp(arg);
         working_player_list.push_back(arg);
         
         for (auto player_move_c_others_module : player_move_c_others_modules)
@@ -510,7 +498,7 @@ inline void __stdcall on_scene_unload(void* arg)
 {
     Hooks::main_camera = nullptr;
     nuke_player_list();
-    // return on_scene_unload_original(arg);
+    return on_scene_unload_original(arg);
     // Get Old Scene Name
     /*
     void* name_ptr = (void*)*(uint64_t*)((uint64_t)arg + 0x10);
@@ -682,60 +670,18 @@ inline void __stdcall add_weapon(void* arg, void* string, int source, bool bool1
     if (((ModuleBase*)unlock_weapons_module)->is_enabled())
     {
         Unity::System_String* sname = (Unity::System_String*)string;
-        // Logger::log_info("Got Weapon: " + sname->ToString());
-        // if (weapon_spoofer_module->all())
-        if (false)
+        std::wstring nname = unlock_weapons_module->get_current();
+        std::string nnname(nname.begin(), nname.end());
+        sname->Clear();
+        sname->m_iLength = (u_long)nname.length();
+        for (u_long l = 0; l < nname.length(); l++)
         {
-            Logger::log_info("Adding All");
-            for (int i = 0; i < weapon_spoofer_module->get_spoof_list().size(); i++)
-            {
-                // clear string
-                sname->Clear();
-
-                // Write String
-                std::wstring nname = weapon_spoofer_module->get_spoof_list()[i];
-                sname->m_iLength = (u_long)nname.length();
-                for (u_long l = 0; l < nname.length(); l++)
-                {
-                    sname->m_wString[l] = nname[l];
-                }
-
-                // Logger::log_info("Changed To: " + sname->ToString());
-                if (i % 50 == 0) Logger::log_info("Add Progress: " + std::to_string(i));
-                
-                // dev = 9999
-                add_weapon_original(arg, string, weapon_spoofer_module->dev() ? 9999 : source, bool1, bool2, class1, struct1);
-            }
-            Logger::log_info("Done Adding");
-            weapon_spoofer_module->lock();
-            return;
+            sname->m_wString[l] = nname[l];
         }
-        else
-        {
-            /*
-            if (weapon_spoofer_module->to_unlock().empty())
-            {
-                Logger::log_info("Invalid Weapon");
-                return;
-            }
-            */
-            // std::wstring nname = weapon_spoofer_module->to_unlock();
-            std::wstring nname = unlock_weapons_module->get_current();
-            std::string nnname(nname.begin(), nname.end());
-            // Logger::log_info("Changing To: " + nnname);
-            sname->Clear();
-            sname->m_iLength = (u_long)nname.length();
-            for (u_long l = 0; l < nname.length(); l++)
-            {
-                sname->m_wString[l] = nname[l];
-            }
             
-            // dev = 9999
-            // add_weapon_original(arg, string, weapon_spoofer_module->dev() ? 9999 : source, bool1, bool2, class1, struct1);
-            add_weapon_original(arg, string, 9999, bool1, bool2, class1, struct1);
-            // Logger::log_info("Weapon Obtained");
-            return;
-        }
+        // dev = 9999
+        add_weapon_original(arg, string, 9999, bool1, bool2, class1, struct1);
+        return;
     }
     
     add_weapon_original(arg, string, source, bool1, bool2, class1, struct1);
@@ -1080,7 +1026,7 @@ void Hooks::load()
     gadget_modifier_module = new ModuleGadgetModifier();
 
     esp_module = new ModuleESP();
-    // player_move_c_modules.push_back((ModuleBase*) esp_module);
+    player_move_c_modules.push_back((ModuleBase*) esp_module);
     aim_bot_module = new ModuleAimBot();
     
     player_move_c_modules.push_back((ModuleBase*) new ModuleFly());
