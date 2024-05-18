@@ -15,7 +15,7 @@ public:
     static inline uint64_t TextMeshGetText = 0x4494c40; // 24.4.5
     static inline uint64_t BehaviourGetEnabled = 0x43aaa70; // 24.4.5
     static inline uint64_t OnPreRender = 0x431e890; // 24.4.5
-    static inline uint64_t TextMeshGetColor = 0x44009b0; // 24.4.5
+    static inline uint64_t TextMeshGetColor = 0x44949e0; // 24.4.5
     static inline uint64_t WorldToScreenPoint = 0x438a1f0; // 24.4.5
     static inline uint64_t ComponentGetTransform = 0x43aba90; // 24.4.5
     static inline uint64_t TransformGetRotation = 0x43c0a10; // 24.4.5
