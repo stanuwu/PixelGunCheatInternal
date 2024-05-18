@@ -11,7 +11,7 @@ public:
     static inline uint64_t SetNextCriticalHit = 0x80f060; // 24.4.5
     static inline uint64_t MakeInvisibleForSeconds = 0x1b06330; // 24.4.5
     static inline uint64_t InfiniteGemClaim = 0x4c0080; // 24.4.5
-    static inline uint64_t RapidFire = 0x1158630; // 24.4.5
+    static inline uint64_t RapidFire = 0x113bc50; // 24.4.5
     static inline uint64_t TextMeshGetText = 0x4494c40; // 24.4.5
     static inline uint64_t BehaviourGetEnabled = 0x43aaa70; // 24.4.5
     static inline uint64_t OnPreRender = 0x431e890; // 24.4.5

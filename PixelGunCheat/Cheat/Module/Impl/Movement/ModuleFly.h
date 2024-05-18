@@ -14,7 +14,7 @@ public:
     
     void do_module(void* arg) override
     {
-        if (ClientUtil::fixed_tick_ingame % 120 == 0) Functions::ActivateGadget(arg, 3, 1);
+        if (ClientUtil::fixed_tick_ingame % 120 == 0) Functions::ActivateGadget(arg, 3, 65);
         fly_player_instance = arg;
     }
 

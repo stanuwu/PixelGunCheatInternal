@@ -4,7 +4,7 @@
 #include "../../../Internal/Functions.h"
 
 static BKCSliderInt __gadget_id = BKCSliderInt("Gadget ID", 0, 0, 20);
-static BKCSliderInt __gadget_level = BKCSliderInt("Gadget Level", 1, 1, 10);
+static BKCSliderInt __gadget_level = BKCSliderInt("Gadget Level", 1, 1, 65);
 static BKCModule __gadget_activator = { "Gadget Activator", "Go go gadget testicular torsion!", PLAYER, 0x0, false, { &__gadget_id, &__gadget_level } };
 
 static void* gadget_activator_player_instance;

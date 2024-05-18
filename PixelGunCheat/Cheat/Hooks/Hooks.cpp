@@ -408,10 +408,10 @@ inline void __stdcall player_move_c(void* arg)
     {
         // Just do this every fucking call innit
         // Hooks::main_camera = find_main_camera();
-        if (Hooks::main_camera == nullptr) return player_move_c_original(arg);
-        Hooks::our_player = arg;
+        // if (Hooks::main_camera == nullptr) return player_move_c_original(arg);
+        Hooks::our_player = arg; // WARN: ALWAYS ALLOW THIS TO BE SET, OTHERWISE BREAKS A LOT OF MODULES
         
-        Hooks::fov_changer_module->run(nullptr);
+        // Hooks::fov_changer_module->run(nullptr);
 
         // Functions::SendChat(arg, Hooks::create_system_string(".gg/security-research [ " + random_string(8) + " ] "));
         
@@ -473,7 +473,6 @@ inline float(__stdcall* rapid_fire_original)(void* arg);
 inline float __stdcall rapid_fire(void* arg)
 {
     if (((ModuleBase*)rapid_fire_module)->is_enabled()) return rapid_fire_module->get_speed();
-
     return rapid_fire_original(arg);
 }
 
@@ -481,7 +480,6 @@ inline float(__stdcall* speed_original)(void* arg);
 inline float __stdcall speed(void* arg)
 {
     if (((ModuleBase*)speed_module)->is_enabled()) return speed_module->get_amount();
-
     return speed_original(arg);
 }
 
@@ -960,6 +958,16 @@ inline int __stdcall force_item_display(void* arg, int offer_type, void* id)
 
     return force_item_display_orig(arg, offer_type, id);
 }
+
+inline void (__stdcall* activate_gadget_orig)(void* arg, int type, void* str, int lvl);
+inline void __stdcall activate_gadget(void* arg, int type, void* str, int lvl)
+{
+    Unity::System_String* u_string = (Unity::System_String*) str;
+    std::cout << type << std::endl;
+    std::cout << u_string->ToString() << std::endl;
+    std::cout << lvl << std::endl;
+    activate_gadget_orig(arg, type, str, lvl);
+}
  
 // Static
 void hook_function(uint64_t offset, LPVOID detour, void* original)
@@ -1013,7 +1021,7 @@ void Hooks::load()
     hook_function(Offsets::GetAmmoInClip, &ammo_in_clip, &ammo_in_clip_original);
     hook_function(Offsets::GetAmmo, &ammo, &ammo_original);
     hook_function(Offsets::GetDamageMultiplier, &damage_multiplier, &damage_multiplier_original);
-    // hook_function(Offsets::PlayerGetImmortality, &get_immortality, &get_immortality_original);
+    hook_function(Offsets::PlayerGetImmortality, &get_immortality, &get_immortality_original);
 
     hook_function(Offsets::SpoofModuleLevel, &spoof_module_level, &spoof_module_level_orig);
     
@@ -1035,6 +1043,7 @@ void Hooks::load()
     hook_function(Offsets::LotteryDropType, &lottery_drop_type, &lottery_drop_type_orig);
 
     hook_function(Offsets::ForceItemDisplay, &force_item_display, &force_item_display_orig);
+    hook_function(Offsets::GadgetActivate, &activate_gadget, &activate_gadget_orig);
     
     // LOG HOOKS
     hook_function(0x438f9e0, &debug_log, &debug_log_orig); // Log 1arg

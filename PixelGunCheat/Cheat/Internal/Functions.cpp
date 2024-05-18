@@ -206,7 +206,7 @@ void Functions::ActivateGadget(void* arg, int gadget_id, int level)
 {
     if (!arg) return;
     static const auto fn = (void(*)(void*, int, void*, int))(GameAssembly_ + Offsets::GadgetActivate);
-    return fn(arg, gadget_id, Hooks::create_system_string("TrustMeBroThisIsARealCallToThisMethod"), level);
+    return fn(arg, gadget_id, Hooks::create_system_string("IWouldNotLieThatThisIsARealStringForThisMethodCallBro"), level);
 }
 
 void Functions::DeactivateGadget(void* arg, int gadget_id)
