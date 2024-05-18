@@ -1016,8 +1016,6 @@ void Hooks::load()
     hook_function(Offsets::PlayerGetImmortality, &get_immortality, &get_immortality_original);
 
     hook_function(Offsets::SpoofModuleLevel, &spoof_module_level, &spoof_module_level_orig);
-
-    // hook_function(0x1f19ad0, &spoof_gadget_tier, &spoof_gadget_tier_orig);
     
     // hook_function(Offsets::WeaponSetSkin, &force_item_display, &force_item_display_orig);
     
