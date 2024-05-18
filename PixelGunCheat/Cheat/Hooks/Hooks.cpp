@@ -246,10 +246,10 @@ void Hooks::dump_all_records()
 
 void Hooks::draw_all()
 {
-    if (esp_module == nullptr) return;
-    esp_module->draw_all();
-    if (aim_bot_module == nullptr) return;
-    aim_bot_module->draw_all_aim();
+    // if (esp_module == nullptr) return;
+    // esp_module->draw_all();
+    // if (aim_bot_module == nullptr) return;
+    // aim_bot_module->draw_all_aim();
 }
 
 void nuke_player_list()
@@ -357,7 +357,7 @@ inline void __stdcall weapon_sounds_call(void* arg)
     
     if (is_my_player_weapon_sounds(arg))
     {
-        if (Hooks::our_player != nullptr && aim_bot_module && aim_bot_module->is_using_silent_aim) ((ModuleBase*)aim_bot_module)->run(arg);
+        // if (Hooks::our_player != nullptr && aim_bot_module && aim_bot_module->is_using_silent_aim) ((ModuleBase*)aim_bot_module)->run(arg);
         
         for (ModuleBase* weapon_sounds_module : weapon_sounds_modules)
         {
@@ -380,7 +380,7 @@ inline void __stdcall weapon_sounds_late_call(void* arg)
 {
     if (is_my_player_weapon_sounds(arg))
     {
-        if (Hooks::our_player != nullptr && aim_bot_module && !aim_bot_module->is_using_silent_aim) ((ModuleBase*)aim_bot_module)->run(arg);
+        // if (Hooks::our_player != nullptr && aim_bot_module && !aim_bot_module->is_using_silent_aim) ((ModuleBase*)aim_bot_module)->run(arg);
     }
 
     return weapon_sounds_late_original(arg);
@@ -425,7 +425,7 @@ inline void __stdcall player_move_c(void* arg)
         // Other Players
         if (Hooks::main_camera == nullptr) return player_move_c_original(arg);
         Hooks::fov_changer_module->run(nullptr);
-        esp_module->add_esp(arg);
+        // esp_module->add_esp(arg);
         working_player_list.push_back(arg);
         
         for (auto player_move_c_others_module : player_move_c_others_modules)
@@ -1013,7 +1013,7 @@ void Hooks::load()
     hook_function(Offsets::GetAmmoInClip, &ammo_in_clip, &ammo_in_clip_original);
     hook_function(Offsets::GetAmmo, &ammo, &ammo_original);
     hook_function(Offsets::GetDamageMultiplier, &damage_multiplier, &damage_multiplier_original);
-    hook_function(Offsets::PlayerGetImmortality, &get_immortality, &get_immortality_original);
+    // hook_function(Offsets::PlayerGetImmortality, &get_immortality, &get_immortality_original);
 
     hook_function(Offsets::SpoofModuleLevel, &spoof_module_level, &spoof_module_level_orig);
     
@@ -1071,7 +1071,7 @@ void Hooks::load()
     gadget_modifier_module = new ModuleGadgetModifier();
 
     esp_module = new ModuleESP();
-    player_move_c_modules.push_back((ModuleBase*) esp_module);
+    // player_move_c_modules.push_back((ModuleBase*) esp_module);
     aim_bot_module = new ModuleAimBot();
     
     player_move_c_modules.push_back((ModuleBase*) new ModuleFly());
