@@ -28,7 +28,7 @@ public:
         const int win_width = ClientUtil::win_size_info.right - ClientUtil::win_size_info.left;
         const float win_width_float = (float)win_width;
         const float bg_offset = 4;
-        const float extra_offset = __line_on_side.enabled ? 2 : 0;
+        const float extra_offset = __line_on_side.enabled ? 2 * BKCImGuiHooker::scale_factor : 0;
         float x = 0;
         float y = 0;
 
@@ -78,13 +78,13 @@ public:
             {
                 if (__screen_position.current_index == 1)
                 {
-                    x = win_width_float - (7 + text_size.x * BKCImGuiHooker::scale_factor);
-                    ImGui::GetBackgroundDrawList()->AddRectFilled({ x - bg_offset * 2 - extra_offset, y + 2 }, { x + text_size.x * BKCImGuiHooker::scale_factor, y + text_size.y + mod_y + 2 }, ImGui::ColorConvertFloat4ToU32({ 0.00f, 0.00f, 0.00f, (float)__background_opacity.value / 100.0f }), 0);
+                    x = win_width_float - (7 + text_size.x);
+                    ImGui::GetBackgroundDrawList()->AddRectFilled({ x - bg_offset * 2 - extra_offset, y + 2 }, { x + text_size.x, y + text_size.y + mod_y + 2 }, ImGui::ColorConvertFloat4ToU32({ 0.00f, 0.00f, 0.00f, (float)__background_opacity.value / 100.0f }), 0);
                     ImGui::GetBackgroundDrawList()->AddRectFilled({ win_width_float - 7 - extra_offset, y + 2 }, { win_width_float - 7, y + text_size.y + mod_y + 2 }, color_array, 0);
                 }
                 else
                 {
-                    ImGui::GetBackgroundDrawList()->AddRectFilled({ x, y + 2 }, { x + text_size.x * BKCImGuiHooker::scale_factor + bg_offset * 2 + extra_offset, y + text_size.y + mod_y + 2 }, ImGui::ColorConvertFloat4ToU32({ 0.00f, 0.00f, 0.00f, (float)__background_opacity.value / 100.0f }), 0);
+                    ImGui::GetBackgroundDrawList()->AddRectFilled({ x, y + 2 }, { x + text_size.x + bg_offset * 2 + extra_offset, y + text_size.y + mod_y + 2 }, ImGui::ColorConvertFloat4ToU32({ 0.00f, 0.00f, 0.00f, (float)__background_opacity.value / 100.0f }), 0);
                     ImGui::GetBackgroundDrawList()->AddRectFilled({ x, y + 2 }, { x + extra_offset, y + text_size.y + mod_y + 2 }, color_array, 0);
                 }
             }
