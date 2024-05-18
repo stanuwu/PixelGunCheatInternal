@@ -407,7 +407,7 @@ inline void __stdcall player_move_c(void* arg)
     if (my_player)
     {
         // Just do this every fucking call innit
-        Hooks::main_camera = find_main_camera();
+        // Hooks::main_camera = find_main_camera();
         if (Hooks::main_camera == nullptr) return player_move_c_original(arg);
         Hooks::our_player = arg;
         
@@ -971,7 +971,7 @@ void hook_function(uint64_t offset, LPVOID detour, void* original)
         std::stringstream hexified;
         hexified << std::hex << offset;
         Logger::log_err("MinHook failed to hook to offset 0x" + hexified.str() + "! (Status: " + std::to_string(create_hook) + ")");
-    }
+    } 
 }
 
 // Load
@@ -987,16 +987,18 @@ void Hooks::load()
 
     // Cool IL2CPP Resolver
     IL2CPP::Initialize();
-    Unity::Camera::Initialize();
-    Unity::Transform::Initialize();
+
+    // Uncomment = Crash, JMP Table Detection Cancer Thingamajig brought to you by Cubic Games OP Anti-Mod
+    // Unity::Camera::Initialize();
+    // Unity::Transform::Initialize();
     
     // MinHook
     MH_Initialize();
     
     // Hook Functions Here
+    hook_function(Offsets::PlayerMoveCUpdate, &player_move_c, &player_move_c_original);
     hook_function(Offsets::WeaponSoundsUpdate, &weapon_sounds_call, &weapon_sounds_original);
     hook_function(Offsets::WeaponSoundsLateUpdate, &weapon_sounds_late_call, &weapon_sounds_late_original);
-    hook_function(Offsets::PlayerMoveCUpdate, &player_move_c, &player_move_c_original);
     hook_function(Offsets::InfiniteGemClaim, &infinite_gem_claim, &infinite_gem_claim_original);
     hook_function(Offsets::RapidFire, &rapid_fire, &rapid_fire_original);
     hook_function(Offsets::GetPlayerSpeed, &speed, &speed_original);
@@ -1025,7 +1027,7 @@ void Hooks::load()
     hook_function(Offsets::GadgetCooldown, &gadget_cooldown, &gadget_cooldown_orig);
     hook_function(Offsets::TeamKill, &team_kill, &team_kill_orig);
 
-    hook_function(0x1b1bd50, &chat_bypass, &chat_bypass_orig);
+    hook_function(Offsets::SendChat, &chat_bypass, &chat_bypass_orig);
     
     // hook_function(0x1bbf0e0, &force_pandoras, &force_pandoras_orig);
     // hook_function(0xcb9f30, &lottery_core, &lottery_core_orig);
@@ -1037,17 +1039,17 @@ void Hooks::load()
     hook_function(Offsets::ForceItemDisplay, &force_item_display, &force_item_display_orig);
     
     // LOG HOOKS
-    hook_function(0x43938D0, &debug_log, &debug_log_orig); // Log 1arg
-    hook_function(0x4393740, &debug_log_warn, &debug_log_warn_orig); // LogWarning 1arg
-    hook_function(0x43931B0, &debug_log_error, &debug_log_error_orig); // LogError 1arg
+    hook_function(0x438f9e0, &debug_log, &debug_log_orig); // Log 1arg
+    hook_function(0x438f850, &debug_log_warn, &debug_log_warn_orig); // LogWarning 1arg
+    hook_function(0x438f2c0, &debug_log_error, &debug_log_error_orig); // LogError 1arg
 
-    hook_function(0x4393800, &debug_log_fmt, &debug_log_fmt_orig); // Log 2arg
-    hook_function(0x4393670, &debug_log_warn_fmt, &debug_log_warn_fmt_orig); // LogWarning 2arg
-    hook_function(0x43930E0, &debug_log_error_fmt, &debug_log_error_fmt_orig); // LogError 2arg
+    hook_function(0x438f910, &debug_log_fmt, &debug_log_fmt_orig); // Log 2arg
+    hook_function(0x438f780, &debug_log_warn_fmt, &debug_log_warn_fmt_orig); // LogWarning 2arg
+    hook_function(0x438f1f0, &debug_log_error_fmt, &debug_log_error_fmt_orig); // LogError 2arg
 
-    hook_function(0x43933F0, &debug_log_fmt2, &debug_log_fmt_orig2); // LogFormat 2arg
-    hook_function(0x43934C0, &debug_log_warn_fmt2, &debug_log_warn_fmt_orig2); // LogWarningFormat 2arg
-    hook_function(0x4393010, &debug_log_error_fmt2, &debug_log_error_fmt_orig2); // LogErrorFormat 2arg
+    hook_function(0x438f500, &debug_log_fmt2, &debug_log_fmt_orig2); // LogFormat 2arg
+    hook_function(0x438f5d0, &debug_log_warn_fmt2, &debug_log_warn_fmt_orig2); // LogWarningFormat 2arg
+    hook_function(0x438f120, &debug_log_error_fmt2, &debug_log_error_fmt_orig2); // LogErrorFormat 2arg
     
     // Init Modules Here
     rapid_fire_module = new ModuleRapidFire();

@@ -808,8 +808,16 @@ std::string strlow(std::string str)
 
 void HandleModuleSettingRendering(BKCModule& module)
 {
+    std::string last_separator = "";
+    
     for (auto& setting : module.settings)
-    { 
+    {
+        if (setting->category != last_separator)
+        {
+            ImGui::SeparatorText(("Settings: " + setting->category).c_str());
+            last_separator = setting->category;
+        }
+        
         std::stringstream per_module_name;
         
         if (setting->type == 1)
@@ -885,7 +893,6 @@ void HandleModuleRendering(BKCModule& module)
         ImGui::Indent();
         ImGui::SeparatorText("Active Status");
         ImGui::Checkbox(module_enabled_id.str().c_str(), &module.enabled);
-        ImGui::SeparatorText("Settings");
         HandleModuleSettingRendering(module);
         ImGui::Unindent();
     }

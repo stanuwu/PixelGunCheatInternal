@@ -129,7 +129,7 @@ void* Functions::GetDataList(void* arg, int type)
 
 void* Functions::GetWeaponSkinSettings(void* id)
 {
-    static const auto fn = (void*(*)(void*))(GameAssembly_ + 0x8ff5b0);
+    static const auto fn = (void*(*)(void*))(GameAssembly_ + Offsets::GetWeaponSkinSettings);
     return fn(id);
 }
 
@@ -229,26 +229,13 @@ void* Functions::ProgressUpdaterGetInstance()
     return fn(); 
 }
 
-void Functions::AddModule(void* arg, int count, void* id)
-{
-    if (!arg) return;
-    static const auto fn = (void(*)(void*, int, void*))(GameAssembly_ + 0xa297f0);
-    return fn(arg, count, id);
-}
-
 void Functions::SendChat(void* arg, void* msg)
 {
     if (!arg) return;
-    static const auto fn = (void(*)(void*, void*, bool, void*))(GameAssembly_ + 0x1b1bd50);
+    static const auto fn = (void(*)(void*, void*, bool, void*))(GameAssembly_ + Offsets::SendChat);
     return fn(arg, msg, false, Hooks::create_system_string(""));
 }
 
-void Functions::DoSomething(void* arg, int eff_id, float test)
-{
-    if (!arg) return;
-    static const auto fn = (void(*)(void*, int, float))(GameAssembly_ + 0x1b209c0);
-    return fn(arg, eff_id, test);
-}
 
 void Functions::ProgressAddCurrency(void* instance, void* currency, int amount, int enum1, bool bool1, bool bool2, itemObtainParams* obtainParams)
 {

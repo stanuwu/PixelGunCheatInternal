@@ -13,7 +13,7 @@ public:
     
     void do_module(void* arg) override
     {
-        set_bool(arg, Offsets::isRecudedHeadshotDamage, true); // isReducedHeadshotDamage
+        set_bool(arg, Offsets::isReducedHeadshotDamage, true); // isReducedHeadshotDamage
         set_float(arg, Offsets::reducedHeadshotDamageMultiplier, __ahs_multi.value); // reducedHeadshotDamageMultiplier
     }
 };
