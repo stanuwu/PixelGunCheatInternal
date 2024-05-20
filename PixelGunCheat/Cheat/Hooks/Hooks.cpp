@@ -917,7 +917,7 @@ inline void __stdcall proton_connect_failure(void* arg, int cause)
     if (((ModuleBase*)force_rejoin_module)->is_enabled() && cause == 1043) // DisconnectByServerLogic
     {
         Logger::log_debug("Trying to prevent Proton connection failure...");
-        ModuleNotifications::add_notification("Force Rejoin", "Detected a disconnection, trying to force rejoin...", 3000);
+        ModuleNotifications::add_notification("Force Rejoin", "Detected a disconnection, trying to force rejoin...", 5000);
         return;
     }
     
@@ -930,7 +930,7 @@ inline void __stdcall proton_connect_failure2(void* arg, int cause)
     if (((ModuleBase*)force_rejoin_module)->is_enabled() && cause == 1043) // DisconnectByServerLogic
     {
         Logger::log_debug("Trying to prevent Proton connection failure...");
-        ModuleNotifications::add_notification("Force Rejoin", "Detected a disconnection, trying to force rejoin...", 3000);
+        ModuleNotifications::add_notification("Force Rejoin", "Detected a disconnection, trying to force rejoin...", 5000);
         return;
     }
 
