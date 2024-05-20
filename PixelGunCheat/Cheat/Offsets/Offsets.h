@@ -68,6 +68,8 @@ public:
     static inline uint64_t CameraGetMain = 0x438A930; // 24.4.5
     static inline uint64_t CameraGetCurrent = 0x438A7C0; // 24.4.5
     static inline uint64_t CameraSetFieldOfView = 0x438b210; // 24.4.5
+    static inline uint64_t ProtonOnDisconnect = 0x9c7c70; // 24.4.5
+    static inline uint64_t ProtonOnDisconnect2 = 0x1f1bfe0; // 24.4.5
     
     // Fields
     static inline uint64_t scopeSpeed = 0x100;

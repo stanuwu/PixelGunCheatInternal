@@ -254,6 +254,13 @@ void* Functions::CameraGetMain()
     return fn(); 
 }
 
+void Functions::TestKicker(void* arg)
+{
+    if (!arg) return;
+    static const auto fn = (void(*)(void*, void*, void*))(GameAssembly_ + 0x1b1e9f0);
+    return fn(arg, Hooks::create_system_string("kick_test"), nullptr);
+}
+
 void Functions::CameraSetFov(void* arg, float fov)
 {
     static const auto fn = (void(*)(void*, float))(GameAssembly_ + Offsets::CameraSetFieldOfView);

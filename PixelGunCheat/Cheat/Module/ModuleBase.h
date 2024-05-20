@@ -49,6 +49,11 @@ public:
     virtual void do_module(void* arg) = 0;
 
 protected:
+    static void* get_element(void* arg, uint64_t offset)
+    {
+        return (void*)((uint64_t)arg + offset);
+    }
+    
     static void set_bool(void* arg, uint64_t offset, bool value)
     {
         *(bool*)((uint64_t)arg + offset) = value;

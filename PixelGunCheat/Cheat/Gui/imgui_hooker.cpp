@@ -21,6 +21,7 @@
 #include "../Data/Weapons.h"
 #include "../Hooks/Hooks.h"
 #include "../Internal/Functions.h"
+#include "../Module/Impl/Visual/ModuleNotifications.h"
 
 #pragma comment( lib, "d3d10.lib" )
 #pragma comment( lib, "d3d11.lib" )
@@ -51,6 +52,7 @@ static ImU32 color_bg = ImGui::ColorConvertFloat4ToU32({0.00f, 0.00f, 0.00f, 0.8
 std::string current_font = "C:/Windows/Fonts/micross.ttf";
 static bool boundless_value_setting = false;
 static bool font_changed = false;
+static int count = 0;
 
 void InitModules(const std::vector<BKCModule>& init_mods);
 void HandleModuleSettingRendering(BKCModule& module);
@@ -639,7 +641,7 @@ void BKCImGuiHooker::start(void* g_mainRenderTargetView, void* g_pd3dDevice, voi
         ImGui::End();
 
         // ENABLE THIS FOR EASILY FINDING WHAT YOU NEED TO ADD TO THE GUI
-        // ImGui::ShowDemoWindow();
+        ImGui::ShowDemoWindow();
 
         /*
         if (show_client_settings) DrawClientSettingsWindow(is_dx_11);
@@ -755,6 +757,12 @@ void DrawClientSettingsWindow(bool is_dx_11)
     if (ImGui::Button("Dump All Records (Dev)"))
     {
         Hooks::dump_all_records();
+    }
+
+    if (ImGui::Button("Send Test Notification"))
+    {
+        ModuleNotifications::add_notification("Force Rejoin", "Detected a disconnection, trying to force rejoin... " + std::to_string(count), 3000);
+        count++;
     }
 }
 

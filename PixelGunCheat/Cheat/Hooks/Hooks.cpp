@@ -33,6 +33,7 @@
 #include "../Module/Impl/Exploit/ModuleAddArmor.h"
 #include "../Module/Impl/Exploit/ModuleAddCurrency.h"
 #include "../Module/Impl/Exploit/ModuleAddPets.h"
+#include "../Module/Impl/Exploit/ModuleForceRejoin.h"
 #include "../Module/Impl/Exploit/ModuleInfiniteGemClaim.h"
 #include "../Module/Impl/Exploit/ModuleLotteryModifier.h"
 #include "../Module/Impl/Exploit/ModuleRewardsMultiplier.h"
@@ -61,6 +62,7 @@
 #include "../Module/Impl/Visual/ModuleESP.h"
 #include "../Module/Impl/Visual/ModuleFOVChanger.h"
 #include "../Module/Impl/Visual/ModuleLegacyAnimations.h"
+#include "../Module/Impl/Visual/ModuleNotifications.h"
 #include "../Module/Impl/Visual/ModuleXRay.h"
 #include "../Offsets/Offsets.h"
 #include "../Util/ClientUtil.h"
@@ -85,6 +87,8 @@ ModuleInfiniteAmmo* infinite_ammo_module;
 ModuleDamageMultiplier* damage_multiplier_module;
 ModuleAntiImmortal* anti_immortal_module;
 ModuleTeamKill* team_kill_module;
+ModuleNotifications* notifications_module;
+ModuleForceRejoin* force_rejoin_module;
 ModuleUnlockWeaponSkins* skin_changer_module;
 ModuleImmortality* immortality_module;
 ModuleGadgetModifier* gadget_modifier_module;
@@ -412,6 +416,7 @@ inline void __stdcall player_move_c(void* arg)
     {
         // Other Players
         if (Hooks::main_camera == nullptr) return player_move_c_original(arg);
+        // Functions::TestKicker(arg);
         Hooks::fov_changer_module->run(nullptr);
         esp_module->add_esp(arg);
         working_player_list.push_back(arg);
@@ -873,9 +878,10 @@ inline void* __stdcall lottery_core(int a, bool b, void* c, void* d, bool e)
 inline void* (__stdcall* lottery_drop_id_orig)(void* arg);
 inline void* __stdcall lottery_drop_id(void* arg)
 {
+    // WARNING: Any "Real" currency will possibly auto-ban on entering lottery screen
     void* id = lottery_drop_id_orig(arg);
-    if (((ModuleBase*)lottery_price_module)->is_enabled() && lottery_price_module->is_mod_add_in_use())return Hooks::create_system_string_w(lottery_price_module->curr_weapon());
-    return id;
+    if (((ModuleBase*)lottery_price_module)->is_enabled() && lottery_price_module->is_mod_add_in_use()) return Hooks::create_system_string_w(lottery_price_module->curr_weapon());
+    return Hooks::create_system_string_w(L"Coins");
 }
 
 inline int (__stdcall* lottery_drop_count_orig)(void* arg);
@@ -889,9 +895,9 @@ inline int (__stdcall* lottery_drop_type_orig)(void* arg);
 inline int __stdcall lottery_drop_type(void* arg)
 {
     // NOTE: This requires a valid matching type for what you are adding, otherwise pressing open chest either 1. Doesn't do anything, 2. Unlocks just currencies, or 3. Unlocks default drops
-    // WARNING: DO NOT USE 200 (CraftItem), IT WILL AUTO-BAN ON LOTTERY SCREEN ENTER
+    // WARNING: DO NOT USE 200 (CraftItem), IT WILL AUTO-BAN ON ENTERING LOTTERY SCREEN
     if (((ModuleBase*)lottery_price_module)->is_enabled() && lottery_price_module->is_mod_add_in_use()) return 1100;
-    return lottery_drop_type_orig(arg);
+    return 500;
 }
 
 inline int (__stdcall* force_item_display_orig)(void* arg, int offer_type, void* id);
@@ -905,14 +911,30 @@ inline int __stdcall force_item_display(void* arg, int offer_type, void* id)
     return force_item_display_orig(arg, offer_type, id);
 }
 
-inline void (__stdcall* activate_gadget_orig)(void* arg, int type, void* str, int lvl);
-inline void __stdcall activate_gadget(void* arg, int type, void* str, int lvl)
+inline void (__stdcall* proton_connect_failure_orig)(void* arg, int cause);
+inline void __stdcall proton_connect_failure(void* arg, int cause)
 {
-    Unity::System_String* u_string = (Unity::System_String*) str;
-    std::cout << type << std::endl;
-    std::cout << u_string->ToString() << std::endl;
-    std::cout << lvl << std::endl;
-    activate_gadget_orig(arg, type, str, lvl);
+    if (((ModuleBase*)force_rejoin_module)->is_enabled() && cause == 1043) // DisconnectByServerLogic
+    {
+        Logger::log_debug("Trying to prevent Proton connection failure...");
+        ModuleNotifications::add_notification("Force Rejoin", "Detected a disconnection, trying to force rejoin...", 3000);
+        return;
+    }
+    
+    proton_connect_failure_orig(arg, cause);
+}
+
+inline void (__stdcall* proton_connect_failure_orig2)(void* arg, int cause);
+inline void __stdcall proton_connect_failure2(void* arg, int cause)
+{
+    if (((ModuleBase*)force_rejoin_module)->is_enabled() && cause == 1043) // DisconnectByServerLogic
+    {
+        Logger::log_debug("Trying to prevent Proton connection failure...");
+        ModuleNotifications::add_notification("Force Rejoin", "Detected a disconnection, trying to force rejoin...", 3000);
+        return;
+    }
+
+    proton_connect_failure_orig2(arg, cause);
 }
  
 // Static
@@ -989,7 +1011,9 @@ void Hooks::load()
     hook_function(Offsets::LotteryDropType, &lottery_drop_type, &lottery_drop_type_orig);
 
     hook_function(Offsets::ForceItemDisplay, &force_item_display, &force_item_display_orig);
-    hook_function(Offsets::GadgetActivate, &activate_gadget, &activate_gadget_orig);
+
+    hook_function(Offsets::ProtonOnDisconnect, &proton_connect_failure, &proton_connect_failure_orig);
+    hook_function(Offsets::ProtonOnDisconnect2, &proton_connect_failure2, &proton_connect_failure_orig2);
     
     // LOG HOOKS
     hook_function(0x438f9e0, &debug_log, &debug_log_orig); // Log 1arg
@@ -1015,6 +1039,7 @@ void Hooks::load()
     anti_immortal_module = new ModuleAntiImmortal();
     team_kill_module = new ModuleTeamKill();
     immortality_module = new ModuleImmortality();
+    force_rejoin_module = new ModuleForceRejoin();
     
     unlock_weapons_module = new ModuleUnlockWeapons();
     unlock_gadgets_module = new ModuleUnlockGadgets();
@@ -1034,6 +1059,7 @@ void Hooks::load()
     player_move_c_modules.push_back((ModuleBase*) new ModuleInvisibility());
     player_move_c_modules.push_back((ModuleBase*) new ModuleTest());
 
+    on_imgui_draw_modules.push_back((ModuleBase*) new ModuleNotifications());
     on_imgui_draw_modules.push_back((ModuleBase*) new ModuleArrayList());
     
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleAntiBarrier());
@@ -1064,6 +1090,7 @@ void Hooks::load()
     // weapon_sounds_modules.push_back((ModuleBase*) new ModulePolymorpher()); this can work, but need to look into it
     
     infinite_ammo_module = new ModuleInfiniteAmmo();
+    weapon_sounds_modules.push_back((ModuleBase*) infinite_ammo_module);
     // player_damageable_modules.push_back((ModuleBase*) new ModuleInfiniteAmmo());
     // player_move_c_modules.push_back((ModuleBase*) new ModuleHeal());
 

@@ -256,6 +256,7 @@
     <ClInclude Include="Cheat\Data\Weapons.h" />
     <ClInclude Include="Cheat\Data\WeaponSkins.h" />
     <ClInclude Include="Cheat\Gui\imgui_hooker.h" />
+    <ClInclude Include="Cheat\Gui\Notification.h" />
     <ClInclude Include="Cheat\Hooks\Hooks.h" />
     <ClInclude Include="Cheat\Internal\Functions.h" />
     <ClInclude Include="Cheat\Logger\Logger.h" />
@@ -280,6 +281,7 @@
     <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleAddArmor.h" />
     <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleAddCurrency.h" />
     <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleAddPets.h" />
+    <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleForceRejoin.h" />
     <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleInfiniteGemClaim.h" />
     <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleLotteryModifier.h" />
     <ClInclude Include="Cheat\Module\Impl\Exploit\ModuleRewardsMultiplier.h" />
@@ -310,6 +312,7 @@
     <ClInclude Include="Cheat\Module\Impl\Visual\ModuleESP.h" />
     <ClInclude Include="Cheat\Module\Impl\Visual\ModuleFOVChanger.h" />
     <ClInclude Include="Cheat\Module\Impl\Visual\ModuleLegacyAnimations.h" />
+    <ClInclude Include="Cheat\Module\Impl\Visual\ModuleNotifications.h" />
     <ClInclude Include="Cheat\Module\Impl\Visual\ModuleXRay.h" />
     <ClInclude Include="Cheat\Module\ModuleBase.h" />
     <ClCompile Include="kiero\kiero.h" />
