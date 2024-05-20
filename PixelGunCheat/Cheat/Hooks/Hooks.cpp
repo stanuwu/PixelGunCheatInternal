@@ -881,7 +881,7 @@ inline void* __stdcall lottery_drop_id(void* arg)
     // WARNING: Any "Real" currency will possibly auto-ban on entering lottery screen
     void* id = lottery_drop_id_orig(arg);
     if (((ModuleBase*)lottery_price_module)->is_enabled() && lottery_price_module->is_mod_add_in_use()) return Hooks::create_system_string_w(lottery_price_module->curr_weapon());
-    return Hooks::create_system_string_w(L"Coins");
+    return id;
 }
 
 inline int (__stdcall* lottery_drop_count_orig)(void* arg);
@@ -897,7 +897,7 @@ inline int __stdcall lottery_drop_type(void* arg)
     // NOTE: This requires a valid matching type for what you are adding, otherwise pressing open chest either 1. Doesn't do anything, 2. Unlocks just currencies, or 3. Unlocks default drops
     // WARNING: DO NOT USE 200 (CraftItem), IT WILL AUTO-BAN ON ENTERING LOTTERY SCREEN
     if (((ModuleBase*)lottery_price_module)->is_enabled() && lottery_price_module->is_mod_add_in_use()) return 1100;
-    return 500;
+    return lottery_drop_type_orig(arg);
 }
 
 inline int (__stdcall* force_item_display_orig)(void* arg, int offer_type, void* id);
