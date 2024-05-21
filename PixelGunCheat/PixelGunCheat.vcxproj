@@ -257,6 +257,7 @@
     <ClInclude Include="Cheat\Data\WeaponSkins.h" />
     <ClInclude Include="Cheat\Gui\imgui_hooker.h" />
     <ClInclude Include="Cheat\Gui\Notification.h" />
+    <ClInclude Include="Cheat\Hooks\GlobalModuleDeclarations.h" />
     <ClInclude Include="Cheat\Hooks\Hooks.h" />
     <ClInclude Include="Cheat\Internal\Functions.h" />
     <ClInclude Include="Cheat\Logger\Logger.h" />

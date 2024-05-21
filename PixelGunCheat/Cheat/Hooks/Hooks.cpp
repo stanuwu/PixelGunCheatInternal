@@ -7,6 +7,7 @@
 #include <set>
 #include <sstream>
 
+#include "GlobalModuleDeclarations.h"
 #include "MinHook.h"
 #include "../Internal/Functions.h"
 #include "../Module/ModuleBase.h"
@@ -87,6 +88,7 @@ ModuleInfiniteAmmo* infinite_ammo_module;
 ModuleDamageMultiplier* damage_multiplier_module;
 ModuleAntiImmortal* anti_immortal_module;
 ModuleTeamKill* team_kill_module;
+ModuleHUDCustomizer* GlobalModuleDeclarations::hud_customizer_module;
 ModuleNotifications* notifications_module;
 ModuleForceRejoin* force_rejoin_module;
 ModuleUnlockWeaponSkins* skin_changer_module;
@@ -1060,7 +1062,9 @@ void Hooks::load()
     player_move_c_modules.push_back((ModuleBase*) new ModuleTest());
 
     on_imgui_draw_modules.push_back((ModuleBase*) new ModuleNotifications());
-    on_imgui_draw_modules.push_back((ModuleBase*) new ModuleHUDCustomizer());
+    
+    GlobalModuleDeclarations::hud_customizer_module = new ModuleHUDCustomizer();
+    on_imgui_draw_modules.push_back((ModuleBase*) GlobalModuleDeclarations::hud_customizer_module);
     
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleAntiBarrier());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleAOEBullets());

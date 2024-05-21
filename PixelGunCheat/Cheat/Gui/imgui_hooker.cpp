@@ -19,6 +19,7 @@
 #include <thread>
 
 #include "../Data/Weapons.h"
+#include "../Hooks/GlobalModuleDeclarations.h"
 #include "../Hooks/Hooks.h"
 #include "../Internal/Functions.h"
 #include "../Module/Impl/Visual/ModuleNotifications.h"
@@ -379,6 +380,7 @@ void load_config(const char* config_file)
     std::stringstream msg;
     msg << "Loaded config " << config_file;
     Logger::log_info(msg.str());
+    ModuleNotifications::add_notification("Config Manager", "Loaded config '" + std::string(config_file) + "'", 3000);
 }
 
 void save_config(const char* config_file)
@@ -424,6 +426,7 @@ void save_config(const char* config_file)
     std::stringstream msg;
     msg << "Saved config " << config_file;
     Logger::log_info(msg.str());
+    ModuleNotifications::add_notification("Config Manager", "Saved config '" + std::string(config_file) + "'", 3000);
 }
 
 std::vector<std::string> native_font_list(bool ttf_only)
@@ -668,7 +671,8 @@ void BKCImGuiHooker::start(void* g_mainRenderTargetView, void* g_pd3dDevice, voi
     ImGui::GetBackgroundDrawList()->AddText(nullptr, size, {9, 6}, ImGui::ColorConvertFloat4ToU32({ 0.0f, 0.0f, 0.0f, 0.5f }), full_title.str().c_str());
     ImGui::GetBackgroundDrawList()->AddText(nullptr, size, {11, 4}, ImGui::ColorConvertFloat4ToU32({ 0.0f, 0.0f, 0.0f, 0.5f }), full_title.str().c_str());
     ImGui::GetBackgroundDrawList()->AddText(nullptr, size, {11, 6}, ImGui::ColorConvertFloat4ToU32({ 0.0f, 0.0f, 0.0f, 0.5f }), full_title.str().c_str());
-    ImGui::GetBackgroundDrawList()->AddText(nullptr, size, {10, 5}, color_title, full_title.str().c_str());
+    if (GlobalModuleDeclarations::hud_customizer_module != nullptr && ((ModuleBase*)GlobalModuleDeclarations::hud_customizer_module)->is_enabled()) ImGui::GetBackgroundDrawList()->AddText(nullptr, size, {10, 5}, GlobalModuleDeclarations::hud_customizer_module->get_color_scheme(ClientUtil::color_prog_offset), full_title.str().c_str());
+    else ImGui::GetBackgroundDrawList()->AddText(nullptr, size, {10, 5}, color_title, full_title.str().c_str());
     ImGui::PopFont();
     
     ImGui::Render();

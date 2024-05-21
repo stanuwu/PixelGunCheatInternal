@@ -12,6 +12,8 @@ static BKCModule __notifications = { "Notifications", "Shows useful notification
 
 inline std::map<std::chrono::milliseconds, Notification> notifications = {};
 
+static ImU32 color_notif_default = ImGui::ColorConvertFloat4ToU32(Functions::ImVec4i(255, 180, 230));
+
 class ModuleNotifications : ModuleBase
 {
 public:
@@ -35,6 +37,7 @@ public:
         const float win_width = (float)(ClientUtil::win_size_info.right - ClientUtil::win_size_info.left);
         const float win_height = (float)(ClientUtil::win_size_info.bottom - ClientUtil::win_size_info.top);
         float y = win_height - 75;
+        float color_offset = 0;
 
         std::list<std::chrono::milliseconds> to_remove = {};
         
@@ -64,11 +67,13 @@ public:
             
             // Logger::log_debug("Rendering x=" + std::to_string(head_size.x) + ", y=" + std::to_string(message_size.x));
 
-            ImGui::GetBackgroundDrawList()->AddRectFilled({ x - 1, y - 1 }, { x + min_width + 1, y + 50 + 1 }, ImGui::ColorConvertFloat4ToU32({ 0.85f, 0.15f, 0.15f, 1.0f }), 4);
+            if(GlobalModuleDeclarations::hud_customizer_module != nullptr && ((ModuleBase*)GlobalModuleDeclarations::hud_customizer_module)->is_enabled()) ImGui::GetBackgroundDrawList()->AddRectFilled({ x - 1, y - 1 }, { x + min_width + 1, y + 50 + 1 }, GlobalModuleDeclarations::hud_customizer_module->get_color_scheme(ClientUtil::color_prog_offset + color_offset), 4);
+            else ImGui::GetBackgroundDrawList()->AddRectFilled({ x - 1, y - 1 }, { x + min_width + 1, y + 50 + 1 }, color_notif_default, 4);
             ImGui::GetBackgroundDrawList()->AddRectFilled({ x, y }, { x + min_width, y + 50 }, ImGui::ColorConvertFloat4ToU32({ 0.15f, 0.15f, 0.15f, 1.0f }), 4);
             ImGui::GetBackgroundDrawList()->AddText(nullptr, ImGui::GetFontSize(), { x + 5, y + 4 }, ImGui::ColorConvertFloat4ToU32({ 1.0f, 1.0f, 1.0f, 1.0f }), notification->second.head.c_str());
             ImGui::GetBackgroundDrawList()->AddText(nullptr, ImGui::GetFontSize(), { x + 5, y + (head_size.y + 2) + 4 }, ImGui::ColorConvertFloat4ToU32({ 0.8f, 0.8f, 0.8f, 1.0f }), notification->second.message.c_str());
             // ImGui::GetBackgroundDrawList()->AddText(nullptr, size, { win_width_float - text_size.x - (7 + bg_offset + extra_offset), y + 2 + mod_y / 2 }, color_array, mod->name.c_str());
+            color_offset += 0.1f;
             y -= 55;
         }
 

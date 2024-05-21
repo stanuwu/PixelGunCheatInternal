@@ -1,9 +1,9 @@
 ﻿#pragma once
-#include <imgui.h>
+#include <algorithm>
 
-#include "../../ModuleBase.h"
-#include "../../../Hooks/Hooks.h"
 #include "../../../Internal/Functions.h"
+#include "../../../Logger/Logger.h"
+#include "../../../Util/ClientUtil.h"
 
 static std::vector<std::wstring> color_schemes = {
     L"Red",
@@ -15,22 +15,28 @@ static std::vector<std::wstring> color_schemes = {
     L"Purple",
     L"Pink",
     L"Sunset",
-    L"Blue-ish",
+    L"Cosmic",
+    L"Greenery",
+    L"Pastels",
+    L"Pastels 2",
+    L"Skies",
     L"Trans",
     L"Custom [Unimplemented]"
 };
 
-static BKCCheckbox __hud_module_list = BKCCheckbox("Module List", true, "Show the enabled modules", "Module List");
+// keep inline
+inline BKCDropdown __color_scheme = BKCDropdown("Color Scheme", L"Trans", color_schemes, "Color scheme of the whole menu.");
+
+static BKCCheckbox __hud_module_list = BKCCheckbox("Module List", true, "Show the enabled modules", "Features");
 static BKCDropdown __module_sort_type = BKCDropdown("Module Sort", L"Text Length", { L"Alphabetic", L"Text Length" }, "", "Module List - General");
 static BKCDropdown __screen_position = BKCDropdown("Position", L"Top Left", { L"Top Left", L"Top Right" }, "", "Module List - General");
-static BKCDropdown __color_scheme = BKCDropdown("Color Scheme", L"Trans", color_schemes, "", "Module List - Color");
 static BKCSlider __color_speed = BKCSlider("Color Speed", 0.20f, 0.01f, 1.0f, "How fast the UI colors change", "Module List - Color");
 static BKCSlider __color_offset = BKCSlider("Color Offset", 0.15f, 0.01f, 0.3f, "Offset of the changing colors added per module", "Module List - Color");
 static BKCSliderInt __background_opacity = BKCSliderInt("Background Opacity (%)", 50, 0, 100, "Changes how dark the background renders as", "Module List - Extra");
 static BKCSliderInt __module_separation = BKCSliderInt("Y Separation", 1, 0, 12, "Distance on the vertical axis between modules", "Module List - Extra");
 static BKCCheckbox __line_on_side = BKCCheckbox("Line on Side", true, "Adds a line to the side of every module", "Module List - Extra");
 static BKCCheckbox __dont_extend_bg_on_separation = BKCCheckbox("No Extend Background", false, "Disables background extending on module separation", "Module List - Extra");
-static BKCModule __hud_customizer = { "HUD Customizer", "Customize colors and such in the menu", VISUAL, 0x0, true, { &__module_sort_type, &__screen_position, &__color_scheme, &__color_speed, &__color_offset, &__background_opacity, &__module_separation, &__line_on_side, &__dont_extend_bg_on_separation } };
+static BKCModule __hud_customizer = { "HUD Customizer", "Customize colors and such in the menu", VISUAL, 0x0, true, { &__color_scheme, &__hud_module_list, &__module_sort_type, &__screen_position, &__color_speed, &__color_offset, &__background_opacity, &__module_separation, &__line_on_side, &__dont_extend_bg_on_separation } };
 
 static ImU32 color_array = ImGui::ColorConvertFloat4ToU32(Functions::ImVec4i(255, 180, 230));
 
@@ -38,6 +44,63 @@ class ModuleHUDCustomizer : ModuleBase
 {
 public:
     ModuleHUDCustomizer() : ModuleBase(&__hud_customizer) {}
+
+    ImU32 get_color_scheme(float offset)
+    {
+        ImU32 render_color;
+        switch (__color_scheme.current_index)
+        {
+        case 0: // red
+            render_color = ClientUtil::QuickDynamicBlendImU32(offset, { 0xFFee908c, 0xFFe02f2d });
+            break;
+        case 1: // green
+            render_color = ClientUtil::QuickDynamicBlendImU32(offset, { 0xFFb8f4bd, 0xFF2ee043 });
+            break;
+        case 2: // blue
+            render_color = ClientUtil::QuickDynamicBlendImU32(offset, { 0xFFa7bff2, 0xFF3f5ce2 });
+            break;
+        case 3: // aqua
+            render_color = ClientUtil::QuickDynamicBlendImU32(offset, { 0xFFb1edf3, 0xFF23c6de });
+            break;
+        case 4: // yellow
+            render_color = ClientUtil::QuickDynamicBlendImU32(offset, { 0xFFfaf8db, 0xFFe2e550 });
+            break;
+        case 5: // orange
+            render_color = ClientUtil::QuickDynamicBlendImU32(offset, { 0xFFeed18d, 0xFFdfa629 });
+            break;
+        case 6: // purple
+            render_color = ClientUtil::QuickDynamicBlendImU32(offset, { 0xFFd9aef3, 0xFF9920d9 });
+            break;
+        case 7: // pink
+            render_color = ClientUtil::QuickDynamicBlendImU32(offset, { 0xFFf2b5f4, 0xFFe342cf });
+            break;
+        case 8: // sunset
+            render_color = ClientUtil::QuickDynamicBlendImU32(offset, { 0xffC40C0C, 0xffFF6500, 0xffFF8A08, 0xffFFC100, 0xffFF8A08, 0xffFF6500, 0xffC40C0C });
+            break;
+        case 9: // cosmic
+            render_color = ClientUtil::QuickDynamicBlendImU32(offset, { 0xff1043AF, 0xff874CCC, 0xffC65BCF, 0xffF27BBD, 0xffC65BCF, 0xff874CCC, 0xff1043AF });
+            break;
+        case 10: // greenery
+            render_color = ClientUtil::QuickDynamicBlendImU32(offset, { 0xff006769, 0xff40A578, 0xff9DDE8B, 0xffE6FF94, 0xff9DDE8B, 0xff40A578, 0xff006769 });
+            break;
+        case 11: // pastels
+            render_color = ClientUtil::QuickDynamicBlendImU32(offset, { 0xffA8D8EA, 0xffAA96DA, 0xffFCBAD3, 0xffFFFFD2, 0xffFCBAD3, 0xffAA96DA, 0xffA8D8EA });
+            break;
+        case 12: // pastels 2
+            render_color = ClientUtil::QuickDynamicBlendImU32(offset, { 0xffFFCFDF, 0xffFEFDCA, 0xffE0F9B5, 0xffA5DEE5, 0xffE0F9B5, 0xffFEFDCA, 0xffFFCFDF });
+            break;
+        case 13: // skies
+            render_color = ClientUtil::QuickDynamicBlendImU32(offset, { 0xffCCA8E9, 0xffC3BEF0, 0xffCADEFC, 0xffDEFCF9, 0xffCADEFC, 0xffC3BEF0, 0xffCCA8E9 });
+            break;
+        case 14: // trans (fuck them haters bru 🗣️🗣️🗣️)
+            render_color = ClientUtil::QuickDynamicBlendImU32(offset, { 0xFF5BCEFA, 0xFFF5A9B8, 0xFFFFFFFF, 0xFFF5A9B8, 0xFF5BCEFA });
+            break;
+        default:
+            render_color = ImGui::ColorConvertFloat4ToU32({ 1, 1, 1, 1 });
+            break;
+        }
+        return render_color;
+    }
     
     void do_module(void* arg) override
     {
@@ -123,49 +186,7 @@ private:
             }
 
             ImVec2 text_size = ImGui::CalcTextSize(mod->name.c_str());
-            ImU32 render_color;
-            float full_color_offset = ClientUtil::color_prog_offset + color_offset;
-
-            switch (__color_scheme.current_index)
-            {
-            case 0: // red
-                render_color = ClientUtil::QuickDynamicBlendImU32(full_color_offset, { 0xFFee908c, 0xFFe02f2d });
-                break;
-            case 1: // green
-                render_color = ClientUtil::QuickDynamicBlendImU32(full_color_offset, { 0xFFb8f4bd, 0xFF2ee043 });
-                break;
-            case 2: // blue
-                render_color = ClientUtil::QuickDynamicBlendImU32(full_color_offset, { 0xFFa7bff2, 0xFF3f5ce2 });
-                break;
-            case 3: // aqua
-                render_color = ClientUtil::QuickDynamicBlendImU32(full_color_offset, { 0xFFb1edf3, 0xFF23c6de });
-                break;
-            case 4: // yellow
-                render_color = ClientUtil::QuickDynamicBlendImU32(full_color_offset, { 0xFFfaf8db, 0xFFe2e550 });
-                break;
-            case 5: // orange
-                render_color = ClientUtil::QuickDynamicBlendImU32(full_color_offset, { 0xFFeed18d, 0xFFdfa629 });
-                break;
-            case 6: // purple
-                render_color = ClientUtil::QuickDynamicBlendImU32(full_color_offset, { 0xFFd9aef3, 0xFF9920d9 });
-                break;
-            case 7: // pink
-                render_color = ClientUtil::QuickDynamicBlendImU32(full_color_offset, { 0xFFf2b5f4, 0xFFe342cf });
-                break;
-            case 8: // sunset
-                // render_color = ClientUtil::QuickDynamicBlendImU32(full_color_offset, { 0xffe0872d, 0xffe6b855, 0xfff3e1ad, 0xffe6b855, 0xffe0872d });
-                render_color = ClientUtil::QuickDynamicBlendImU32(full_color_offset, { 0xffC40C0C, 0xffFF6500, 0xffFF8A08, 0xffFFC100, 0xffFF8A08, 0xffFF6500, 0xffC40C0C });
-                break;
-            case 9: // blue-ish
-                render_color = ClientUtil::QuickDynamicBlendImU32(full_color_offset, { 0xff2628df, 0xff7940e3, 0xffde25db, 0xff7940e3, 0xff2628df });
-                break;
-            case 10: // trans (fuck them haters bru 🗣️🗣️🗣️)
-                render_color = ClientUtil::QuickDynamicBlendImU32(full_color_offset, { 0xFF5BCEFA, 0xFFF5A9B8, 0xFFFFFFFF, 0xFFF5A9B8, 0xFF5BCEFA });
-                break;
-            default:
-                render_color = ImGui::ColorConvertFloat4ToU32({ 1, 1, 1, 1 });
-                break;
-            }
+            ImU32 render_color = get_color_scheme(ClientUtil::color_prog_offset + color_offset);
             
             switch (__screen_position.current_index)
             {
