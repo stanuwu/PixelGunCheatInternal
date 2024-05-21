@@ -57,7 +57,7 @@
 #include "../Module/Impl/Player/ModuleInfiniteAmmo.h"
 #include "../Module/Impl/Player/ModuleInvisibility.h"
 #include "../Module/Impl/Player/ModuleReach.h"
-#include "../Module/Impl/Visual/ModuleArrayList.h"
+#include "../Module/Impl/Visual/ModuleHUDCustomizer.h"
 #include "../Module/Impl/Visual/ModuleBetterScope.h"
 #include "../Module/Impl/Visual/ModuleESP.h"
 #include "../Module/Impl/Visual/ModuleFOVChanger.h"
@@ -1060,7 +1060,7 @@ void Hooks::load()
     player_move_c_modules.push_back((ModuleBase*) new ModuleTest());
 
     on_imgui_draw_modules.push_back((ModuleBase*) new ModuleNotifications());
-    on_imgui_draw_modules.push_back((ModuleBase*) new ModuleArrayList());
+    on_imgui_draw_modules.push_back((ModuleBase*) new ModuleHUDCustomizer());
     
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleAntiBarrier());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleAOEBullets());

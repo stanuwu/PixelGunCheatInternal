@@ -307,7 +307,7 @@
     <ClInclude Include="Cheat\Module\Impl\Player\ModuleInfiniteArmor.h" />
     <ClInclude Include="Cheat\Module\Impl\Player\ModuleInvisibility.h" />
     <ClInclude Include="Cheat\Module\Impl\Player\ModuleReach.h" />
-    <ClInclude Include="Cheat\Module\Impl\Visual\ModuleArrayList.h" />
+    <ClInclude Include="Cheat\Module\Impl\Visual\ModuleHUDCustomizer.h" />
     <ClInclude Include="Cheat\Module\Impl\Visual\ModuleBetterScope.h" />
     <ClInclude Include="Cheat\Module\Impl\Visual\ModuleESP.h" />
     <ClInclude Include="Cheat\Module\Impl\Visual\ModuleFOVChanger.h" />

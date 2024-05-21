@@ -641,7 +641,7 @@ void BKCImGuiHooker::start(void* g_mainRenderTargetView, void* g_pd3dDevice, voi
         ImGui::End();
 
         // ENABLE THIS FOR EASILY FINDING WHAT YOU NEED TO ADD TO THE GUI
-        ImGui::ShowDemoWindow();
+        // ImGui::ShowDemoWindow();
 
         /*
         if (show_client_settings) DrawClientSettingsWindow(is_dx_11);
