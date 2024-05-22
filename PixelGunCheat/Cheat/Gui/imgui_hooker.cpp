@@ -149,6 +149,63 @@ void embraceTheDarkness()
     style->SeparatorTextBorderSize = 1;
 }
 
+void UpdateColorsByTheme()
+{
+    ImGuiStyle* style = &ImGui::GetStyle();
+    ImVec4* colors = style->Colors;
+
+    ImVec4 theme_colors = ImGui::ColorConvertU32ToFloat4(GlobalModuleDeclarations::hud_customizer_module->get_color_scheme(ClientUtil::color_prog_offset));
+
+    colors[ImGuiCol_Text]                   = ImVec4(0.92f, 0.92f, 0.92f, 1.00f);
+    colors[ImGuiCol_TextDisabled]           = ImVec4(0.44f, 0.44f, 0.44f, 1.00f);
+    colors[ImGuiCol_WindowBg]               = Functions::ImVec4i(20, 20, 20);
+    colors[ImGuiCol_ChildBg]                = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[ImGuiCol_PopupBg]                = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
+    colors[ImGuiCol_Border]                 = Functions::ImVec4i((int)(theme_colors.x * 255.0f), (int)(theme_colors.y * 255.0f), (int)(theme_colors.z * 255.0f));
+    colors[ImGuiCol_BorderShadow]           = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[ImGuiCol_FrameBg]                = Functions::ImVec4i((int)(theme_colors.x * 255.0f), (int)(theme_colors.y * 255.0f), (int)(theme_colors.z * 255.0f), 140);
+    colors[ImGuiCol_FrameBgHovered]         = Functions::ImVec4i((int)(theme_colors.x * 255.0f), (int)(theme_colors.y * 255.0f), (int)(theme_colors.z * 255.0f), 100);
+    colors[ImGuiCol_FrameBgActive]          = Functions::ImVec4i((int)(theme_colors.x * 255.0f), (int)(theme_colors.y * 255.0f), (int)(theme_colors.z * 255.0f), 170);
+    colors[ImGuiCol_TitleBg]                = Functions::ImVec4i(15, 15, 15);
+    colors[ImGuiCol_TitleBgActive]          = Functions::ImVec4i((int)(theme_colors.x * 255.0f), (int)(theme_colors.y * 255.0f), (int)(theme_colors.z * 255.0f));
+    colors[ImGuiCol_TitleBgCollapsed]       = Functions::ImVec4i(15, 15, 15);
+    colors[ImGuiCol_MenuBarBg]              = ImVec4(0.11f, 0.11f, 0.11f, 1.00f);
+    colors[ImGuiCol_ScrollbarBg]            = ImVec4(0.06f, 0.06f, 0.06f, 0.53f);
+    colors[ImGuiCol_ScrollbarGrab]          = ImVec4(0.21f, 0.21f, 0.21f, 1.00f);
+    colors[ImGuiCol_ScrollbarGrabHovered]   = ImVec4(0.47f, 0.47f, 0.47f, 1.00f);
+    colors[ImGuiCol_ScrollbarGrabActive]    = ImVec4(0.81f, 0.83f, 0.81f, 1.00f);
+    colors[ImGuiCol_CheckMark]              = Functions::ImVec4i((int)(theme_colors.x * 255.0f), (int)(theme_colors.y * 255.0f), (int)(theme_colors.z * 255.0f));
+    colors[ImGuiCol_SliderGrab]             = Functions::ImVec4i((int)(theme_colors.x * 255.0f), (int)(theme_colors.y * 255.0f), (int)(theme_colors.z * 255.0f));
+    colors[ImGuiCol_SliderGrabActive]       = Functions::ImVec4i((int)(theme_colors.x * 255.0f), (int)(theme_colors.y * 255.0f), (int)(theme_colors.z * 255.0f));
+    colors[ImGuiCol_Button]                 = Functions::ImVec4i((int)(theme_colors.x * 255.0f), (int)(theme_colors.y * 255.0f), (int)(theme_colors.z * 255.0f), 100);
+    colors[ImGuiCol_ButtonHovered]          = Functions::ImVec4i((int)(theme_colors.x * 255.0f), (int)(theme_colors.y * 255.0f), (int)(theme_colors.z * 255.0f), 170);
+    colors[ImGuiCol_ButtonActive]           = Functions::ImVec4i((int)(theme_colors.x * 255.0f), (int)(theme_colors.y * 255.0f), (int)(theme_colors.z * 255.0f));
+    colors[ImGuiCol_Header]                 = Functions::ImVec4i((int)(theme_colors.x * 255.0f), (int)(theme_colors.y * 255.0f), (int)(theme_colors.z * 255.0f), 80);
+    colors[ImGuiCol_HeaderHovered]          = Functions::ImVec4i((int)(theme_colors.x * 255.0f), (int)(theme_colors.y * 255.0f), (int)(theme_colors.z * 255.0f), 205);
+    colors[ImGuiCol_HeaderActive]           = Functions::ImVec4i((int)(theme_colors.x * 255.0f), (int)(theme_colors.y * 255.0f), (int)(theme_colors.z * 255.0f));
+    colors[ImGuiCol_Separator]              = ImVec4(0.21f, 0.21f, 0.21f, 1.00f);
+    colors[ImGuiCol_SeparatorHovered]       = Functions::ImVec4i(255, 255, 175);
+    colors[ImGuiCol_SeparatorActive]        = Functions::ImVec4i(255, 255, 255);
+    colors[ImGuiCol_ResizeGrip]             = Functions::ImVec4i((int)(theme_colors.x * 255.0f), (int)(theme_colors.y * 255.0f), (int)(theme_colors.z * 255.0f), 50);
+    colors[ImGuiCol_ResizeGripHovered]      = Functions::ImVec4i((int)(theme_colors.x * 255.0f), (int)(theme_colors.y * 255.0f), (int)(theme_colors.z * 255.0f), 170);
+    colors[ImGuiCol_ResizeGripActive]       = Functions::ImVec4i((int)(theme_colors.x * 255.0f), (int)(theme_colors.y * 255.0f), (int)(theme_colors.z * 255.0f), 240);
+    colors[ImGuiCol_Tab]                    = Functions::ImVec4i((int)(theme_colors.x * 255.0f), (int)(theme_colors.y * 255.0f), (int)(theme_colors.z * 255.0f), 220);
+    colors[ImGuiCol_TabHovered]             = Functions::ImVec4i((int)(theme_colors.x * 255.0f), (int)(theme_colors.y * 255.0f), (int)(theme_colors.z * 255.0f), 205);
+    colors[ImGuiCol_TabActive]              = Functions::ImVec4i((int)(theme_colors.x * 255.0f), (int)(theme_colors.y * 255.0f), (int)(theme_colors.z * 255.0f));
+    colors[ImGuiCol_TabUnfocused]           = Functions::ImVec4i(100, 50, 80);
+    colors[ImGuiCol_TabUnfocusedActive]     = Functions::ImVec4i(175, 75, 140);
+    colors[ImGuiCol_PlotLines]              = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
+    colors[ImGuiCol_PlotLinesHovered]       = ImVec4(1.00f, 0.43f, 0.35f, 1.00f);
+    colors[ImGuiCol_PlotHistogram]          = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
+    colors[ImGuiCol_PlotHistogramHovered]   = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
+    colors[ImGuiCol_TextSelectedBg]         = ImVec4(0.26f, 0.59f, 0.98f, 0.35f);
+    colors[ImGuiCol_DragDropTarget]         = ImVec4(1.00f, 1.00f, 0.00f, 0.90f);
+    colors[ImGuiCol_NavHighlight]           = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
+    colors[ImGuiCol_NavWindowingHighlight]  = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
+    colors[ImGuiCol_NavWindowingDimBg]      = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
+    colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
+}
+
 void GetDesktopResolution(int& horizontal, int& vertical)
 {
     RECT desktop;
@@ -577,6 +634,10 @@ void BKCImGuiHooker::start(void* g_mainRenderTargetView, void* g_pd3dDevice, voi
         Logger::log_info("Changed client font to " + current_font);
         return;
     }
+
+    if (GlobalModuleDeclarations::hud_customizer_module != nullptr
+        && ((ModuleBase*)GlobalModuleDeclarations::hud_customizer_module)->is_enabled()
+        && GlobalModuleDeclarations::hud_customizer_module->apply_to_full_gui()) UpdateColorsByTheme();
     
     // Start the Dear ImGui frame
     if (is_dx_11) ImGui_ImplDX11_NewFrame();

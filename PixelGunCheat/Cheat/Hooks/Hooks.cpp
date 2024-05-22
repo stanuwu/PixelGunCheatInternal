@@ -973,63 +973,6 @@ void Hooks::load()
     // MinHook
     MH_Initialize();
     
-    // Hook Functions Here
-    hook_function(Offsets::PlayerMoveCUpdate, &player_move_c, &player_move_c_original);
-    hook_function(Offsets::WeaponSoundsUpdate, &weapon_sounds_call, &weapon_sounds_original);
-    hook_function(Offsets::WeaponSoundsLateUpdate, &weapon_sounds_late_call, &weapon_sounds_late_original);
-    hook_function(Offsets::InfiniteGemClaim, &infinite_gem_claim, &infinite_gem_claim_original);
-    hook_function(Offsets::RapidFire, &rapid_fire, &rapid_fire_original);
-    hook_function(Offsets::GetPlayerSpeed, &speed, &speed_original);
-    hook_function(Offsets::OnPreRender, &on_pre_render, &on_pre_render_original);
-    hook_function(Offsets::OnSceneUnload, &on_scene_unload, &on_scene_unload_original);
-    hook_function(Offsets::PriceModifier, &free_lottery, &free_lottery_original);
-    hook_function(Offsets::PlayerMoveCFixedUpdate, &player_move_c_fixed, &player_move_c_fixed_original);
-    hook_function(Offsets::RewardMultiplier, &reward_multiplier, &reward_multiplier_original);
-    hook_function(Offsets::DoubleRewards, &double_rewards, &double_rewards_original);
-    hook_function(Offsets::PremiumPass, &season_pass_premium, &season_pass_premium_original);
-    hook_function(Offsets::AddWeapon, &add_weapon, &add_weapon_original);
-    hook_function(Offsets::GetAmmoInClip, &ammo_in_clip, &ammo_in_clip_original);
-    hook_function(Offsets::GetAmmo, &ammo, &ammo_original);
-    hook_function(Offsets::GetDamageMultiplier, &damage_multiplier, &damage_multiplier_original);
-    hook_function(Offsets::PlayerGetImmortality, &get_immortality, &get_immortality_original);
-
-    hook_function(Offsets::SpoofModuleLevel, &spoof_module_level, &spoof_module_level_orig);
-    
-    // hook_function(Offsets::WeaponSetSkin, &force_item_display, &force_item_display_orig);
-    
-    hook_function(Offsets::ModulePerkDuration, &spoof_module_perk_duration, &spoof_module_perk_duration_orig);
-    hook_function(Offsets::ThrowGadgetDamage, &gadget_throwable_damage, &gadget_throwable_damage_orig);
-    hook_function(Offsets::GadgetDuration, &gadget_duration, &gadget_duration_orig);
-    hook_function(Offsets::GadgetCooldown, &gadget_cooldown, &gadget_cooldown_orig);
-    hook_function(Offsets::TeamKill, &team_kill, &team_kill_orig);
-
-    hook_function(Offsets::SendChat, &chat_bypass, &chat_bypass_orig);
-    
-    // hook_function(0x1bbf0e0, &force_pandoras, &force_pandoras_orig);
-    // hook_function(0xcb9f30, &lottery_core, &lottery_core_orig);
-    
-    hook_function(Offsets::LotteryDropCount, &lottery_drop_count, &lottery_drop_count_orig);
-    hook_function(Offsets::LotteryDropId, &lottery_drop_id, &lottery_drop_id_orig);
-    hook_function(Offsets::LotteryDropType, &lottery_drop_type, &lottery_drop_type_orig);
-
-    hook_function(Offsets::ForceItemDisplay, &force_item_display, &force_item_display_orig);
-
-    hook_function(Offsets::ProtonOnDisconnect, &proton_connect_failure, &proton_connect_failure_orig);
-    hook_function(Offsets::ProtonOnDisconnect2, &proton_connect_failure2, &proton_connect_failure_orig2);
-    
-    // LOG HOOKS
-    hook_function(0x438f9e0, &debug_log, &debug_log_orig); // Log 1arg
-    hook_function(0x438f850, &debug_log_warn, &debug_log_warn_orig); // LogWarning 1arg
-    hook_function(0x438f2c0, &debug_log_error, &debug_log_error_orig); // LogError 1arg
-
-    hook_function(0x438f910, &debug_log_fmt, &debug_log_fmt_orig); // Log 2arg
-    hook_function(0x438f780, &debug_log_warn_fmt, &debug_log_warn_fmt_orig); // LogWarning 2arg
-    hook_function(0x438f1f0, &debug_log_error_fmt, &debug_log_error_fmt_orig); // LogError 2arg
-
-    hook_function(0x438f500, &debug_log_fmt2, &debug_log_fmt_orig2); // LogFormat 2arg
-    hook_function(0x438f5d0, &debug_log_warn_fmt2, &debug_log_warn_fmt_orig2); // LogWarningFormat 2arg
-    hook_function(0x438f120, &debug_log_error_fmt2, &debug_log_error_fmt_orig2); // LogErrorFormat 2arg
-    
     // Init Modules Here
     rapid_fire_module = new ModuleRapidFire();
     speed_module = new ModuleSpeed();
@@ -1102,17 +1045,114 @@ void Hooks::load()
     on_pre_render_modules.push_back(fov_changer_module);
 
     // autosort everything alphabetically (finally xd)
-    std::sort(BKCImGuiHooker::modules.begin(), BKCImGuiHooker::modules.end(), [](const BKCModule* mod1, const BKCModule* mod2)
+    std::ranges::sort(BKCImGuiHooker::modules, [](const BKCModule* mod1, const BKCModule* mod2)
     {
         return mod1->name.compare(mod2->name) <= 0;
     });
     
     // Post Module Load
     BKCImGuiHooker::modules_loaded = true;
+
+    // Hook Functions Here
+    hook_function(Offsets::PlayerMoveCUpdate, &player_move_c, &player_move_c_original);
+    hook_function(Offsets::WeaponSoundsUpdate, &weapon_sounds_call, &weapon_sounds_original);
+    hook_function(Offsets::WeaponSoundsLateUpdate, &weapon_sounds_late_call, &weapon_sounds_late_original);
+    hook_function(Offsets::InfiniteGemClaim, &infinite_gem_claim, &infinite_gem_claim_original);
+    hook_function(Offsets::RapidFire, &rapid_fire, &rapid_fire_original);
+    hook_function(Offsets::GetPlayerSpeed, &speed, &speed_original);
+    hook_function(Offsets::OnPreRender, &on_pre_render, &on_pre_render_original);
+    hook_function(Offsets::OnSceneUnload, &on_scene_unload, &on_scene_unload_original);
+    hook_function(Offsets::PriceModifier, &free_lottery, &free_lottery_original);
+    hook_function(Offsets::PlayerMoveCFixedUpdate, &player_move_c_fixed, &player_move_c_fixed_original);
+    hook_function(Offsets::RewardMultiplier, &reward_multiplier, &reward_multiplier_original);
+    hook_function(Offsets::DoubleRewards, &double_rewards, &double_rewards_original);
+    hook_function(Offsets::PremiumPass, &season_pass_premium, &season_pass_premium_original);
+    hook_function(Offsets::AddWeapon, &add_weapon, &add_weapon_original);
+    hook_function(Offsets::GetAmmoInClip, &ammo_in_clip, &ammo_in_clip_original);
+    hook_function(Offsets::GetAmmo, &ammo, &ammo_original);
+    hook_function(Offsets::GetDamageMultiplier, &damage_multiplier, &damage_multiplier_original);
+    hook_function(Offsets::PlayerGetImmortality, &get_immortality, &get_immortality_original);
+
+    hook_function(Offsets::SpoofModuleLevel, &spoof_module_level, &spoof_module_level_orig);
+    
+    // hook_function(Offsets::WeaponSetSkin, &force_item_display, &force_item_display_orig);
+    
+    hook_function(Offsets::ModulePerkDuration, &spoof_module_perk_duration, &spoof_module_perk_duration_orig);
+    hook_function(Offsets::ThrowGadgetDamage, &gadget_throwable_damage, &gadget_throwable_damage_orig);
+    hook_function(Offsets::GadgetDuration, &gadget_duration, &gadget_duration_orig);
+    hook_function(Offsets::GadgetCooldown, &gadget_cooldown, &gadget_cooldown_orig);
+    hook_function(Offsets::TeamKill, &team_kill, &team_kill_orig);
+
+    hook_function(Offsets::SendChat, &chat_bypass, &chat_bypass_orig);
+    
+    // hook_function(0x1bbf0e0, &force_pandoras, &force_pandoras_orig);
+    // hook_function(0xcb9f30, &lottery_core, &lottery_core_orig);
+    
+    hook_function(Offsets::LotteryDropCount, &lottery_drop_count, &lottery_drop_count_orig);
+    hook_function(Offsets::LotteryDropId, &lottery_drop_id, &lottery_drop_id_orig);
+    hook_function(Offsets::LotteryDropType, &lottery_drop_type, &lottery_drop_type_orig);
+
+    hook_function(Offsets::ForceItemDisplay, &force_item_display, &force_item_display_orig);
+
+    hook_function(Offsets::ProtonOnDisconnect, &proton_connect_failure, &proton_connect_failure_orig);
+    hook_function(Offsets::ProtonOnDisconnect2, &proton_connect_failure2, &proton_connect_failure_orig2);
+    
+    // LOG HOOKS
+    hook_function(0x438f9e0, &debug_log, &debug_log_orig); // Log 1arg
+    hook_function(0x438f850, &debug_log_warn, &debug_log_warn_orig); // LogWarning 1arg
+    hook_function(0x438f2c0, &debug_log_error, &debug_log_error_orig); // LogError 1arg
+
+    hook_function(0x438f910, &debug_log_fmt, &debug_log_fmt_orig); // Log 2arg
+    hook_function(0x438f780, &debug_log_warn_fmt, &debug_log_warn_fmt_orig); // LogWarning 2arg
+    hook_function(0x438f1f0, &debug_log_error_fmt, &debug_log_error_fmt_orig); // LogError 2arg
+
+    hook_function(0x438f500, &debug_log_fmt2, &debug_log_fmt_orig2); // LogFormat 2arg
+    hook_function(0x438f5d0, &debug_log_warn_fmt2, &debug_log_warn_fmt_orig2); // LogWarningFormat 2arg
+    hook_function(0x438f120, &debug_log_error_fmt2, &debug_log_error_fmt_orig2); // LogErrorFormat 2arg
 }
 
 void Hooks::unload()
 {
+    // clear all hooks before removehook
+    player_move_c_modules.clear();
+    player_move_c_others_modules.clear();
+    player_fps_controller_sharp_modules.clear();
+    weapon_sounds_modules.clear();
+    weapon_sound_others_modules.clear();
+    player_damageable_modules.clear();
+    on_pre_render_modules.clear();
+    on_imgui_draw_modules.clear();
+
+    // nuke all existing separate modules
+    rapid_fire_module = nullptr;
+    speed_module = nullptr;
+    infinite_gem_claim_module = nullptr;
+    lottery_price_module = nullptr;
+    fast_levels_module = nullptr;
+    rewards_multiplier_module = nullptr;
+    esp_module = nullptr;
+    aim_bot_module = nullptr;
+    season_pass_module = nullptr;
+    fov_changer_module = nullptr;
+    unlock_weapons_module = nullptr;
+    unlock_gadgets_module = nullptr;
+    infinite_ammo_module = nullptr;
+    damage_multiplier_module = nullptr;
+    anti_immortal_module = nullptr;
+    team_kill_module = nullptr;
+    GlobalModuleDeclarations::hud_customizer_module = nullptr;
+    notifications_module = nullptr;
+    force_rejoin_module = nullptr;
+    skin_changer_module = nullptr;
+    immortality_module = nullptr;
+    gadget_modifier_module = nullptr;
+    spoof_modules_module = nullptr;
+    add_armor_module = nullptr;
+    add_pets_module = nullptr;
+    add_currency_module = nullptr;
+    weapon_spoofer_module = nullptr;
+
+    // fully remove all hooks
     MH_DisableHook(MH_ALL_HOOKS);
     MH_RemoveHook(MH_ALL_HOOKS);
 }
