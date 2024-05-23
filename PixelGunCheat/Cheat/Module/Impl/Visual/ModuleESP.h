@@ -17,6 +17,7 @@ static BKCSlider __esp_tracers_screen_pos = BKCSlider("Tracers Vertical", 0.5f, 
 static BKCCheckbox __esp_rainbow = BKCCheckbox("Rainbow :3", false);
 static BKCModule __esp = { "ESP", "I swear it's just a visual glitch in OBS!", VISUAL, 0x0, true, { &__esp_style, &__esp_thickness, &__esp_corner_rounding, &__esp_teammates, &__esp_tracers, &__esp_tracers_screen_pos, &__esp_rainbow, &__esp_rgb_speed } };
 
+//
 static ImU32 color_enemy = ImGui::ColorConvertFloat4ToU32({1.00f, 0.00f, 0.00f, 1.00f});
 static ImU32 color_ally = ImGui::ColorConvertFloat4ToU32({0.33f, 0.33f, 0.33f, 1.00f});
 static ImU32 color_black = ImGui::ColorConvertFloat4ToU32({0.0f, 0.0f, 0.0f, 1.00f});
