@@ -17,7 +17,7 @@ We are not encouraging modding or cheating with this repository. It is purely fo
 
 > Thanks to `@solotov2160`, `@ph0mp`, `@bosslawl`, `@c___s`, `@vor1c`, `@xz3phyr.`, `@awaprim` for helping with development!
 
-> ## For help or install directions join our [discord](https://discord.gg/wR8rqUUS2d).
+> ## For help or install directions join our [discord]() !! discord is currently undergoing maintainance and will be added back later.
 
 > ## Injector
 > https://github.com/stanuwu/PG3DInjector
