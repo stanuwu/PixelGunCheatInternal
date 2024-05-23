@@ -7,13 +7,16 @@
 #include "../../../Util/ClientUtil.h"
 #include "../IL2CPPResolver/IL2CPP_Resolver.hpp"
 
+//Replaced Body Shot to Expand version with Head,Body and Foot Option
+static BKCDropdown __aim_bot_body_parts = BKCDropdown("Aim at Body Parts", L"Head", { L"Head", L"Body", L"Foot" });
+//Currently Bugged
+//static BKCSliderInt __aim_bot_smoothness = BKCSliderInt("Aim Bot Smoothness", 50, 1, 100);
 static BKCSliderInt __aim_bot_target_size = BKCSliderInt("Target Marker Size", 5, 1, 20);
 static BKCCheckbox __aim_bot_target_marker = BKCCheckbox("Target Marker", true);
 static BKCCheckbox __aim_bot_silent_aim = BKCCheckbox("Silent Aim", true, "Currently does nothing when disabled!");
 static BKCSliderInt __aim_bot_radius = BKCSliderInt("Aim Radius", 0, 0, 1000);
 static BKCCheckbox __aim_bot_through_walls = BKCCheckbox("Through Walls", false);
-static BKCCheckbox __aim_bot_body_shot = BKCCheckbox("Body Shot", false);
-static BKCModule __aim_bot = { "Aim Bot", "\"Oh hey look a civilian airliner!\" *brrrrrrrrr*", COMBAT, 0x0, true, {&__aim_bot_target_marker, &__aim_bot_target_size, &__aim_bot_silent_aim, &__aim_bot_radius, &__aim_bot_through_walls, &__aim_bot_body_shot} };
+static BKCModule __aim_bot = { "Aim Bot", "\"Oh hey look a civilian airliner!\" *brrrrrrrrr*", COMBAT, 0x0, true, {&__aim_bot_body_parts, /*&__aim_bot_smoothness,*/ &__aim_bot_target_marker,&__aim_bot_target_size,&__aim_bot_silent_aim,&__aim_bot_radius,&__aim_bot_through_walls}};
 
 static ImU32 color_marker = ImGui::ColorConvertFloat4ToU32({1.00f, 0.00f, 1.00f, 1.00f});
 static ImU32 color_border = ImGui::ColorConvertFloat4ToU32({0.00f, 0.00f, 0.00f, 1.00f});
@@ -96,7 +99,7 @@ public:
     void do_module(void* arg) override
     {
         is_using_silent_aim = __aim_bot_silent_aim.enabled;
-        
+
         if (ClientUtil::tick % 60 == 0)
         {
             GetWindowRect(GetActiveWindow(), &window_size_aim);
@@ -106,7 +109,7 @@ public:
 
         if (arg == nullptr) return;
         set_float(arg, Offsets::bulletDelay, 0.000001f); // bulletDelay
-        
+
         Unity::Vector3 prediction;
         void* target = nullptr;
         float distance = 9999999;
@@ -117,15 +120,15 @@ public:
             if (player == nullptr || Hooks::our_player == nullptr) continue;
             // Only Enemies
             if (!Hooks::is_player_enemy(player)) continue;
-            
+
             void* transform = Hooks::get_player_transform(player);
             Unity::Vector3 world;
             Functions::TransformGetPosition(transform, &world);
             // Unity::Vector3 world = transform->GetPosition();
-            
+
             Unity::Vector3 screen;
             Functions::CameraWorldToScreen(camera, &world, &screen);
-            
+
             if (__aim_bot_radius.value > 0)
             {
                 if (!is_within_silent_aim(screen, (float)__aim_bot_radius.value)) continue;
@@ -134,13 +137,13 @@ public:
             {
                 if (!is_on_screen_aim(screen)) continue;
             }
-            
+
             if (screen.z <= 0) continue;
-            
-            Unity::Vector3 velocity = {0, 0, 0};
+
+            Unity::Vector3 velocity = { 0, 0, 0 };
 
             std::string player_name = Hooks::get_player_name(player);
-            
+
             if (player_pos_cache.contains(player_name))
             {
                 Unity::Vector3 cached = player_pos_cache.at(player_name);
@@ -157,22 +160,23 @@ public:
 
             Unity::Vector3 camera_pos;
             Functions::TransformGetPosition(camera_transform, &camera_pos);
-            
-            Unity::Vector3 head_pos = {
-                world.x + (velocity.Normalize().x / 10),
-                world.y + (velocity.Normalize().y / 10) + 0.75f,
-                world.z + (velocity.Normalize().z / 10)
+
+            Unity::Vector3 head_pos
+            {
+            world.x + (velocity.Normalize().x / 10),
+            world.y + (velocity.Normalize().y / 10) + 0.75f,
+            world.z + (velocity.Normalize().z / 10)
             };
-            
+
             const float distance_r = vec3_distance(world, camera_pos);
             if (distance_r > 800) continue;
-            
-            Unity::Vector3 one = Unity::Vector3 {1, 1, 1};
+
+            Unity::Vector3 one = Unity::Vector3{ 1, 1, 1 };
             Unity::Quaternion camera_rotation;
             Functions::TransformGetRotation(camera_transform, &camera_rotation);
-            
+
             Unity::Vector3 aimDirection = quaternation_mul(camera_rotation, one);
-            Unity::Vector3 v = {head_pos.x - camera_pos.x, head_pos.y - camera_pos.x, head_pos.z - camera_pos.x};
+            Unity::Vector3 v = { head_pos.x - camera_pos.x, head_pos.y - camera_pos.x, head_pos.z - camera_pos.x };
             float d = v.Dot(aimDirection);
             Unity::Vector3 closest_point = {
                 camera_pos.x + aimDirection.x * d,
@@ -219,30 +223,42 @@ public:
                 velocity.Normalize().z / 10
             };
         }
-        
+
         if (target != nullptr && Hooks::main_camera != nullptr)
         {
             void* target_t = Hooks::get_player_transform(target);
             Unity::Vector3 target_p;
             Functions::TransformGetPosition(target_t, &target_p);
-            Unity::Vector3 aim_at = {
-                target_p.x + prediction.x,
-                target_p.y + prediction.y + (__aim_bot_body_shot.enabled ? 0 : 0.75f),
-                target_p.z + prediction.z
-            };
+
+            Unity::Vector3 aim_at;
+            if (__aim_bot.enabled && __aim_bot_body_parts.current_value == L"Head")
+                aim_at = { target_p.x + prediction.x, target_p.y + prediction.y + 0.75f, target_p.z + prediction.z };
+            if (__aim_bot.enabled && __aim_bot_body_parts.current_value == L"Body")
+                aim_at = { target_p.x + prediction.x, target_p.y + prediction.y + 0.0f, target_p.z + prediction.z };
+            if (__aim_bot.enabled && __aim_bot_body_parts.current_value == L"Foot")
+                aim_at = { target_p.x + prediction.x, target_p.y + prediction.y - 0.75f, target_p.z + prediction.z };
+
+            //Currently Bugged
+            //int smoothness_int = 100 - static_cast<int>((99 * __aim_bot_smoothness.value) / 100);
+
+            //static Unity::Vector3 smoothed_aim_position = aim_at;
+            //smoothed_aim_position.x = smoothed_aim_position.x * (100 - smoothness_int) / 100 + aim_at.x * smoothness_int / 100;
+            //smoothed_aim_position.y = smoothed_aim_position.y * (100 - smoothness_int) / 100 + aim_at.y * smoothness_int / 100;
+            //smoothed_aim_position.z = smoothed_aim_position.z * (100 - smoothness_int) / 100 + aim_at.z * smoothness_int / 100;
+
             void* t = Functions::ComponentGetTransform(Hooks::main_camera);
             if (camera == nullptr) return;
             Hooks::fov_changer_module->run(nullptr);
             Unity::Vector3 screen;
-            Functions::CameraWorldToScreen(camera, &aim_at, &screen);
-            to_draw_aim.push_back({{screen.x, height - screen.y, screen.z}});
-            Unity::Vector3 up = {0, 1, 0};
-            Functions::TransformLookAt(t, &aim_at, &up);
-            Hooks::aimed_pos = &aim_at;
+            Functions::CameraWorldToScreen(camera, &aim_at/*& smoothed_aim_position*/, &screen);
+            to_draw_aim.push_back({ {screen.x, height - screen.y, screen.z} });
+            Unity::Vector3 up = { 0, 1, 0 };
+            Functions::TransformLookAt(t, &aim_at/*& smoothed_aim_position*/, &up);
+            Hooks::aimed_pos = &aim_at/*&smoothed_aim_position*/ ;
         }
         else
         {
-            Unity::Vector3 zero = {0, 0, 0};
+            Unity::Vector3 zero = { 0, 0, 0 };
             Hooks::aimed_pos = &zero;
         }
     }
@@ -265,7 +281,7 @@ public:
     {
         if (__aim_bot_radius.value > 0 && is_enabled() && !Hooks::player_list.empty())
         {
-            ImGui::GetBackgroundDrawList()->AddCircle({ (window_size_aim.right + window_size_aim.left) / 2.0f, (window_size_aim.bottom + window_size_aim.top) / 2.0f }, (float)__aim_bot_radius.value, color_marker, 64, 2.0f);
+            ImGui::GetBackgroundDrawList()->AddCircle({ (window_size_aim.right + window_size_aim.left) / 2.0f - 1.1f, (window_size_aim.bottom + window_size_aim.top) / 2.0f - 1.1f}, (float)__aim_bot_radius.value, color_marker, 64, 2.0f);
         }
     }
 
