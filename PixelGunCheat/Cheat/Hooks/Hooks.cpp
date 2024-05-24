@@ -406,8 +406,6 @@ inline void __stdcall player_move_c(void* arg)
         Hooks::our_player = arg; // WARN: ALWAYS ALLOW THIS TO BE SET, OTHERWISE BREAKS A LOT OF MODULES
         
         Hooks::fov_changer_module->run(nullptr);
-
-        // Functions::SendChat(arg, Hooks::create_system_string(".gg/security-research [ " + random_string(8) + " ] "));
         
         for (ModuleBase* player_move_c_module : player_move_c_modules)
         {
