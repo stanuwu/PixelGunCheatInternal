@@ -11,11 +11,12 @@ static BKCDropdown __esp_style = BKCDropdown("ESP Style", L"Simple", { L"Simple"
 static BKCSliderInt __esp_thickness = BKCSliderInt("Border Thickness", 2, 1, 5);
 static BKCSliderInt __esp_corner_rounding = BKCSliderInt("Corner Rounding", 0, -10, 10);
 static BKCCheckbox __esp_teammates = BKCCheckbox("Teammates", true);
+static BKCCheckbox __esp_distance = BKCCheckbox("Distance ESP", true);
 static BKCSlider __esp_rgb_speed = BKCSlider("RGB Speed", 0.1f, 0.01f, 1.0f);
 static BKCCheckbox __esp_tracers = BKCCheckbox("Tracers", false);
 static BKCSlider __esp_tracers_screen_pos = BKCSlider("Tracers Vertical", 0.5f, 0, 1);
 static BKCCheckbox __esp_rainbow = BKCCheckbox("Rainbow :3", false);
-static BKCModule __esp = { "ESP", "I swear it's just a visual glitch in OBS!", VISUAL, 0x0, true, { &__esp_style, &__esp_thickness, &__esp_corner_rounding, &__esp_teammates, &__esp_tracers, &__esp_tracers_screen_pos, &__esp_rainbow, &__esp_rgb_speed } };
+static BKCModule __esp = { "ESP", "I swear it's just a visual glitch in OBS!", VISUAL, 0x0, true, { &__esp_style, &__esp_thickness, &__esp_corner_rounding, &__esp_teammates, &__esp_distance, &__esp_tracers,&__esp_tracers_screen_pos,&__esp_rainbow,&__esp_rgb_speed } };
 
 static ImU32 color_enemy = ImGui::ColorConvertFloat4ToU32({ 1.00f, 0.00f, 0.00f, 1.00f });
 static ImU32 color_ally = ImGui::ColorConvertFloat4ToU32({ 0.00f, 0.00f, 1.00f, 1.00f });
@@ -30,6 +31,7 @@ struct EspPlayer {
     ImU32 color;
     std::string player_name;
     bool is_teammate;
+    float distance;
 };
 
 static std::list<EspPlayer> to_draw;
@@ -90,12 +92,17 @@ public:
             std::string player_name = Hooks::get_player_name(player);
             bool is_enemy = Hooks::is_player_enemy(player);
 
+            void* camera_transform = Functions::ComponentGetTransform(Hooks::main_camera);
+            Unity::Vector3 camera_pos;
+            Functions::TransformGetPosition(camera_transform, &camera_pos);
+            float distance = vec3_distance(position, camera_pos);
+
             std::lock_guard<std::mutex> lock(to_draw_mutex);
             if (is_enemy) {
-                to_draw.push_back({ screen_pos, width2, height2, color_enemy, player_name, false });
+                to_draw.push_back({ screen_pos, width2, height2, color_enemy, player_name, false, distance });
             }
             else if (__esp_teammates.enabled) {
-                to_draw.push_back({ screen_pos, width2, height2, color_ally, player_name, true });
+                to_draw.push_back({ screen_pos, width2, height2, color_ally, player_name, true, distance });
             }
         }
         catch (...) {
@@ -103,13 +110,16 @@ public:
         }
     }
 
-    static void draw_esp(const Unity::Vector3& screen_pos, float width2, float height2, ImU32 color, const std::string& player_name, bool is_teammate) {
+    static void draw_esp(const Unity::Vector3& screen_pos, float width2, float height2, ImU32 color, const std::string& player_name, bool is_teammate, float distance) {
         ImVec2 size = ImGui::CalcTextSize(player_name.c_str());
         ImU32 final_color = color;
 
         if (__esp_rainbow.enabled && !is_teammate) {
             final_color = get_rainbow_color(static_cast<float>(ImGui::GetTime()), 1.0f, 1.0f, __esp_rgb_speed.value);
         }
+
+        std::string distance_text = std::to_string(static_cast<int>(distance)) + "m";
+        ImVec2 distance_size = ImGui::CalcTextSize(distance_text.c_str());
 
         if (__esp_style.current_value == L"Simple") {
             ImGui::GetBackgroundDrawList()->AddText({ screen_pos.x - size.x / 2, screen_pos.y - height2 }, final_color, player_name.c_str());
@@ -123,6 +133,18 @@ public:
             ImGui::GetBackgroundDrawList()->AddRect({ screen_pos.x + width2, screen_pos.y + height2 }, { screen_pos.x - width2, screen_pos.y - height2 }, color_black, static_cast<float>(__esp_corner_rounding.value), 0, static_cast<float>(__esp_thickness.value) * 2);
             ImGui::GetBackgroundDrawList()->AddText({ screen_pos.x - size.x / 2, screen_pos.y - height2 }, final_color, player_name.c_str());
             ImGui::GetBackgroundDrawList()->AddRect({ screen_pos.x + width2, screen_pos.y + height2 }, { screen_pos.x - width2, screen_pos.y - height2 }, final_color, static_cast<float>(__esp_corner_rounding.value), 0, static_cast<float>(__esp_thickness.value));
+        }
+
+        //New Distance ESP :3
+        if (__esp_distance.enabled && __esp_style.current_value == L"Simple")
+        {
+            ImGui::GetBackgroundDrawList()->AddText({ screen_pos.x - distance_size.x / 2, screen_pos.y - height2 + size.y }, final_color, distance_text.c_str());
+        }
+        if (__esp_distance.enabled && __esp_style.current_value == L"CS-like")
+        {
+            ImGui::GetBackgroundDrawList()->AddText({ screen_pos.x + 1 - distance_size.x / 2, screen_pos.y + 1 - height2 + size.y }, color_black, distance_text.c_str());
+            ImGui::GetBackgroundDrawList()->AddText({ screen_pos.x - 1 - distance_size.x / 2, screen_pos.y - 1 - height2 + size.y }, color_black, distance_text.c_str());
+            ImGui::GetBackgroundDrawList()->AddText({ screen_pos.x - distance_size.x / 2, screen_pos.y - height2 + size.y }, final_color, distance_text.c_str());
         }
 
         if (__esp_tracers.enabled && !is_teammate) {
@@ -143,7 +165,7 @@ public:
             std::lock_guard<std::mutex> lock(to_draw_mutex);
             for (const auto& draw : to_draw) {
                 if (!Hooks::main_camera) return;
-                draw_esp(draw.screen_pos, draw.width2, draw.height2, draw.color, draw.player_name, draw.is_teammate);
+                draw_esp(draw.screen_pos, draw.width2, draw.height2, draw.color, draw.player_name, draw.is_teammate, draw.distance);
             }
             to_draw.clear();
         }
