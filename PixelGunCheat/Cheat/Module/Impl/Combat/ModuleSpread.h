@@ -2,8 +2,8 @@
 #include "../../ModuleBase.h"
 #include "../../../Offsets/Offsets.h"
 
-static BKCSlider __spread_coeff = BKCSlider("Spread Coefficient", 0, -100, 100, "Spread values too small/large may cause interesting effects!");
-static BKCModule __spread_modifier = { "No Spread", "Boys will not spread their legs anymore :(", COMBAT, 0x0, true, { &__spread_coeff } };
+static BKCSlider __spread_coeff = BKCSlider("Spread Coefficient", 0, -100, 100);
+static BKCModule __spread_modifier = { "No Spread", "Change spread of your weapon.", COMBAT, 0x0, true, { &__spread_coeff } };
 
 class ModuleSpread : ModuleBase
 {

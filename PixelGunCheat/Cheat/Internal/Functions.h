@@ -98,5 +98,6 @@ public:
     static ImVec4 ImVec4i(int r, int g, int b, int a = 255);
     static void* CameraGetMain();
     static void CameraSetFov(void* arg, float fov);
+    static void TransformSetRotation(void* arg, void* quaternion);
     static void TestKicker(void* arg);
 };

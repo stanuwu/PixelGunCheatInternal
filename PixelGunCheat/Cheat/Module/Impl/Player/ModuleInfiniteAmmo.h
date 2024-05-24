@@ -3,7 +3,7 @@
 #include "../../../Hooks/Hooks.h"
 
 static BKCCheckbox __infinite_ammo_extra_patches = { "Extra Patches", false, "Adds extra functionality to how you get infinite ammo" };
-static BKCModule __infinite_ammo = { "Infinite Ammo", "Ammo capacity module with a slight upgrade", PLAYER, 0x0, true, { &__infinite_ammo_extra_patches } };
+static BKCModule __infinite_ammo = { "Infinite Ammo", "Gives you infinite ammo. (can cause kicks)", PLAYER, 0x0, false, { &__infinite_ammo_extra_patches } };
 
 class ModuleInfiniteAmmo : ModuleBase
 {

@@ -3,7 +3,7 @@
 #include "../../../Hooks/Hooks.h"
 #include "../../../Offsets/Offsets.h"
 
-static BKCModule __better_scope = { "Better Scoping", "Scopes in faster", VISUAL, 0x0, false, { } };
+static BKCModule __better_scope = { "Better Scoping", "Scopes in faster.", VISUAL, 0x0, false, { } };
 
 class ModuleBetterScope : ModuleBase
 {

@@ -3,7 +3,7 @@
 #include "../../../Hooks/Hooks.h"
 #include "../../../Offsets/Offsets.h"
 
-static BKCModule __double_jump = { "Double Jump", "But where triple jump???", MOVEMENT, 0x0, false, { } };
+static BKCModule __double_jump = { "Double Jump", "Adds a second jump.", MOVEMENT, 0x0, false, { } };
 
 class ModuleDoubleJump : ModuleBase
 {

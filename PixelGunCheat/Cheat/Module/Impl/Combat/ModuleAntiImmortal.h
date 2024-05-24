@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "../../ModuleBase.h"
 
-static BKCModule __anti_immortal = { "Anti Immortal", "Spawn camping to the next level", COMBAT, 0x0, true, {} };
+static BKCModule __anti_immortal = { "Anti Immortal", "Removes invincibility from other players including spawn protection.", COMBAT, 0x0, false, {} };
 
 class ModuleAntiImmortal : ModuleBase
 {

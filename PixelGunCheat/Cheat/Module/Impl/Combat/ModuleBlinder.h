@@ -7,7 +7,7 @@
 static BKCCheckbox __random_blind = BKCCheckbox("Blind Random", false, "Randomizes what blindness effect is applied to the enemy.");
 static BKCSlider __blind_duration = BKCSlider("Blind Duration", 9999, 0, 9999);
 
-static BKCModule __blinder = { "Blinder", "Bleach their eyes!!!", COMBAT, 0x0, true, { &__random_blind, &__blind_duration } };
+static BKCModule __blinder = { "Blinder", "Makes enemies blind when shot.", COMBAT, 0x0, false, { &__random_blind, &__blind_duration } };
 
 static std::vector blind_effects = {
     23, 26, 28, 30, 31, 32, 33, 34, 35, 36, 37,

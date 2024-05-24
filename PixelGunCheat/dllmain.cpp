@@ -366,6 +366,9 @@ int64_t WINAPI MainThread(LPVOID param)
             Logger::log_err("No valid DirectX version found!");
         }
     }
+
+    // wait for hooking until dx is finished
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     
     Hooks* hooks = new Hooks();
     try

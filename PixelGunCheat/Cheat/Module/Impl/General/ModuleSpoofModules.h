@@ -8,7 +8,7 @@
 #include "../../../Logger/Logger.h"
 
 static BKCSliderInt __mod_spoof_level = { "Module Level", 1, 1, 10 };
-static BKCModule __mod_spoof = { "Spoof Modules", "You mean you don't want to grind 4 years for a single X module???", GENERAL, 0x0, false, { &__mod_spoof_level } };
+static BKCModule __mod_spoof = { "Spoof Modules", "Change your module levels while enabled.", GENERAL, 0x0, false, { &__mod_spoof_level } };
 
 class ModuleSpoofModules : ModuleBase
 {

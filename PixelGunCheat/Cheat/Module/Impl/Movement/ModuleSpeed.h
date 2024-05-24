@@ -3,7 +3,7 @@
 #include "../../../Hooks/Hooks.h"
 
 static BKCSlider __speed_amount = BKCSlider("Amount",  1, 0.1f, 5);
-static BKCModule __speed = { "Speed", "Bro tuned his legs to be faster", MOVEMENT, 0x0, false, {&__speed_amount} };
+static BKCModule __speed = { "Speed", "Makes you faster.", MOVEMENT, 0x0, false, {&__speed_amount} };
 
 class ModuleSpeed : ModuleBase
 {

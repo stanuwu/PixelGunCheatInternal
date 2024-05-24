@@ -3,7 +3,7 @@
 #include "../../../Internal/Functions.h"
 #include "../../../Hooks/Hooks.h"
 
-static BKCModule __fly = { "Fly", "Become an airliner", MOVEMENT, 0x0, false, { } };
+static BKCModule __fly = { "Fly", "Allows you to fly as if you had a jetpack.", MOVEMENT, 0x0, false, { } };
 
 static void* fly_player_instance;
 

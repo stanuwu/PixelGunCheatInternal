@@ -2,7 +2,7 @@
 #include "../../ModuleBase.h"
 #include "../../../Offsets/Offsets.h"
 
-static BKCModule __full_auto = { "Full Auto", "I don't remember this module being in the game...", COMBAT, 0x0, true, {} };
+static BKCModule __full_auto = { "Full Auto", "Makes all weapons full auto.", COMBAT, 0x0, false, {} };
 
 class ModuleFullAuto : ModuleBase
 {

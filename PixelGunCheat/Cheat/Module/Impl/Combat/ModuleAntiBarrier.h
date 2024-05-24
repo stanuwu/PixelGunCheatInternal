@@ -2,7 +2,7 @@
 #include "../../ModuleBase.h"
 #include "../../../Offsets/Offsets.h"
 
-static BKCModule __anti_barrier = { "Anti Barrier", "Pretty much just anti rusted revolver", COMBAT, 0x0, true, {} };
+static BKCModule __anti_barrier = { "Anti Barrier", "Makes your gun pierce barriers.", COMBAT, 0x0, false, {} };
 
 class ModuleAntiBarrier : ModuleBase
 {

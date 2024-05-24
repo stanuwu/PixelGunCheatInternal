@@ -372,10 +372,13 @@ inline void __stdcall weapon_sounds_call(void* arg)
 inline void(__stdcall* weapon_sounds_late_original)(void* arg);
 inline void __stdcall weapon_sounds_late_call(void* arg)
 {
+    // unused right now
+    /*
     if (is_my_player_weapon_sounds(arg))
     {
-        if (Hooks::our_player != nullptr && aim_bot_module && !aim_bot_module->is_using_silent_aim) ((ModuleBase*)aim_bot_module)->run(arg);
+        
     }
+    */
 
     return weapon_sounds_late_original(arg);
 }
@@ -479,6 +482,9 @@ inline float __stdcall speed(void* arg)
 inline float(__stdcall* on_pre_render_original)(void* arg);
 inline float __stdcall on_pre_render(void* arg)
 {
+    // non silent aim
+    if (Hooks::our_player != nullptr && Hooks::main_camera != nullptr && aim_bot_module && !aim_bot_module->is_using_silent_aim) ((ModuleBase*)aim_bot_module)->run(arg);
+    
     if (ClientUtil::tick % 60 == 0)
     {
         ClientUtil::UpdateWinSize();
@@ -1000,7 +1006,7 @@ void Hooks::load()
     player_move_c_modules.push_back((ModuleBase*) new ModuleFly());
     player_move_c_modules.push_back((ModuleBase*) new ModuleGadgetActivator());
     player_move_c_modules.push_back((ModuleBase*) new ModuleInvisibility());
-    player_move_c_modules.push_back((ModuleBase*) new ModuleTest());
+    // player_move_c_modules.push_back((ModuleBase*) new ModuleTest());
 
     on_imgui_draw_modules.push_back((ModuleBase*) new ModuleNotifications());
     

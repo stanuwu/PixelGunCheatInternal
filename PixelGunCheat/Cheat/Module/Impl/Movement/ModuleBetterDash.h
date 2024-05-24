@@ -7,7 +7,7 @@ static BKCCheckbox __force_dash = BKCCheckbox("Force Dash", false, "Forces a wea
 static BKCSlider __dash_impulse = BKCSlider("Dash Impulse", 100, 0, 1000);
 static BKCSlider __dash_decay = BKCSlider("Dash Decay", 3.5f, 0, 100);
 static BKCSlider __dash_impact = BKCSlider("Dash Impact", 1, 0, 2);
-static BKCModule __better_dash = { "Better Dash", "Yeet yourself even further", MOVEMENT, 0x0, false, { &__force_dash, &__dash_impulse, &__dash_decay, &__dash_impact } };
+static BKCModule __better_dash = { "Better Dash", "Improved dashing.", MOVEMENT, 0x0, false, { &__force_dash, &__dash_impulse, &__dash_decay, &__dash_impact } };
 
 class ModuleBetterDash : ModuleBase
 {

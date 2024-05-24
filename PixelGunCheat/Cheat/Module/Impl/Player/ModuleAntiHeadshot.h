@@ -4,7 +4,7 @@
 #include "../../../Offsets/Offsets.h"
 
 static BKCSlider __ahs_multi = BKCSlider("Damage Multiplier", 0, 0, 1);
-static BKCModule __anti_hs = { "Anti Headshot", "Missed shot due to resolver", PLAYER, 0x0, false, { &__ahs_multi } };
+static BKCModule __anti_hs = { "Anti Headshot", "Change headshot damage that others do to you.", PLAYER, 0x0, false, { &__ahs_multi } };
 
 class ModuleAntiHeadshot : ModuleBase
 {

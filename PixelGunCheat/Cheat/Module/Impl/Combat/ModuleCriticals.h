@@ -3,7 +3,7 @@
 #include "../../../Internal/Functions.h"
 #include "../../../Offsets/Offsets.h"
 
-static BKCModule __criticals = { "Criticals", "*tf2 crit sound*", COMBAT, 0x0, true, {} };
+static BKCModule __criticals = { "Criticals", "*tf2 crit sound*", COMBAT, 0x0, false, {} };
 
 class ModuleCriticals : ModuleBase
 {

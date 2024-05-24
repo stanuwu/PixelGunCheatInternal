@@ -3,7 +3,7 @@
 #include "../../../Hooks/Hooks.h"
 #include "../../../Offsets/Offsets.h"
 
-static BKCModule __xray = { "XRay", "Not as useful as in Minecraft", VISUAL, 0x0, false, {} };
+static BKCModule __xray = { "XRay", "Enables XRay for all scopes.", VISUAL, 0x0, false, {} };
 
 class ModuleXRay : ModuleBase
 {

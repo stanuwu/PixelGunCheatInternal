@@ -2,7 +2,7 @@
 #include "../../ModuleBase.h"
 #include "../../../Hooks/Hooks.h"
 
-static BKCModule __legacy_animations = { "Legacy Animations", "Back to the good old days (only on some weapons)", VISUAL, 0x0, false, { } };
+static BKCModule __legacy_animations = { "Legacy Animations", "Adds back some old weapon animations.", VISUAL, 0x0, false, { } };
 
 class ModuleLegacyAnimations : ModuleBase
 {

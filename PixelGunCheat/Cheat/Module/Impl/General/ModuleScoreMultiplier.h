@@ -3,8 +3,8 @@
 #include "../../../Hooks/Hooks.h"
 #include "../../../Offsets/Offsets.h"
 
-static BKCSlider __score_amount = BKCSlider("Amount",  10, 0, 9999, "Use large multiplier values with caution!");
-static BKCModule __score_multiplier = { "Score Multiplier", "Just so skilled to get such a high score!", GENERAL, 0x0, false, {&__score_amount} };
+static BKCSlider __score_amount = BKCSlider("Amount",  10, 0, 9999);
+static BKCModule __score_multiplier = { "Score Multiplier", "Get more points for kills and assists. (WILL cause manual ban)", GENERAL, 0x0, false, {&__score_amount} };
 
 class ModuleScoreMultiplier : ModuleBase
 {

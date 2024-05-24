@@ -36,7 +36,7 @@ WPARAM MapLeftRightKeys(const MSG& msg);
 
 // Boykisser Central Vars
 std::string BKCImGuiHooker::c_Title = "Boykisser Central";
-std::string BKCImGuiHooker::c_RealBuild = "v2.5.2";
+std::string BKCImGuiHooker::c_RealBuild = "v2.6";
 static std::string c_Build = ":3";
 std::stringstream full_title;
 std::string combo_file = "default";
@@ -695,9 +695,12 @@ void BKCImGuiHooker::start(void* g_mainRenderTargetView, void* g_pd3dDevice, voi
             DrawClientSettingsWindow(is_dx_11);
             break;
         default:
-            ImGui::Text("Welcome to Boykisser Central, Happy Modding!");
+            ImGui::Text("Welcome to Boykisser Central (official version), Happy Modding!");
             ImGui::SameLine();
             ImGui::TextColored({ 1.0f, 0.0f, 0.0f, 1.0f }, "<3");
+            ImGui::Text("For support join ");
+            ImGui::SameLine();
+            ImGui::TextColored({ 1.0f, 0.0f, 0.0f, 1.0f }, "https://discord.gg/EWWyBS3QdY");
             ImGui::Text("Please select a category above to use the menu...");
             break;
         }
@@ -726,8 +729,8 @@ void BKCImGuiHooker::start(void* g_mainRenderTargetView, void* g_pd3dDevice, voi
     // Watermark
     ImGui::PushFont(watermark_font);
     float size = ImGui::GetFontSize();
-    // ImVec2 true_size = ImGui::CalcTextSize(full_title.str().c_str());
-    // ImGui::GetBackgroundDrawList()->AddRectFilled({5, 5}, {15 + true_size.x, 10 + true_size.y}, color_bg, 10);
+    ImVec2 true_size = ImGui::CalcTextSize(full_title.str().c_str());
+    ImGui::GetBackgroundDrawList()->AddRectFilled({5, 5}, {15 + true_size.x, 10 + true_size.y}, color_bg, 10);
     ImGui::GetBackgroundDrawList()->AddText(nullptr, size, {9, 4}, ImGui::ColorConvertFloat4ToU32({ 0.0f, 0.0f, 0.0f, 0.5f }), full_title.str().c_str());
     ImGui::GetBackgroundDrawList()->AddText(nullptr, size, {9, 6}, ImGui::ColorConvertFloat4ToU32({ 0.0f, 0.0f, 0.0f, 0.5f }), full_title.str().c_str());
     ImGui::GetBackgroundDrawList()->AddText(nullptr, size, {11, 4}, ImGui::ColorConvertFloat4ToU32({ 0.0f, 0.0f, 0.0f, 0.5f }), full_title.str().c_str());

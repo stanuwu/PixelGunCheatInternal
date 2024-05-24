@@ -8,7 +8,7 @@
 #include "../../../Hooks/Hooks.h"
 #include "../../../Util/ClientUtil.h"
 
-static BKCModule __notifications = { "Notifications", "Shows useful notifications", VISUAL, 0x0, true, {} };
+static BKCModule __notifications = { "Notifications", "Shows useful notifications.", VISUAL, 0x0, true, {} };
 
 inline std::map<std::chrono::milliseconds, Notification> notifications = {};
 

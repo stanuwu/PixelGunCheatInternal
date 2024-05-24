@@ -2,7 +2,7 @@
 #include "../../ModuleBase.h"
 #include "../../../Offsets/Offsets.h"
 
-static BKCModule __piercer = { "Piercer", "Bro got AP bullets wtf??", COMBAT, 0x0, false, {} };
+static BKCModule __piercer = { "Piercer", "Shoot through walls with certain weapons.", COMBAT, 0x0, false, {} };
 
 class ModulePiercer : ModuleBase
 {

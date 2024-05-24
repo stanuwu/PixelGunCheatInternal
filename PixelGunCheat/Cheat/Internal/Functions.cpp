@@ -266,3 +266,10 @@ void Functions::CameraSetFov(void* arg, float fov)
     static const auto fn = (void(*)(void*, float))(GameAssembly_ + Offsets::CameraSetFieldOfView);
     return fn(arg, fov); 
 }
+
+void Functions::TransformSetRotation(void* arg, void* quaternion)
+{
+    if (!arg) return;
+    static const auto fn = (void(*)(void*, void*)) (GameAssembly_ + Offsets::TransformSetRotation);
+    return fn(arg, quaternion);
+}

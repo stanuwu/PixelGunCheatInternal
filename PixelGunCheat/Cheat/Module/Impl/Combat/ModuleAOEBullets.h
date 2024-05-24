@@ -5,7 +5,7 @@
 static BKCSlider __aoe_range = BKCSlider("Range",  9999, 0, 9999);
 static BKCSlider __aoe_damage = BKCSlider("Damage",  5, 0, 20, "High damage values may cause kicks!");
 static BKCCheckbox __aoe_weapon_fix = BKCCheckbox("Weapon Fix", false, "Changes some weapon types to false, some weapons will break with this while turned on!");
-static BKCModule __aoe_bullets = { "AOE Bullets", "Massive bullets, kind of, sometimes", COMBAT, 0x0, false, {&__aoe_range, &__aoe_damage} };
+static BKCModule __aoe_bullets = { "AOE Bullets", "Gives your bullets an area of effect.", COMBAT, 0x0, false, {&__aoe_range, &__aoe_damage} };
 
 class ModuleAOEBullets : ModuleBase
 {

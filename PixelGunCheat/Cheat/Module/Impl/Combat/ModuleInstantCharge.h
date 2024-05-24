@@ -2,7 +2,7 @@
 #include "../../ModuleBase.h"
 #include "../../../Offsets/Offsets.h"
 
-static BKCModule __instant_charge = { "Instant Charge", "Got that 300watt fast charger from Temu", COMBAT, 0x0, false, {} };
+static BKCModule __instant_charge = { "Instant Charge", "Removes charge time for charged weapons.", COMBAT, 0x0, false, {} };
 
 class ModuleInstantCharge : ModuleBase
 {

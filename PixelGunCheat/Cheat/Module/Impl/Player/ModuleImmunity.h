@@ -9,7 +9,7 @@ static BKCCheckbox __immunity_bleeding = BKCCheckbox{ "Slow", true };
 
 static BKCCheckbox __immunity_toxic = BKCCheckbox{ "Stun", true };
 
-static BKCModule __immunity = { "Immunity", "Bro got his vaccines", PLAYER, 0x0, true, {&__immunity_poison, &__immunity_bleeding, &__immunity_toxic} };
+static BKCModule __immunity = { "Immunity", "Prevents certain status effects.", PLAYER, 0x0, false, {&__immunity_poison, &__immunity_bleeding, &__immunity_toxic} };
 
 
 class ModuleImmunity : ModuleBase

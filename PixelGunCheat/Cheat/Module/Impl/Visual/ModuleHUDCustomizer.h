@@ -20,12 +20,12 @@ static std::vector<std::wstring> color_schemes = {
     L"Pastels",
     L"Pastels 2",
     L"Skies",
-    L"Trans",
-    L"Custom [Unimplemented]"
+    L"Trans"
+    // L"Custom [Unimplemented]" add this back later
 };
 
 // keep inline
-inline BKCDropdown __color_scheme = BKCDropdown("Color Scheme", L"Trans", color_schemes, "Color scheme of the whole menu.");
+inline BKCDropdown __color_scheme = BKCDropdown("Color Scheme", L"Pink", color_schemes, "Color scheme of the whole menu.");
 
 static BKCCheckbox __hud_module_list = BKCCheckbox("Module List", true, "Show the enabled modules", "Features");
 static BKCCheckbox __hud_click_gui = BKCCheckbox("Click GUI", true, "Apply the theme to menu colors too (This can possibly cause lag on older machines!)", "Features");
@@ -37,7 +37,7 @@ static BKCSliderInt __background_opacity = BKCSliderInt("Background Opacity (%)"
 static BKCSliderInt __module_separation = BKCSliderInt("Y Separation", 1, 0, 12, "Distance on the vertical axis between modules", "Module List - Extra");
 static BKCCheckbox __line_on_side = BKCCheckbox("Line on Side", true, "Adds a line to the side of every module", "Module List - Extra");
 static BKCCheckbox __dont_extend_bg_on_separation = BKCCheckbox("No Extend Background", false, "Disables background extending on module separation", "Module List - Extra");
-static BKCModule __hud_customizer = { "HUD Customizer", "Customize colors and such in the menu", VISUAL, 0x0, true, { &__color_scheme, &__hud_module_list, &__hud_click_gui, &__module_sort_type, &__screen_position, &__color_speed, &__color_offset, &__background_opacity, &__module_separation, &__line_on_side, &__dont_extend_bg_on_separation } };
+static BKCModule __hud_customizer = { "HUD Customizer", "Customize the look of the menu.", VISUAL, 0x0, true, { &__color_scheme, &__hud_module_list, &__hud_click_gui, &__module_sort_type, &__screen_position, &__color_speed, &__color_offset, &__background_opacity, &__module_separation, &__line_on_side, &__dont_extend_bg_on_separation } };
 
 static ImU32 color_array = ImGui::ColorConvertFloat4ToU32(Functions::ImVec4i(255, 180, 230));
 

@@ -70,6 +70,7 @@ public:
     static inline uint64_t CameraSetFieldOfView = 0x438b210; // 24.4.5
     static inline uint64_t ProtonOnDisconnect = 0x9c7c70; // 24.4.5
     static inline uint64_t ProtonOnDisconnect2 = 0x1f1bfe0; // 24.4.5
+    static inline uint64_t TransformSetRotation = 0x43C1240; // 24.4.5
     
     // Fields
     static inline uint64_t scopeSpeed = 0x100;

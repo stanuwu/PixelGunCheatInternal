@@ -2,7 +2,7 @@
 #include "../../ModuleBase.h"
 #include "../../../Hooks/Hooks.h"
 
-static BKCModule __immortality = { "Immortality", "Become a god or something like that", PLAYER, 0x0, true, {} };
+static BKCModule __immortality = { "Immortality", "Makes you invincible.", PLAYER, 0x0, false, {} };
 
 class ModuleImmortality : ModuleBase
 {

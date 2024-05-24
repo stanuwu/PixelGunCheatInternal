@@ -9,7 +9,7 @@ static BKCSlider __gadget_cooldown = BKCSlider("Gadget Cooldown", 0.1f, 0.1f, 99
 static BKCCheckbox __mod_perk = BKCCheckbox("Modify Module Perks", true);
 static BKCSlider __mod_perk_duration = BKCSlider("Module Combo Perk Duration (sec)", 20, 0, 999);
 
-static BKCModule __gadget_modifier = { "Gadget Modifier", "Who doesn't want to improve their gadgets on the go?", PLAYER, 0x0, false, { &__normal_gadgets, &__gadget_throwable_damage, &__gadget_tool_duration, &__gadget_cooldown, &__mod_perk, &__mod_perk_duration } };
+static BKCModule __gadget_modifier = { "Gadget Modifier", "Change throwables and gadgets.", PLAYER, 0x0, false, { &__normal_gadgets, &__gadget_throwable_damage, &__gadget_tool_duration, &__gadget_cooldown, &__mod_perk, &__mod_perk_duration } };
 
 class ModuleGadgetModifier : ModuleBase
 {
