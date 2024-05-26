@@ -483,7 +483,7 @@ inline float(__stdcall* on_pre_render_original)(void* arg);
 inline float __stdcall on_pre_render(void* arg)
 {
     // non silent aim
-    if (Hooks::our_player != nullptr && Hooks::main_camera != nullptr && aim_bot_module && !aim_bot_module->is_using_silent_aim) ((ModuleBase*)aim_bot_module)->run(arg);
+    if (Hooks::our_player != nullptr && Hooks::main_camera != nullptr && ((ModuleBase*)aim_bot_module)->is_enabled() && !aim_bot_module->is_using_silent_aim) ((ModuleBase*)aim_bot_module)->run(arg);
     
     if (ClientUtil::tick % 60 == 0)
     {
@@ -1064,7 +1064,6 @@ void Hooks::load()
     hook_function(Offsets::InfiniteGemClaim, &infinite_gem_claim, &infinite_gem_claim_original);
     hook_function(Offsets::RapidFire, &rapid_fire, &rapid_fire_original);
     hook_function(Offsets::GetPlayerSpeed, &speed, &speed_original);
-    hook_function(Offsets::OnPreRender, &on_pre_render, &on_pre_render_original);
     hook_function(Offsets::OnSceneUnload, &on_scene_unload, &on_scene_unload_original);
     hook_function(Offsets::PriceModifier, &free_lottery, &free_lottery_original);
     hook_function(Offsets::PlayerMoveCFixedUpdate, &player_move_c_fixed, &player_move_c_fixed_original);
@@ -1113,6 +1112,9 @@ void Hooks::load()
     hook_function(0x438f500, &debug_log_fmt2, &debug_log_fmt_orig2); // LogFormat 2arg
     hook_function(0x438f5d0, &debug_log_warn_fmt2, &debug_log_warn_fmt_orig2); // LogWarningFormat 2arg
     hook_function(0x438f120, &debug_log_error_fmt2, &debug_log_error_fmt_orig2); // LogErrorFormat 2arg
+
+    // move this all the way down to avoid issues
+    hook_function(Offsets::OnPreRender, &on_pre_render, &on_pre_render_original);
 }
 
 void Hooks::unload()

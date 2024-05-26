@@ -21,7 +21,7 @@ public:
     static std::string get_player_name(void* player_move_c);
     static void* get_player_transform(void* player);
     static bool is_player_enemy(void* player);
-    void load();
+    static void load();
     void unload();
     static uintptr_t GameBase;
     static uintptr_t GameAssembly;

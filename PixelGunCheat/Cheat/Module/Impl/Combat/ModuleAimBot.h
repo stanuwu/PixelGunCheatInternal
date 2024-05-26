@@ -9,9 +9,9 @@
 #include "../IL2CPPResolver/IL2CPP_Resolver.hpp"
 
 static BKCDropdown __aim_bot_body_parts = BKCDropdown("Aim at Body Parts", L"Head", { L"Head", L"Body", L"Foot" });
-static BKCSliderInt __aim_bot_smoothness = BKCSliderInt("Aim Bot Smoothness", 10, 1, 100, "Set to 0 for instant aim.");
+static BKCSliderInt __aim_bot_smoothness = BKCSliderInt("Aim Bot Smoothness", 10, 0, 100, "Set to 0 for instant aim.");
 static BKCSliderInt __aim_bot_target_size = BKCSliderInt("Target Marker Size", 5, 1, 20);
-static BKCCheckbox __aim_bot_target_marker = BKCCheckbox("Target Marker", true, "Highlight the current targed. Only works with silent aim.");
+static BKCCheckbox __aim_bot_target_marker = BKCCheckbox("Target Marker", true, "Highlight the current target. Only works with silent aim.");
 static BKCCheckbox __aim_bot_silent_aim = BKCCheckbox("Silent Aim", false, "Aims without moving your crosshair.");
 static BKCSliderInt __aim_bot_radius = BKCSliderInt("Aim Radius", 300, 0, 1000, "Set to 0 to aim everywhere.");
 static BKCCheckbox __aim_bot_through_walls = BKCCheckbox("Through Walls", false);
@@ -57,9 +57,9 @@ static float vec3_distance(Unity::Vector3& one, Unity::Vector3& two)
 static Unity::Vector3 crossProduct(const Unity::Vector3 &left, const Unity::Vector3 &right)
 {
     return Unity::Vector3{
-        left.y*right.z - left.z*right.y,
-        left.z*right.x - left.x*right.z,
-        left.x*right.y - left.y*right.x
+        left.y * right.z - left.z * right.y,
+        left.z * right.x - left.x * right.z,
+        left.x * right.y - left.y * right.x
     };
 }
 
@@ -293,7 +293,7 @@ public:
             }
             last_aim = target;
             time++;
-            if (__aim_bot_smoothness.value > 0)
+            if (__aim_bot_smoothness.value > 0 && !__aim_bot_silent_aim.enabled)
             {
                 Unity::Vector3 euler1 = camera_rotation.ToEuler();
                 Unity::Vector3 euler2 = camera_rotation2.ToEuler();

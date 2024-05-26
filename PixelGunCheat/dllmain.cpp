@@ -236,6 +236,9 @@ long __stdcall hkPresent11(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT F
         
         if (SUCCEEDED(pSwapChain->GetDevice(__uuidof(ID3D11Device), (void**)& pDevice11)))
         {
+            // wait for shit to load ffs
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            
             pDevice11->GetImmediateContext(&pContext11);
             DXGI_SWAP_CHAIN_DESC sd;
             pSwapChain->GetDesc(&sd);
@@ -247,8 +250,8 @@ long __stdcall hkPresent11(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT F
             oWndProc = (WNDPROC)SetWindowLongPtr(window, GWLP_WNDPROC, (LONG_PTR)WndProc);
 
             Logger::log_info("Kiero D3D11 hkPresent hooked successfully!");
+            
             // Init Imgui
-
             BKCImGuiHooker::setup_imgui_hwnd(window, pDevice11, pContext11, dx11);
             
             is_init = false;
@@ -272,6 +275,9 @@ long __stdcall hkPresent10(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT F
         
         if (SUCCEEDED(pSwapChain->GetDevice(__uuidof(ID3D10Device), (void**)& pDevice10)))
         {
+            // wait for shit to load ffs
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            
             DXGI_SWAP_CHAIN_DESC sd;
             pSwapChain->GetDesc(&sd);
             window = sd.OutputWindow;
@@ -282,8 +288,8 @@ long __stdcall hkPresent10(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT F
             oWndProc = (WNDPROC)SetWindowLongPtr(window, GWLP_WNDPROC, (LONG_PTR)WndProc);
 
             Logger::log_info("Kiero D3D10 hkPresent hooked successfully!");
+            
             // Init Imgui
-
             BKCImGuiHooker::setup_imgui_hwnd(window, pDevice10, nullptr, dx11);
             
             is_init = false;
