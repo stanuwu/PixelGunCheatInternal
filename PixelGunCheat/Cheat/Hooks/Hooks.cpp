@@ -324,6 +324,7 @@ Unity::CCamera* find_main_camera()
     
     return (Unity::CCamera*)Functions::CameraGetMain();
 }
+
 // Hook Functions
 inline void(__stdcall* weapon_sounds_original)(void* arg);
 inline void __stdcall weapon_sounds_call(void* arg)
@@ -400,36 +401,37 @@ inline void(__stdcall* player_move_c_original)(void* arg);
 inline void __stdcall player_move_c(void* arg)
 {
     bool my_player = is_my_player_move_c(arg);
-
-    if (my_player)
+    if (Hooks::fov_changer_module != nullptr)
     {
-        // Just do this every fucking call innit
-        Hooks::main_camera = find_main_camera();
-        if (Hooks::main_camera == nullptr) return player_move_c_original(arg);
-        Hooks::our_player = arg; // WARN: ALWAYS ALLOW THIS TO BE SET, OTHERWISE BREAKS A LOT OF MODULES
-        
-        Hooks::fov_changer_module->run(nullptr);
-        
-        for (ModuleBase* player_move_c_module : player_move_c_modules)
+        if (my_player)
         {
-            player_move_c_module->run(arg);
+            // Just do this every fucking call innit
+            Hooks::main_camera = find_main_camera();
+            if (Hooks::main_camera == nullptr) return player_move_c_original(arg);
+            Hooks::our_player = arg; // WARN: ALWAYS ALLOW THIS TO BE SET, OTHERWISE BREAKS A LOT OF MODULES
+        
+            Hooks::fov_changer_module->run(nullptr);
+        
+            for (ModuleBase* player_move_c_module : player_move_c_modules)
+            {
+                player_move_c_module->run(arg);
+            }
+        }
+        else
+        {
+            // Other Players
+            if (Hooks::main_camera == nullptr) return player_move_c_original(arg);
+            // Functions::TestKicker(arg);
+            Hooks::fov_changer_module->run(nullptr);
+            esp_module->add_esp(arg);
+            working_player_list.push_back(arg);
+        
+            for (auto player_move_c_others_module : player_move_c_others_modules)
+            {
+                player_move_c_others_module->run(arg);
+            }
         }
     }
-    else
-    {
-        // Other Players
-        if (Hooks::main_camera == nullptr) return player_move_c_original(arg);
-        // Functions::TestKicker(arg);
-        Hooks::fov_changer_module->run(nullptr);
-        esp_module->add_esp(arg);
-        working_player_list.push_back(arg);
-        
-        for (auto player_move_c_others_module : player_move_c_others_modules)
-        {
-            player_move_c_others_module->run(arg);
-        }
-    }
-    
     return player_move_c_original(arg);
 }
 
@@ -468,14 +470,14 @@ inline bool __stdcall infinite_gem_claim(void* arg)
 inline float(__stdcall* rapid_fire_original)(void* arg);
 inline float __stdcall rapid_fire(void* arg)
 {
-    if (((ModuleBase*)rapid_fire_module)->is_enabled()) return rapid_fire_module->get_speed();
+    if (rapid_fire_module != nullptr && ((ModuleBase*)rapid_fire_module)->is_enabled()) return rapid_fire_module->get_speed();
     return rapid_fire_original(arg);
 }
 
 inline float(__stdcall* speed_original)(void* arg);
 inline float __stdcall speed(void* arg)
 {
-    if (((ModuleBase*)speed_module)->is_enabled()) return speed_module->get_amount();
+    if (speed_module != nullptr && ((ModuleBase*)speed_module)->is_enabled()) return speed_module->get_amount();
     return speed_original(arg);
 }
 
@@ -483,7 +485,7 @@ inline float(__stdcall* on_pre_render_original)(void* arg);
 inline float __stdcall on_pre_render(void* arg)
 {
     // non silent aim
-    if (Hooks::our_player != nullptr && Hooks::main_camera != nullptr && ((ModuleBase*)aim_bot_module)->is_enabled() && !aim_bot_module->is_using_silent_aim) ((ModuleBase*)aim_bot_module)->run(arg);
+    if (Hooks::our_player != nullptr && Hooks::main_camera != nullptr && aim_bot_module != nullptr && ((ModuleBase*)aim_bot_module)->is_enabled() && !aim_bot_module->is_using_silent_aim) ((ModuleBase*)aim_bot_module)->run(arg);
     
     if (ClientUtil::tick % 60 == 0)
     {
@@ -523,7 +525,7 @@ inline void __stdcall on_scene_unload(void* arg)
 inline int (__stdcall* free_lottery_original)(void* arg);
 inline int __stdcall free_lottery(void* arg)
 {
-    if (((ModuleBase*)lottery_price_module)->is_enabled())
+    if (lottery_price_module != nullptr && ((ModuleBase*)lottery_price_module)->is_enabled())
     {
         return lottery_price_module->get_price();
     }
@@ -534,7 +536,7 @@ inline int __stdcall free_lottery(void* arg)
 inline int (__stdcall* reward_multiplier_original)(void* arg);
 inline int __stdcall reward_multiplier(void* arg)
 {
-    if (((ModuleBase*)rewards_multiplier_module)->is_enabled())
+    if (rewards_multiplier_module != nullptr && ((ModuleBase*)rewards_multiplier_module)->is_enabled())
     {
         return rewards_multiplier_module->get_amount();
     }
@@ -545,7 +547,7 @@ inline int __stdcall reward_multiplier(void* arg)
 inline bool (__stdcall* double_rewards_original)(void* arg);
 inline bool __stdcall double_rewards(void* arg)
 {
-    if (((ModuleBase*)rewards_multiplier_module)->is_enabled())
+    if (rewards_multiplier_module != nullptr && ((ModuleBase*)rewards_multiplier_module)->is_enabled())
     {
         return true;
     }
@@ -556,7 +558,7 @@ inline bool __stdcall double_rewards(void* arg)
 inline bool (__stdcall* season_pass_premium_original)(void* arg);
 inline bool __stdcall season_pass_premium(void* arg)
 {
-    if (((ModuleBase*)season_pass_module)->is_enabled() && season_pass_module->spoof_premium())
+    if (season_pass_module != nullptr && ((ModuleBase*)season_pass_module)->is_enabled() && season_pass_module->spoof_premium())
     {
         return true;
     }
@@ -678,7 +680,7 @@ inline void __stdcall debug_log_error_fmt2(void* arg)
 inline void (__stdcall* add_weapon_original)(void* arg, void* string, int source, bool bool1, bool bool2, void* class1, void* struct1);
 inline void __stdcall add_weapon(void* arg, void* string, int source, bool bool1, bool bool2, void* class1, void* struct1)
 {
-    if (((ModuleBase*)unlock_weapons_module)->is_enabled())
+    if (unlock_weapons_module != nullptr && ((ModuleBase*)unlock_weapons_module)->is_enabled())
     {
         Unity::System_String* sname = (Unity::System_String*)string;
         std::wstring nname = unlock_weapons_module->get_current();
@@ -701,36 +703,36 @@ inline void __stdcall add_weapon(void* arg, void* string, int source, bool bool1
 inline int (__stdcall* ammo_in_clip_original)(void* arg);
 inline int __stdcall ammo_in_clip(void* arg)
 {
-    if (((ModuleBase*)infinite_ammo_module)->is_enabled()) return 9999;
+    if (infinite_ammo_module != nullptr && ((ModuleBase*)infinite_ammo_module)->is_enabled()) return 9999;
     return ammo_in_clip_original(arg);
 }
 
 inline int (__stdcall* ammo_original)(void* arg);
 inline int __stdcall ammo(void* arg)
 {
-    if (((ModuleBase*)infinite_ammo_module)->is_enabled()) return 9999;
+    if (infinite_ammo_module != nullptr && ((ModuleBase*)infinite_ammo_module)->is_enabled()) return 9999;
     return ammo_original(arg);
 }
 
 inline float (__stdcall* damage_multiplier_original)(void* arg);
 inline float __stdcall damage_multiplier(void* arg)
 {   
-    if (((ModuleBase*)damage_multiplier_module)->is_enabled()) return damage_multiplier_module->amount();
+    if (damage_multiplier_module != nullptr && ((ModuleBase*)damage_multiplier_module)->is_enabled()) return damage_multiplier_module->amount();
     return damage_multiplier_original(arg);
 }
 
 inline bool (__stdcall* get_immortality_original)(void* arg);
 inline bool __stdcall get_immortality(void* arg)
 {
-    if (((ModuleBase*)immortality_module)->is_enabled() && arg == Hooks::our_player) return true;
-    if (((ModuleBase*)anti_immortal_module)->is_enabled() && arg != Hooks::our_player) return false;
+    if (immortality_module != nullptr && ((ModuleBase*)immortality_module)->is_enabled() && arg == Hooks::our_player) return true;
+    if (anti_immortal_module != nullptr && ((ModuleBase*)anti_immortal_module)->is_enabled() && arg != Hooks::our_player) return false;
     return get_immortality_original(arg);
 }
 
 inline int (__stdcall* spoof_module_level_orig)(void* arg);
 inline int __stdcall spoof_module_level(void* arg)
 {
-    if (((ModuleBase*)spoof_modules_module)->is_enabled()) return spoof_modules_module->level();
+    if (spoof_modules_module != nullptr && ((ModuleBase*)spoof_modules_module)->is_enabled()) return spoof_modules_module->level();
     return spoof_module_level_orig(arg);
 }
 
@@ -886,14 +888,14 @@ inline void* __stdcall lottery_drop_id(void* arg)
 {
     // WARNING: Any "Real" currency will possibly auto-ban on entering lottery screen
     void* id = lottery_drop_id_orig(arg);
-    if (((ModuleBase*)lottery_price_module)->is_enabled() && lottery_price_module->is_mod_add_in_use()) return Hooks::create_system_string_w(lottery_price_module->curr_weapon());
+    if (lottery_price_module != nullptr && ((ModuleBase*)lottery_price_module)->is_enabled() && lottery_price_module->is_mod_add_in_use()) return Hooks::create_system_string_w(lottery_price_module->curr_weapon());
     return id;
 }
 
 inline int (__stdcall* lottery_drop_count_orig)(void* arg);
 inline int __stdcall lottery_drop_count(void* arg)
 {
-    if(((ModuleBase*)lottery_price_module)->is_enabled() && lottery_price_module->mod_output()) return lottery_price_module->lottery_count();
+    if(lottery_price_module != nullptr && ((ModuleBase*)lottery_price_module)->is_enabled() && lottery_price_module->mod_output()) return lottery_price_module->lottery_count();
     return lottery_drop_count_orig(arg);
 }
 
@@ -902,7 +904,7 @@ inline int __stdcall lottery_drop_type(void* arg)
 {
     // NOTE: This requires a valid matching type for what you are adding, otherwise pressing open chest either 1. Doesn't do anything, 2. Unlocks just currencies, or 3. Unlocks default drops
     // WARNING: DO NOT USE 200 (CraftItem), IT WILL AUTO-BAN ON ENTERING LOTTERY SCREEN
-    if (((ModuleBase*)lottery_price_module)->is_enabled() && lottery_price_module->is_mod_add_in_use()) return 1100;
+    if (lottery_price_module != nullptr && ((ModuleBase*)lottery_price_module)->is_enabled() && lottery_price_module->is_mod_add_in_use()) return 1100;
     return lottery_drop_type_orig(arg);
 }
 
@@ -920,7 +922,7 @@ inline int __stdcall force_item_display(void* arg, int offer_type, void* id)
 inline void (__stdcall* proton_connect_failure_orig)(void* arg, int cause);
 inline void __stdcall proton_connect_failure(void* arg, int cause)
 {
-    if (((ModuleBase*)force_rejoin_module)->is_enabled() && cause == 1043) // DisconnectByServerLogic
+    if (force_rejoin_module != nullptr && ((ModuleBase*)force_rejoin_module)->is_enabled() && cause == 1043) // DisconnectByServerLogic
     {
         Logger::log_debug("Trying to prevent Proton connection failure...");
         ModuleNotifications::add_notification("Force Rejoin", "Detected a disconnection, trying to force rejoin...", 5000);
@@ -933,7 +935,7 @@ inline void __stdcall proton_connect_failure(void* arg, int cause)
 inline void (__stdcall* proton_connect_failure_orig2)(void* arg, int cause);
 inline void __stdcall proton_connect_failure2(void* arg, int cause)
 {
-    if (((ModuleBase*)force_rejoin_module)->is_enabled() && cause == 1043) // DisconnectByServerLogic
+    if (force_rejoin_module != nullptr && ((ModuleBase*)force_rejoin_module)->is_enabled() && cause == 1043) // DisconnectByServerLogic
     {
         Logger::log_debug("Trying to prevent Proton connection failure...");
         ModuleNotifications::add_notification("Force Rejoin", "Detected a disconnection, trying to force rejoin...", 5000);
@@ -976,6 +978,65 @@ void Hooks::load()
     
     // MinHook
     MH_Initialize();
+
+    // Hook Functions Here
+    hook_function(Offsets::PlayerMoveCUpdate, &player_move_c, &player_move_c_original);
+    hook_function(Offsets::WeaponSoundsUpdate, &weapon_sounds_call, &weapon_sounds_original);
+    hook_function(Offsets::WeaponSoundsLateUpdate, &weapon_sounds_late_call, &weapon_sounds_late_original);
+    hook_function(Offsets::InfiniteGemClaim, &infinite_gem_claim, &infinite_gem_claim_original);
+    hook_function(Offsets::RapidFire, &rapid_fire, &rapid_fire_original);
+    hook_function(Offsets::GetPlayerSpeed, &speed, &speed_original);
+    hook_function(Offsets::OnSceneUnload, &on_scene_unload, &on_scene_unload_original);
+    hook_function(Offsets::PriceModifier, &free_lottery, &free_lottery_original);
+    hook_function(Offsets::PlayerMoveCFixedUpdate, &player_move_c_fixed, &player_move_c_fixed_original);
+    hook_function(Offsets::RewardMultiplier, &reward_multiplier, &reward_multiplier_original);
+    hook_function(Offsets::DoubleRewards, &double_rewards, &double_rewards_original);
+    hook_function(Offsets::PremiumPass, &season_pass_premium, &season_pass_premium_original);
+    hook_function(Offsets::AddWeapon, &add_weapon, &add_weapon_original);
+    hook_function(Offsets::GetAmmoInClip, &ammo_in_clip, &ammo_in_clip_original);
+    hook_function(Offsets::GetAmmo, &ammo, &ammo_original);
+    hook_function(Offsets::GetDamageMultiplier, &damage_multiplier, &damage_multiplier_original);
+    hook_function(Offsets::PlayerGetImmortality, &get_immortality, &get_immortality_original);
+
+    hook_function(Offsets::SpoofModuleLevel, &spoof_module_level, &spoof_module_level_orig);
+    
+    // hook_function(Offsets::WeaponSetSkin, &force_item_display, &force_item_display_orig);
+    
+    hook_function(Offsets::ModulePerkDuration, &spoof_module_perk_duration, &spoof_module_perk_duration_orig);
+    hook_function(Offsets::ThrowGadgetDamage, &gadget_throwable_damage, &gadget_throwable_damage_orig);
+    hook_function(Offsets::GadgetDuration, &gadget_duration, &gadget_duration_orig);
+    hook_function(Offsets::GadgetCooldown, &gadget_cooldown, &gadget_cooldown_orig);
+    hook_function(Offsets::TeamKill, &team_kill, &team_kill_orig);
+
+    hook_function(Offsets::SendChat, &chat_bypass, &chat_bypass_orig);
+    
+    // hook_function(0x1bbf0e0, &force_pandoras, &force_pandoras_orig);
+    // hook_function(0xcb9f30, &lottery_core, &lottery_core_orig);
+    
+    hook_function(Offsets::LotteryDropCount, &lottery_drop_count, &lottery_drop_count_orig);
+    hook_function(Offsets::LotteryDropId, &lottery_drop_id, &lottery_drop_id_orig);
+    hook_function(Offsets::LotteryDropType, &lottery_drop_type, &lottery_drop_type_orig);
+
+    hook_function(Offsets::ForceItemDisplay, &force_item_display, &force_item_display_orig);
+
+    hook_function(Offsets::ProtonOnDisconnect, &proton_connect_failure, &proton_connect_failure_orig);
+    hook_function(Offsets::ProtonOnDisconnect2, &proton_connect_failure2, &proton_connect_failure_orig2);
+    
+    // LOG HOOKS
+    hook_function(0x438f9e0, &debug_log, &debug_log_orig); // Log 1arg
+    hook_function(0x438f850, &debug_log_warn, &debug_log_warn_orig); // LogWarning 1arg
+    hook_function(0x438f2c0, &debug_log_error, &debug_log_error_orig); // LogError 1arg
+
+    hook_function(0x438f910, &debug_log_fmt, &debug_log_fmt_orig); // Log 2arg
+    hook_function(0x438f780, &debug_log_warn_fmt, &debug_log_warn_fmt_orig); // LogWarning 2arg
+    hook_function(0x438f1f0, &debug_log_error_fmt, &debug_log_error_fmt_orig); // LogError 2arg
+
+    hook_function(0x438f500, &debug_log_fmt2, &debug_log_fmt_orig2); // LogFormat 2arg
+    hook_function(0x438f5d0, &debug_log_warn_fmt2, &debug_log_warn_fmt_orig2); // LogWarningFormat 2arg
+    hook_function(0x438f120, &debug_log_error_fmt2, &debug_log_error_fmt_orig2); // LogErrorFormat 2arg
+
+    // move this all the way down to avoid issues
+    hook_function(Offsets::OnPreRender, &on_pre_render, &on_pre_render_original);
     
     // Init Modules Here
     rapid_fire_module = new ModuleRapidFire();
@@ -1056,65 +1117,6 @@ void Hooks::load()
     
     // Post Module Load
     BKCImGuiHooker::modules_loaded = true;
-
-    // Hook Functions Here
-    hook_function(Offsets::PlayerMoveCUpdate, &player_move_c, &player_move_c_original);
-    hook_function(Offsets::WeaponSoundsUpdate, &weapon_sounds_call, &weapon_sounds_original);
-    hook_function(Offsets::WeaponSoundsLateUpdate, &weapon_sounds_late_call, &weapon_sounds_late_original);
-    hook_function(Offsets::InfiniteGemClaim, &infinite_gem_claim, &infinite_gem_claim_original);
-    hook_function(Offsets::RapidFire, &rapid_fire, &rapid_fire_original);
-    hook_function(Offsets::GetPlayerSpeed, &speed, &speed_original);
-    hook_function(Offsets::OnSceneUnload, &on_scene_unload, &on_scene_unload_original);
-    hook_function(Offsets::PriceModifier, &free_lottery, &free_lottery_original);
-    hook_function(Offsets::PlayerMoveCFixedUpdate, &player_move_c_fixed, &player_move_c_fixed_original);
-    hook_function(Offsets::RewardMultiplier, &reward_multiplier, &reward_multiplier_original);
-    hook_function(Offsets::DoubleRewards, &double_rewards, &double_rewards_original);
-    hook_function(Offsets::PremiumPass, &season_pass_premium, &season_pass_premium_original);
-    hook_function(Offsets::AddWeapon, &add_weapon, &add_weapon_original);
-    hook_function(Offsets::GetAmmoInClip, &ammo_in_clip, &ammo_in_clip_original);
-    hook_function(Offsets::GetAmmo, &ammo, &ammo_original);
-    hook_function(Offsets::GetDamageMultiplier, &damage_multiplier, &damage_multiplier_original);
-    hook_function(Offsets::PlayerGetImmortality, &get_immortality, &get_immortality_original);
-
-    hook_function(Offsets::SpoofModuleLevel, &spoof_module_level, &spoof_module_level_orig);
-    
-    // hook_function(Offsets::WeaponSetSkin, &force_item_display, &force_item_display_orig);
-    
-    hook_function(Offsets::ModulePerkDuration, &spoof_module_perk_duration, &spoof_module_perk_duration_orig);
-    hook_function(Offsets::ThrowGadgetDamage, &gadget_throwable_damage, &gadget_throwable_damage_orig);
-    hook_function(Offsets::GadgetDuration, &gadget_duration, &gadget_duration_orig);
-    hook_function(Offsets::GadgetCooldown, &gadget_cooldown, &gadget_cooldown_orig);
-    hook_function(Offsets::TeamKill, &team_kill, &team_kill_orig);
-
-    hook_function(Offsets::SendChat, &chat_bypass, &chat_bypass_orig);
-    
-    // hook_function(0x1bbf0e0, &force_pandoras, &force_pandoras_orig);
-    // hook_function(0xcb9f30, &lottery_core, &lottery_core_orig);
-    
-    hook_function(Offsets::LotteryDropCount, &lottery_drop_count, &lottery_drop_count_orig);
-    hook_function(Offsets::LotteryDropId, &lottery_drop_id, &lottery_drop_id_orig);
-    hook_function(Offsets::LotteryDropType, &lottery_drop_type, &lottery_drop_type_orig);
-
-    hook_function(Offsets::ForceItemDisplay, &force_item_display, &force_item_display_orig);
-
-    hook_function(Offsets::ProtonOnDisconnect, &proton_connect_failure, &proton_connect_failure_orig);
-    hook_function(Offsets::ProtonOnDisconnect2, &proton_connect_failure2, &proton_connect_failure_orig2);
-    
-    // LOG HOOKS
-    hook_function(0x438f9e0, &debug_log, &debug_log_orig); // Log 1arg
-    hook_function(0x438f850, &debug_log_warn, &debug_log_warn_orig); // LogWarning 1arg
-    hook_function(0x438f2c0, &debug_log_error, &debug_log_error_orig); // LogError 1arg
-
-    hook_function(0x438f910, &debug_log_fmt, &debug_log_fmt_orig); // Log 2arg
-    hook_function(0x438f780, &debug_log_warn_fmt, &debug_log_warn_fmt_orig); // LogWarning 2arg
-    hook_function(0x438f1f0, &debug_log_error_fmt, &debug_log_error_fmt_orig); // LogError 2arg
-
-    hook_function(0x438f500, &debug_log_fmt2, &debug_log_fmt_orig2); // LogFormat 2arg
-    hook_function(0x438f5d0, &debug_log_warn_fmt2, &debug_log_warn_fmt_orig2); // LogWarningFormat 2arg
-    hook_function(0x438f120, &debug_log_error_fmt2, &debug_log_error_fmt_orig2); // LogErrorFormat 2arg
-
-    // move this all the way down to avoid issues
-    hook_function(Offsets::OnPreRender, &on_pre_render, &on_pre_render_original);
 }
 
 void Hooks::unload()
