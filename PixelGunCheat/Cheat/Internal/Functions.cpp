@@ -229,13 +229,14 @@ void* Functions::ProgressUpdaterGetInstance()
     return fn(); 
 }
 
+/*
 void Functions::SendChat(void* arg, void* msg)
 {
     if (!arg) return;
     static const auto fn = (void(*)(void*, void*, bool, void*))(GameAssembly_ + Offsets::SendChat);
     return fn(arg, msg, false, Hooks::create_system_string(""));
 }
-
+*/
 
 void Functions::ProgressAddCurrency(void* instance, void* currency, int amount, int enum1, bool bool1, bool bool2, itemObtainParams* obtainParams)
 {

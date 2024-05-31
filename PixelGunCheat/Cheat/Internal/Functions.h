@@ -90,7 +90,7 @@ public:
     static void AddClanLootboxPoints(int amount, int source, bool arg1, bool arg2, int arg3);
     static void AddSomeCurrency(void* currency, int amount, bool arg1, int enum1, int enum2, int enum3, int enum4);
     static void* ProgressUpdaterGetInstance();
-    static void SendChat(void* arg, void* msg);
+    // static void SendChat(void* arg, void* msg);
     static void ProgressAddCurrency(void* instance, void* currency, int amount, int enum1, bool bool1, bool bool2, itemObtainParams* obtainParams);
     static void ActivateGadget(void* arg, int gadget_id, int level);
     static void DeactivateGadget(void* arg, int gadget_id);

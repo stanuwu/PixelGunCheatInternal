@@ -484,9 +484,6 @@ inline float __stdcall speed(void* arg)
 inline float(__stdcall* on_pre_render_original)(void* arg);
 inline float __stdcall on_pre_render(void* arg)
 {
-    // non silent aim
-    if (Hooks::our_player != nullptr && Hooks::main_camera != nullptr && aim_bot_module != nullptr && ((ModuleBase*)aim_bot_module)->is_enabled() && !aim_bot_module->is_using_silent_aim) ((ModuleBase*)aim_bot_module)->run(arg);
-    
     if (ClientUtil::tick % 60 == 0)
     {
         ClientUtil::UpdateWinSize();
@@ -502,6 +499,9 @@ inline float __stdcall on_pre_render(void* arg)
     {
         on_pre_render_module->run(arg);
     }
+
+    // non silent aim
+    if (Hooks::our_player != nullptr && Hooks::main_camera != nullptr && aim_bot_module != nullptr && ((ModuleBase*)aim_bot_module)->is_enabled() && !aim_bot_module->is_using_silent_aim) ((ModuleBase*)aim_bot_module)->run(arg);
 
     return on_pre_render_original(arg);
 }
@@ -980,6 +980,7 @@ void Hooks::load()
     MH_Initialize();
 
     // Hook Functions Here
+    
     hook_function(Offsets::PlayerMoveCUpdate, &player_move_c, &player_move_c_original);
     hook_function(Offsets::WeaponSoundsUpdate, &weapon_sounds_call, &weapon_sounds_original);
     hook_function(Offsets::WeaponSoundsLateUpdate, &weapon_sounds_late_call, &weapon_sounds_late_original);
@@ -997,7 +998,7 @@ void Hooks::load()
     hook_function(Offsets::GetAmmo, &ammo, &ammo_original);
     hook_function(Offsets::GetDamageMultiplier, &damage_multiplier, &damage_multiplier_original);
     hook_function(Offsets::PlayerGetImmortality, &get_immortality, &get_immortality_original);
-
+    
     hook_function(Offsets::SpoofModuleLevel, &spoof_module_level, &spoof_module_level_orig);
     
     // hook_function(Offsets::WeaponSetSkin, &force_item_display, &force_item_display_orig);
@@ -1008,7 +1009,7 @@ void Hooks::load()
     hook_function(Offsets::GadgetCooldown, &gadget_cooldown, &gadget_cooldown_orig);
     hook_function(Offsets::TeamKill, &team_kill, &team_kill_orig);
 
-    hook_function(Offsets::SendChat, &chat_bypass, &chat_bypass_orig);
+    // hook_function(Offsets::SendChat, &chat_bypass, &chat_bypass_orig);
     
     // hook_function(0x1bbf0e0, &force_pandoras, &force_pandoras_orig);
     // hook_function(0xcb9f30, &lottery_core, &lottery_core_orig);
@@ -1016,13 +1017,14 @@ void Hooks::load()
     hook_function(Offsets::LotteryDropCount, &lottery_drop_count, &lottery_drop_count_orig);
     hook_function(Offsets::LotteryDropId, &lottery_drop_id, &lottery_drop_id_orig);
     hook_function(Offsets::LotteryDropType, &lottery_drop_type, &lottery_drop_type_orig);
-
+    
     hook_function(Offsets::ForceItemDisplay, &force_item_display, &force_item_display_orig);
 
-    hook_function(Offsets::ProtonOnDisconnect, &proton_connect_failure, &proton_connect_failure_orig);
-    hook_function(Offsets::ProtonOnDisconnect2, &proton_connect_failure2, &proton_connect_failure_orig2);
+    // hook_function(Offsets::ProtonOnDisconnect, &proton_connect_failure, &proton_connect_failure_orig);
+    // hook_function(Offsets::ProtonOnDisconnect2, &proton_connect_failure2, &proton_connect_failure_orig2);
     
     // LOG HOOKS
+    /*
     hook_function(0x438f9e0, &debug_log, &debug_log_orig); // Log 1arg
     hook_function(0x438f850, &debug_log_warn, &debug_log_warn_orig); // LogWarning 1arg
     hook_function(0x438f2c0, &debug_log_error, &debug_log_error_orig); // LogError 1arg
@@ -1034,9 +1036,11 @@ void Hooks::load()
     hook_function(0x438f500, &debug_log_fmt2, &debug_log_fmt_orig2); // LogFormat 2arg
     hook_function(0x438f5d0, &debug_log_warn_fmt2, &debug_log_warn_fmt_orig2); // LogWarningFormat 2arg
     hook_function(0x438f120, &debug_log_error_fmt2, &debug_log_error_fmt_orig2); // LogErrorFormat 2arg
+    */
 
     // move this all the way down to avoid issues
     hook_function(Offsets::OnPreRender, &on_pre_render, &on_pre_render_original);
+    
     
     // Init Modules Here
     rapid_fire_module = new ModuleRapidFire();
