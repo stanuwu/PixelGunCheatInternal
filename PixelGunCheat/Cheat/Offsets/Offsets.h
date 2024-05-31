@@ -32,14 +32,14 @@ public:
     static inline uint64_t AddWeapon = 0x656E10; // 24.5.0.0
     static inline uint64_t ItemRecordGetShopId = 0x5C4240; // 24.5.0.0
     static inline uint64_t GetDamageMultiplier = 0x114FB20; // 24.5.0.0
-    static inline uint64_t GetPlayerSpeed = 0x114AD60; // 24.5.0.0
+    static inline uint64_t GetPlayerSpeed = 0x112CE20; // 24.5.0.0
     static inline uint64_t GetAmmoInClip = 0x114F550; // 24.5.0.0
     static inline uint64_t GetAmmo = 0x1153B40; // 24.5.0.0
     static inline uint64_t PlayerGetImmortality = 0x1B28380; // 24.5.0.0
     static inline uint64_t GiveWear = 0x203AD70; // 24.5.0.0
     static inline uint64_t GiveWeapon = 0x2038D10; // 24.5.0.0
     static inline uint64_t GivePets = 0x2039400; // 24.5.0.0
-    static inline uint64_t GiveGadget = 0x1EC3CD0; // 24.5.0.0
+    static inline uint64_t GiveGadget = 0x1EC2280; // 24.5.0.0
     static inline uint64_t AddGems = 0x202A590; // 24.5.0.0
     static inline uint64_t AddCoins = 0x202BA80; // 24.5.0.0
     static inline uint64_t AddSomeCurrency = 0x202B4B0; // 24.5.0.0
@@ -49,7 +49,7 @@ public:
     static inline uint64_t ProgressAddCurrency = 0xA1FCD0; // 24.5.0.0
     static inline uint64_t WeaponSoundsLateUpdate = 0x808670; // 24.5.0.0
     static inline uint64_t GetWeaponSkinSettings = 0x901020; // 24.5.0.0
-    static inline uint64_t GetIDListParentInstance = 0x14B8FD0; // 24.5.0.0
+    static inline uint64_t GetIDListParentInstance = 0x14BB1F0; // 24.5.0.0
     static inline uint64_t GetIDList = 0x148BB10; // 24.5.0.0
     static inline uint64_t GadgetActivate = 0x1B80C80; // 24.5.0.0
     static inline uint64_t GadgetDeactivate = 0x1B29D70; // 24.5.0.0
@@ -80,9 +80,9 @@ public:
     static inline uint64_t railgunStopAtWall = 0x1d0;
     static inline uint64_t shootDelay = 0x1B8;
     static inline uint64_t bulletDelay = 0x1B4;
-    static inline uint64_t delayInBurstShooting = 0x5E8;
+    static inline uint64_t delayInBurstShooting = 0x5F8;
     static inline uint64_t isSectorsAOE = 0x3CC;
-    static inline uint64_t flamethrower = 0x354;
+    static inline uint64_t flamethrower = 0x370;
     static inline uint64_t railgun = 0x1C4;
     static inline uint64_t bazooka = 0x133;
     static inline uint64_t harpoon = 0x2C0;
@@ -119,7 +119,7 @@ public:
     static inline uint64_t frostDamageMultiplier = 0x374;
     static inline uint64_t frostSwordAngle = 0x380;
     static inline uint64_t frostSwordnTime = 0x384;
-    static inline uint64_t range = 0x668;
+    static inline uint64_t range = 0x678;
     static inline uint64_t recoilCoeff = 0xC8;
     static inline uint64_t recoilCoeffZoom = 0x12C;
     static inline uint64_t moveScatterCoeff = 0xC0;
