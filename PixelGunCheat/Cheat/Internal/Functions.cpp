@@ -184,11 +184,13 @@ void Functions::AddCoins(int amount, bool arg1, bool arg2, int enum1, int enum2,
     return fn(amount, arg1, arg2, enum1, enum2, enum3); 
 }
 
+/*
 void Functions::AddCoupons(int amount, int source, bool arg1, int arg2)
 {
     static const auto fn = (void(*)(int, int, bool, int))(GameAssembly_ + Offsets::AddCoupons);
     return fn(amount, source, arg1, arg2); 
 }
+*/
 
 void Functions::AddClanLootboxPoints(int amount, int source, bool arg1, bool arg2, int arg3)
 {

@@ -693,7 +693,15 @@ inline void __stdcall add_weapon(void* arg, void* string, int source, bool bool1
         }
             
         // dev = 9999
-        add_weapon_original(arg, string, 9999, bool1, bool2, class1, struct1);
+        const int valid_reasons[] = {
+            0x19,
+            0x1A,
+            0x1E,
+            0x1F,
+            0x24
+        };
+        srand(time(NULL));
+        add_weapon_original(arg, string, valid_reasons[rand() % 5], bool1, bool2, class1, struct1);
         return;
     }
     

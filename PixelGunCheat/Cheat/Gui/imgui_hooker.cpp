@@ -18,7 +18,6 @@
 #include <MinHook.h>
 #include <thread>
 
-#include "../Data/Weapons.h"
 #include "../Hooks/GlobalModuleDeclarations.h"
 #include "../Hooks/Hooks.h"
 #include "../Internal/Functions.h"
@@ -36,7 +35,7 @@ WPARAM MapLeftRightKeys(const MSG& msg);
 
 // Boykisser Central Vars
 std::string BKCImGuiHooker::c_Title = "Boykisser Central";
-std::string BKCImGuiHooker::c_RealBuild = "v2.7";
+std::string BKCImGuiHooker::c_RealBuild = "v2.8";
 static std::string c_Build = ":3";
 std::stringstream full_title;
 std::string combo_file = "default";

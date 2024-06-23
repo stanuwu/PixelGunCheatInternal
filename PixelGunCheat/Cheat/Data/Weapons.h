@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-// commented names can not be obtained for some reason (crash)
+// commented names can not be obtained for some reason (ban/crash)
 
 static inline std::vector<std::wstring> weapons_names = {
 L"FirstPistol",
@@ -1268,9 +1268,9 @@ L"spiky_mortar",
 L"heavy_evidence",
 L"useful_suitcase",
 L"accurate_investigator",
-L"new_well_pistol",
-L"fps_destroyer",
-L"achieve_hunter",
+// L"new_well_pistol",
+// L"fps_destroyer",
+// L"achieve_hunter",
 L"cash_gun",
 L"rudolf_the_deer",
 L"sooty_sniper_rifle",
