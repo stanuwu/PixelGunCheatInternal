@@ -32,6 +32,6 @@ public:
         );
         set_bool(arg, Offsets::isBlindEffect, true); // isBlindEffect
         set_float(arg, Offsets::isBlindEffectTime, __blind_duration.value); // isBlindEffectTime
-        set_int(arg, Offsets::blindEffect, out[0]);
+        set_int(arg, Offsets::isBlindEffect, out[0]);
     }
 };

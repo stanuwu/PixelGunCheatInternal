@@ -12,6 +12,5 @@ public:
     void do_module(void* arg) override
     {
         set_float(arg, Offsets::shootDelay, 0.000001f); // shootDelay
-        set_float(arg, Offsets::delayInBurstShooting, 0.000001f); // delayInBurstShooting
     }
 };

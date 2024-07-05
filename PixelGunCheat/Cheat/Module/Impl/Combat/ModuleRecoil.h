@@ -12,7 +12,6 @@ public:
     
     void do_module(void* arg) override
     {
-        set_float(arg, Offsets::recoilCoeff, __recoil_coeff.value); // recoilCoeff
         set_float(arg, Offsets::recoilCoeffZoom, __recoil_coeff.value); // recoilCoeffZoom
     }
 };

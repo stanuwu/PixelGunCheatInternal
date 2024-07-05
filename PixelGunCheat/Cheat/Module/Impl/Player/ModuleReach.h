@@ -13,6 +13,7 @@ public:
     
     void do_module(void* arg) override
     {
-        set_float(arg, Offsets::range, __reach_range.value); // range
+        // removed
+        // set_float(arg, Offsets::range, __reach_range.value); // range
     }
 };
