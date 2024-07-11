@@ -128,10 +128,10 @@ public:
     static inline uint64_t isReducedHeadshotDamage = 0x27C;
     static inline uint64_t reducedHeadshotDamageMultiplier = 0x280;
     static inline uint64_t isDoubleJump = 0x467;
-    static inline uint64_t playerMoveCPlayerDamageable = 0x658;
-    static inline uint64_t nickLabel = 0x3C8;
+    static inline uint64_t playerMoveCPlayerDamageable = 0x668;
+    static inline uint64_t nickLabel = 0x3D0;
     static inline uint64_t weaponSoundsPlayerMoveC = 0x510;
-    static inline uint64_t myPlayerTransform = 0x3B0;
+    static inline uint64_t myPlayerTransform = 0x3B8;
     static inline uint64_t headCollider = 0x128;
     static inline uint64_t maxKoofZoom = 0x100;
     static inline uint64_t upKoofFireZoom = 0x104;
