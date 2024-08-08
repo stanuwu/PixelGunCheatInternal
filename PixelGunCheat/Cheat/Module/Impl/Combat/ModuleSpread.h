@@ -13,7 +13,8 @@ public:
     void do_module(void* arg) override
     {
         set_bool(arg, 0x0b8, false); // firstShotScatter
-        
+
+        /*
         set_float(arg, Offsets::moveScatterCoeff, __spread_coeff.value); // moveScatterCoeff
         set_float(arg, Offsets::moveScatterCoeffZoom, __spread_coeff.value); // moveScatterCoeffZoom
         set_float(arg, Offsets::maxKoofZoom, __spread_coeff.value); // maxKoofZoom
@@ -25,5 +26,6 @@ public:
         set_float(arg, Offsets::upKoofFireZoom, __spread_coeff.value); // upKoofFireZoom
         set_float(arg, Offsets::downKoofFirst, __spread_coeff.value); // downKoofFirst
         set_float(arg, Offsets::downKoof, __spread_coeff.value); // downKoof
+        */
     }
 };

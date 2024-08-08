@@ -12,6 +12,6 @@ public:
     
     void do_module(void* arg) override
     {
-        set_bool(arg, Offsets::isDoubleJump, true); // isDoubleJump
+        // set_bool(arg, Offsets::isDoubleJump, true); // isDoubleJump
     }
 };

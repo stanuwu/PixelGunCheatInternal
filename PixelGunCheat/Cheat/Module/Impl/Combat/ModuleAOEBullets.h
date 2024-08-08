@@ -14,6 +14,7 @@ public:
     
     void do_module(void* arg) override
     {
+        /*
         if (__aoe_weapon_fix.enabled)
         {
             set_bool(arg, Offsets::flamethrower, false); // flamethrower
@@ -29,5 +30,6 @@ public:
         set_float(arg, Offsets::sectorsAOEDamageMultiplierFront, __aoe_damage.value); // sectorsAOEDamageMultiplierFront
         set_float(arg, Offsets::sectorsAOEDamageMultiplierSide, __aoe_damage.value); // sectorsAOEDamageMultiplierSide
         set_float(arg, Offsets::sectorsAOERadiusSectorsAoE, __aoe_range.value); // sectorsAOERadiusSectorsAoE
+        */
     }
 };

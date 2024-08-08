@@ -13,7 +13,7 @@ public:
     void do_module(void* arg) override
     {
         // set_bool(arg, 0x0e4, true); // considerScopeValues
-        set_float(arg, Offsets::scopeSpeed, 0); // scopeSpeed
-        set_float(arg, Offsets::scopeCircleRadius, 9999); // scopeCircleRadius
+        // set_float(arg, Offsets::scopeSpeed, 0); // scopeSpeed
+        // set_float(arg, Offsets::scopeCircleRadius, 9999); // scopeCircleRadius
     }
 };

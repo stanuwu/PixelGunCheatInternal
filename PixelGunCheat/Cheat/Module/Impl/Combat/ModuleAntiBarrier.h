@@ -11,8 +11,10 @@ public:
     
     void do_module(void* arg) override
     {
+        /*
         set_bool(arg, Offsets::ignoreBarrier, true); // ignoreBarrier
         set_bool(arg, Offsets::ignoreSlyWolf, true); // ignoreSlyWolf
         set_bool(arg, Offsets::ignoreReflector, true); // ignoreReflector
+        */
     }
 };

@@ -19,8 +19,10 @@ public:
     
     void do_module(void* arg) override
     {
+        /*
         if (__immunity_poison.enabled) set_bool(arg, Offsets::fireImmunity, true); // fireImmunity
         if (__immunity_bleeding.enabled) set_bool(arg, Offsets::bleedingImmunity, true); // bleedingImmunity
         if (__immunity_toxic.enabled) set_bool(arg, Offsets::toxicImmunity, true); // toxicImmunity
+        */
     }
 };

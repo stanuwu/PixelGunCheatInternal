@@ -35,6 +35,7 @@ public:
     
     void do_module(void* arg) override
     {
+        /*
         if (__charm.enabled)
         {
             set_bool(arg, Offsets::isCharm, true); // isCharm
@@ -75,5 +76,6 @@ public:
             set_float(arg, Offsets::stunTime, __stun_duration.value); // stunTime
             set_float(arg, Offsets::stunRadius, __stun_radius.value); // stunRadius
         }
+        */
     }
 };

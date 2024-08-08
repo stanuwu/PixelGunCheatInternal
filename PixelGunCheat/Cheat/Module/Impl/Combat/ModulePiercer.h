@@ -11,8 +11,10 @@ public:
     
     void do_module(void* arg) override
     {
+        /*
         set_bool(arg, Offsets::bulletBreakout, true); // bulletBreakout
         set_bool(arg, Offsets::bulletSuperBreakout, true); // bulletSuperBreakout
         set_bool(arg, Offsets::railgunStopAtWall, false); // railgunStopAtWall
+        */
     }
 };

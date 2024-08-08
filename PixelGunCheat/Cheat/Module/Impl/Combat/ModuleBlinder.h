@@ -30,8 +30,10 @@ public:
             1,
             std::mt19937{std::random_device{}()}
         );
+        /*
         set_bool(arg, Offsets::isBlindEffect, true); // isBlindEffect
         set_float(arg, Offsets::isBlindEffectTime, __blind_duration.value); // isBlindEffectTime
         set_int(arg, Offsets::isBlindEffect, out[0]);
+        */
     }
 };

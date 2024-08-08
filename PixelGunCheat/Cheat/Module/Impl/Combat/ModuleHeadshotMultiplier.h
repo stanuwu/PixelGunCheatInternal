@@ -12,7 +12,9 @@ public:
     
     void do_module(void* arg) override
     {
+        /*
         set_bool(arg, Offsets::isHeadshotDamageIncreased, true); // isHeadshotDamageIncreased
         set_float(arg, Offsets::increasedHeadshotDamageMultiplier, __oshs_multi.value); // increasedHeadshotDamageMultiplier
+        */
     }
 };

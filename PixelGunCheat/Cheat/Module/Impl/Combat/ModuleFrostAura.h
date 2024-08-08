@@ -14,11 +14,13 @@ public:
     
     void do_module(void* arg) override
     {
+        /*
         set_bool(arg, Offsets::isFrostSword, true); // isFrostSword
         set_bool(arg, Offsets::isFrostSwordUseAngle, true); // isFrostSwordUseAngle
         set_float(arg, Offsets::frostRadius, __frost_range.value); // frostRadius
         set_float(arg, Offsets::frostDamageMultiplier, __frost_damage.value); // frostDamageMultiplier
         set_float(arg, Offsets::frostSwordAngle, 360); // frostSwordAngle
         set_float(arg, Offsets::frostSwordnTime, __frost_delay.value); // frostSwordnTime
+        */
     }
 };

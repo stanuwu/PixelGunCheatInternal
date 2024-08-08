@@ -1086,35 +1086,35 @@ void Hooks::load()
     GlobalModuleDeclarations::hud_customizer_module = new ModuleHUDCustomizer();
     on_imgui_draw_modules.push_back((ModuleBase*) GlobalModuleDeclarations::hud_customizer_module);
     
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleAntiBarrier());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleAOEBullets());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleBetterDash());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleBetterScope());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleBlinder());
+    // weapon_sounds_modules.push_back((ModuleBase*) new ModuleAntiBarrier());
+    // weapon_sounds_modules.push_back((ModuleBase*) new ModuleAOEBullets());
+    // weapon_sounds_modules.push_back((ModuleBase*) new ModuleBetterDash());
+    // weapon_sounds_modules.push_back((ModuleBase*) new ModuleBetterScope());
+    // weapon_sounds_modules.push_back((ModuleBase*) new ModuleBlinder());
     weapon_sounds_modules.push_back((ModuleBase*) new ModuleCriticals());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleDebuffer());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleDoubleJump());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleFrostAura());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleFullAuto());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleHeadshotMultiplier());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleImmunity());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleInstantCharge());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleLegacyAnimations());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModulePiercer());
+    // weapon_sounds_modules.push_back((ModuleBase*) new ModuleDebuffer());
+    // weapon_sounds_modules.push_back((ModuleBase*) new ModuleDoubleJump());
+    // weapon_sounds_modules.push_back((ModuleBase*) new ModuleFrostAura());
+    // weapon_sounds_modules.push_back((ModuleBase*) new ModuleFullAuto());
+    // weapon_sounds_modules.push_back((ModuleBase*) new ModuleHeadshotMultiplier());
+    // weapon_sounds_modules.push_back((ModuleBase*) new ModuleImmunity());
+    // weapon_sounds_modules.push_back((ModuleBase*) new ModuleInstantCharge());
+    // weapon_sounds_modules.push_back((ModuleBase*) new ModuleLegacyAnimations());
+    // weapon_sounds_modules.push_back((ModuleBase*) new ModulePiercer());
     // weapon_sounds_modules.push_back((ModuleBase*) new ModuleReach());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleRecoil());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleSpread());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleScoreMultiplier());
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleXRay());
+    // weapon_sounds_modules.push_back((ModuleBase*) new ModuleRecoil());
+    // weapon_sounds_modules.push_back((ModuleBase*) new ModuleSpread());
+    // weapon_sounds_modules.push_back((ModuleBase*) new ModuleScoreMultiplier());
+    // weapon_sounds_modules.push_back((ModuleBase*) new ModuleXRay());
 
     // Will wreak havoc on literally everyone, even other cheaters :D
-    weapon_sounds_modules.push_back((ModuleBase*) new ModuleAntiHeadshot());
+    // weapon_sounds_modules.push_back((ModuleBase*) new ModuleAntiHeadshot());
 
     // weapon_sounds_modules.push_back((ModuleBase*) new InfiniteArmor());
     // weapon_sounds_modules.push_back((ModuleBase*) new ModulePolymorpher()); this can work, but need to look into it
     
     infinite_ammo_module = new ModuleInfiniteAmmo();
-    weapon_sounds_modules.push_back((ModuleBase*) infinite_ammo_module);
+    // weapon_sounds_modules.push_back((ModuleBase*) infinite_ammo_module);
     // player_damageable_modules.push_back((ModuleBase*) new ModuleInfiniteAmmo());
     // player_move_c_modules.push_back((ModuleBase*) new ModuleHeal());
 

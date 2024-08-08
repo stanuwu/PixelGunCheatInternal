@@ -13,6 +13,7 @@ public:
     
     void do_module(void* arg) override
     {
+        /*
         set_bool(arg, Offsets::isBuffPoints, true); // isBuffPoints
         set_bool(arg,Offsets::buffPointsKillDesigner, true); // buffPointsKillDesigner
         set_bool(arg, Offsets::buffPointsAssistDesigner, true); // buffPointsAssistDesigner
@@ -21,5 +22,6 @@ public:
         set_float(arg, Offsets::buffBonusPointsForKill, __score_amount.value); // buffBonusPointsForKill
         set_float(arg, Offsets::buffBonusPointsForAssist, __score_amount.value); // buffBonusPointsForAssist
         set_float(arg, Offsets::buffPointsRevenge, __score_amount.value); // buffPointsRevenge
+        */
     }
 };
