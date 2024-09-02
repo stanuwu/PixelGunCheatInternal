@@ -2,6 +2,8 @@
 (official version)
 `by hiderikzki and stanuwu`
 
+> LTS Mode: Offsets will be updated but broken features will not be fixed.
+
 > Issues on GitHub are only for bugs! If you need support or want to give suggestions please join the discord! Issues not related to the code will be closed!
 
 ## Warning!
