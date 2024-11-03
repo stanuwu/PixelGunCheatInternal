@@ -290,7 +290,7 @@ bool Hooks::is_player_enemy(void* player)
 
 bool is_my_player_move_c(void* player_move_c)
 {
-    return Hooks::get_player_name(player_move_c) == "1111";
+    return Hooks::get_player_name(player_move_c) == "#Player Nickname";
 }
 
 bool is_my_player_weapon_sounds(void* weapon_sounds)
