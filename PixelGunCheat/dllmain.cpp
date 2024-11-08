@@ -236,6 +236,9 @@ long __stdcall hkPresent11(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT F
         
         if (SUCCEEDED(pSwapChain->GetDevice(__uuidof(ID3D11Device), (void**)& pDevice11)))
         {
+            // wait for shit to load ffs
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            
             pDevice11->GetImmediateContext(&pContext11);
             DXGI_SWAP_CHAIN_DESC sd;
             pSwapChain->GetDesc(&sd);
@@ -247,8 +250,8 @@ long __stdcall hkPresent11(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT F
             oWndProc = (WNDPROC)SetWindowLongPtr(window, GWLP_WNDPROC, (LONG_PTR)WndProc);
 
             Logger::log_info("Kiero D3D11 hkPresent hooked successfully!");
+            
             // Init Imgui
-
             BKCImGuiHooker::setup_imgui_hwnd(window, pDevice11, pContext11, dx11);
             
             is_init = false;
@@ -272,6 +275,9 @@ long __stdcall hkPresent10(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT F
         
         if (SUCCEEDED(pSwapChain->GetDevice(__uuidof(ID3D10Device), (void**)& pDevice10)))
         {
+            // wait for shit to load ffs
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            
             DXGI_SWAP_CHAIN_DESC sd;
             pSwapChain->GetDesc(&sd);
             window = sd.OutputWindow;
@@ -282,8 +288,8 @@ long __stdcall hkPresent10(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT F
             oWndProc = (WNDPROC)SetWindowLongPtr(window, GWLP_WNDPROC, (LONG_PTR)WndProc);
 
             Logger::log_info("Kiero D3D10 hkPresent hooked successfully!");
+            
             // Init Imgui
-
             BKCImGuiHooker::setup_imgui_hwnd(window, pDevice10, nullptr, dx11);
             
             is_init = false;
@@ -321,29 +327,17 @@ bool shutdown(FILE* fp, std::string reason)
 
 int64_t WINAPI MainThread(LPVOID param)
 {
+    if (remove("bkc_latest_log.txt") != 0) Logger::log_err("Failed to remove bkc_latest_log.txt, file does not exist or insufficient permissions!");
     AllocConsole();
     FILE* fp;
     freopen_s(&fp, "CONOUT$", "w", stdout);
-    SetConsoleTitleW(L"BoyKisser Central");
+    SetConsoleTitleW(L"Boykisser Central");
     const HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
     Logger::console = console;
     SetConsoleTextAttribute(console, 0x000F);
     // ShowWindow(GetConsoleWindow(), SW_MINIMIZE);
 
-    /*
-    Logger::log_debug("--- LOGGER TEST ---");
-    
-    Logger::log_debug("This is a debug log!");
-    Logger::log_info("This is an info log!");
-    Logger::log_warn("This is a warning log!");
-    Logger::log_err("This is an error log!");
-    Logger::log_fatal("This is a FATAL log!");
-    
-    Logger::log_debug("--- LOGGER TEST ---");
-    */
-
-    for (const auto& line : watermark)
-        Logger::log_info(line);
+    for (const auto& line : watermark) Logger::log_info(line);
     
     Logger::log_info("");
     Logger::log_info("You like kissing boys don't you~~ ;3");
@@ -378,6 +372,9 @@ int64_t WINAPI MainThread(LPVOID param)
             Logger::log_err("No valid DirectX version found!");
         }
     }
+
+    // wait for hooking until dx is finished
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     
     Hooks* hooks = new Hooks();
     try
@@ -398,15 +395,11 @@ int64_t WINAPI MainThread(LPVOID param)
     while(true)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
-        // Removed for now...
-        // TODO: Fix crash on eject
-        
         if (GetAsyncKeyState(VK_INSERT) & 1)
         {
             Logger::log_info("Ejecting...");
             break;
         }
-        
     }
     
     // Unload
@@ -429,10 +422,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
         HANDLE hMainThead = CreateThread(nullptr, 0, LPTHREAD_START_ROUTINE(MainThread), hModule, 0, nullptr);
         if (hMainThead) CloseHandle(hMainThead);
     }
-    else if (ul_reason_for_call == DLL_PROCESS_DETACH)
-    {
-        kiero::shutdown();
-    }
+    else if (ul_reason_for_call == DLL_PROCESS_DETACH) kiero::shutdown();
     return TRUE;
 }
 

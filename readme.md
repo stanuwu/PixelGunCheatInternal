@@ -1,6 +1,10 @@
 ﻿# PixelGun3D Internal Utility Modification
-
+(official version)
 `by hiderikzki and stanuwu`
+
+> LTS Mode: Offsets will be updated but broken features will not be fixed.
+
+> Issues on GitHub are only for bugs! If you need support or want to give suggestions please join the discord! Issues not related to the code will be closed!
 
 ## Warning!
 - This Program is FREE SOFTWARE.
@@ -13,9 +17,9 @@ This repository contains findings and test software related to security research
 
 We are not encouraging modding or cheating with this repository. It is purely for educational purposes only. to companies including but not limited to Epic Games, EA, Bohemia Interative, Bluehole, Daybreak, Activision, Rockstar, Cubic Games, and Devolver Digital this is a copyright disclaimer Under Section 107 of the Copyright Act 1976, allowance is made for "fair use" for purposes such as criticism, comment, news reporting, teaching, scholarship, and research. Fair use is a use permitted by copyright statute that might otherwise be infringing. Non-profit, educational or personal use tips the balance in favor of fair use.
 
-> Thanks to `@solotov2160`, `@ph0mp`, `@bosslawl`, `@c___s`, `@vor1c`, `@xz3phyr.`, `@awaprim` for helping with development!
+> Thanks to `@solotov2160`, `@ph0mp`, `@bosslawl`, `@c___s`, `@xz3phyr.`, `@awaprim` for helping with development!
 
-> ## For help or install directions join our [discord](https://discord.gg/wR8rqUUS2d).
+> ## For help or install directions join our [discord](https://discord.gg/EWWyBS3QdY)
 
 > ## Injector
 > https://github.com/stanuwu/PG3DInjector
@@ -33,7 +37,11 @@ We are not encouraging modding or cheating with this repository. It is purely fo
 >
 > Bitcoin - bc1q6nyc02nsj0fjl3vghr5ujft0qg5y00lr5e865k
 >
-> Etherium - 0x2cFA49693302974B2afe874d537CE7CA159a847f
+> Litecoin - ltc1qh7dk63yx5w5z5fuy9q93a4nvx0jcnc7zme7xlr
+>
+> Etherium (ERC20) - 0x2cFA49693302974B2afe874d537CE7CA159a847f
+>
+> Monero XMR - 42tYkNy6Krz3zgThhmTgao49ZdfoRBxRfJXrepHQ6uGNEw3wGEnkCYTGijUNwX9sWESorqYKP9wwh9yWJSb4fU8T85MVSzG
 
 > ## Features:
 > - AimBot
