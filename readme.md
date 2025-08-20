@@ -19,15 +19,15 @@ We are not encouraging modding or cheating with this repository. It is purely fo
 
 > Thanks to `@solotov2160`, `@ph0mp`, `@bosslawl`, `@c___s`, `@xz3phyr.`, `@awaprim` for helping with development!
 
-> ## For help or install directions join our [discord](https://discord.gg/EWWyBS3QdY)
+> ## For help or install directions join my [discord](https://discord.gg/EWWyBS3QdY)
 
 > ## Injector
 > https://github.com/stanuwu/PG3DInjector
 
 > ## Donations
-> We spent a lot of time working on this, and are releasing it for free.
-> If you like our work feel free to send some money our way so we can buy a coffee.
-> We will be thankful! All Donations will be spread evenly among developers.
+> I spent a lot of time working on this, and are releasing it for free.
+> If you like our work feel free to send some money our way so I can buy a coffee.
+> This helps us make future projects like this possible.
 >
 > [<img src="https://raw.githubusercontent.com/aha999/DonateButtons/master/Paypal.png" width="250">](https://www.paypal.com/ncp/payment/M3V7Q3Q295AHW)
 >
@@ -44,40 +44,22 @@ We are not encouraging modding or cheating with this repository. It is purely fo
 > Monero XMR - 42tYkNy6Krz3zgThhmTgao49ZdfoRBxRfJXrepHQ6uGNEw3wGEnkCYTGijUNwX9sWESorqYKP9wwh9yWJSb4fU8T85MVSzG
 
 > ## Features:
-> - AimBot
-> - AOE Bullets
-> - Array List
-> - Better Scope
-> - Criticals
-> - Debuffer
-> - ESP
-> - FOV Changer
-> - Frost Aura
-> - Full Auto
-> - Heal
-> - Infinite Ammo
-> - Infinite Gem Claim
-> - Instant Charge
-> - Invisibility
-> - Rapid Fire
-> - Reach
-> - No Recoil
-> - Score Multiplier
-> - Speed
-> - Spread
-> - XRay
+> - Add Currency (Gems, Counts, ClanSilver, ClanLootBoxPoints, Coupons, PixelPassCurrency)
+> - Modify Lottery (Price, Amount)
+> - Add Items (Weapons, Armor, Mask, Hat, Boots, Cape, Pet, Avatar, Royale)
+> - Reward Multiplier
 
 ## Building
 Use MSVC Build Tools v143
 
 Dependencies from vcpkg:
 
-`minhook:x64-windows-static`
+`detours`
 
-`imgui:x64-windows-static`
+`imgui`
 
-`imgui[dx10-binding]:x64-windows-static`
+`imgui[dx10-binding]`
 
-`imgui[dx11-binding]:x64-windows-static`
+`imgui[dx11-binding]`
 
-`imgui[win32-binding]:x64-windows-static`
+`imgui[win32-binding]`
