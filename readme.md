@@ -1,3 +1,5 @@
+<!-- GitAds-Verify: MOC2LZY6HIA9GBP732GKG3MPOJSIORCX -->
+
 # !! DEPRECATED !!
 > [new version](https://github.com/stanuwu/PG3DUnlocker)
 
