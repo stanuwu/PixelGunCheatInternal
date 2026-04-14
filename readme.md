@@ -1,5 +1,8 @@
 <!-- GitAds-Verify: MOC2LZY6HIA9GBP732GKG3MPOJSIORCX -->
 
+## GitAds Sponsored
+[![Sponsored by GitAds](https://gitads.dev/v1/ad-serve?source=stanuwu/pixelguncheatinternal@github)](https://gitads.dev/v1/ad-track?source=stanuwu/pixelguncheatinternal@github)
+
 # !! DEPRECATED !!
 > [new version](https://github.com/stanuwu/PG3DUnlocker)
 
